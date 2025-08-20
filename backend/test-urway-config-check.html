@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص إعدادات URWAY</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .status.set {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.not-set {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 فحص إعدادات URWAY</h1>
+            <p>فحص شامل لإعدادات بوابة الدفع URWAY</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h3>📋 فحص الاتصال بالخادم</h3>
+                <button class="btn" onclick="checkServerConnection()">فحص الاتصال</button>
+                <div id="serverResult"></div>
+            </div>
+
+            <div class="section">
+                <h3>⚙️ فحص إعدادات URWAY</h3>
+                <button class="btn" onclick="checkUrwayConfig()">فحص الإعدادات</button>
+                <div id="configResult"></div>
+            </div>
+
+            <div class="section">
+                <h3>🧪 اختبار إنشاء جلسة URWAY</h3>
+                <button class="btn" onclick="testUrwaySession()">اختبار الجلسة</button>
+                <div id="sessionResult"></div>
+            </div>
+
+            <div class="section">
+                <h3>📊 معلومات البيئة</h3>
+                <div id="envInfo">
+                    <div class="config-item">
+                        <span>NODE_ENV:</span>
+                        <span class="status" id="nodeEnv">جاري الفحص...</span>
+                    </div>
+                    <div class="config-item">
+                        <span>البيئة المحددة:</span>
+                        <span class="status" id="environment">جاري الفحص...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // فحص الاتصال بالخادم
+        async function checkServerConnection() {
+            const resultDiv = document.getElementById('serverResult');
+            resultDiv.innerHTML = '<div class="loading">جاري فحص الاتصال...</div>';
+            
+            try {
+                const response = await fetch('/api/urway/check-config');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            ✅ تم الاتصال بالخادم بنجاح
+                            
+                            معلومات الاتصال:
+                            - الحالة: متصل
+                            - الاستجابة: ${response.status}
+                            - الوقت: ${new Date().toLocaleString('ar-SA')}
+                        </div>
+                    `;
+                    
+                    // تحديث معلومات البيئة
+                    updateEnvironmentInfo(data.config);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ فشل الاتصال بالخادم
+                            
+                            تفاصيل الخطأ:
+                            - الحالة: ${response.status}
+                            - الرسالة: ${data.message || 'خطأ غير معروف'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ خطأ في الاتصال
+                        
+                        تفاصيل الخطأ:
+                        - الرسالة: ${error.message}
+                        - الوقت: ${new Date().toLocaleString('ar-SA')}
+                    </div>
+                `;
+            }
+        }
+
+        // فحص إعدادات URWAY
+        async function checkUrwayConfig() {
+            const resultDiv = document.getElementById('configResult');
+            resultDiv.innerHTML = '<div class="loading">جاري فحص الإعدادات...</div>';
+            
+            try {
+                const response = await fetch('/api/urway/check-config');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const config = data.config;
+                    let configHtml = '<div class="result success">';
+                    configHtml += '<h4>✅ إعدادات URWAY:</h4>';
+                    
+                    // معلومات البيئة
+                    configHtml += `<p><strong>NODE_ENV:</strong> ${config.NODE_ENV || 'غير محدد'}</p>`;
+                    configHtml += `<p><strong>البيئة:</strong> ${config.isProduction ? 'Production' : 'Test'}</p>`;
+                    
+                    // إعدادات Production
+                    configHtml += '<h5>إعدادات Production:</h5>';
+                    configHtml += `<p>Terminal ID: <span class="status ${config.URWAY_TERMINAL_ID_PROD === 'SET' ? 'set' : 'not-set'}">${config.URWAY_TERMINAL_ID_PROD}</span></p>`;
+                    configHtml += `<p>Password: <span class="status ${config.URWAY_PASSWORD_PROD === 'SET' ? 'set' : 'not-set'}">${config.URWAY_PASSWORD_PROD}</span></p>`;
+                    configHtml += `<p>Secret Key: <span class="status ${config.URWAY_SECRET_KEY_PROD === 'SET' ? 'set' : 'not-set'}">${config.URWAY_SECRET_KEY_PROD}</span></p>`;
+                    
+                    // إعدادات Test
+                    configHtml += '<h5>إعدادات Test:</h5>';
+                    configHtml += `<p>Terminal ID: <span class="status ${config.URWAY_TERMINAL_ID_TEST === 'SET' ? 'set' : 'not-set'}">${config.URWAY_TERMINAL_ID_TEST}</span></p>`;
+                    configHtml += `<p>Password: <span class="status ${config.URWAY_PASSWORD_TEST === 'SET' ? 'set' : 'not-set'}">${config.URWAY_PASSWORD_TEST}</span></p>`;
+                    configHtml += `<p>Secret Key: <span class="status ${config.URWAY_SECRET_KEY_TEST === 'SET' ? 'set' : 'not-set'}">${config.URWAY_SECRET_KEY_TEST}</span></p>`;
+                    
+                    // الإعدادات المحددة
+                    configHtml += '<h5>الإعدادات المحددة:</h5>';
+                    configHtml += `<p>Terminal ID: <span class="status ${config.URWAY_CONFIG.terminalId === 'SET' ? 'set' : 'not-set'}">${config.URWAY_CONFIG.terminalId}</span></p>`;
+                    configHtml += `<p>Password: <span class="status ${config.URWAY_CONFIG.password === 'SET' ? 'set' : 'not-set'}">${config.URWAY_CONFIG.password}</span></p>`;
+                    configHtml += `<p>Secret Key: <span class="status ${config.URWAY_CONFIG.secretKey === 'SET' ? 'set' : 'not-set'}">${config.URWAY_CONFIG.secretKey}</span></p>`;
+                    configHtml += `<p>Base URL: ${config.URWAY_CONFIG.baseUrl}</p>`;
+                    
+                    configHtml += '</div>';
+                    resultDiv.innerHTML = configHtml;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ فشل في فحص الإعدادات
+                            
+                            تفاصيل الخطأ:
+                            - الرسالة: ${data.message || 'خطأ غير معروف'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ خطأ في فحص الإعدادات
+                        
+                        تفاصيل الخطأ:
+                        - الرسالة: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // اختبار إنشاء جلسة URWAY
+        async function testUrwaySession() {
+            const resultDiv = document.getElementById('sessionResult');
+            resultDiv.innerHTML = '<div class="loading">جاري اختبار إنشاء الجلسة...</div>';
+            
+            try {
+                const testData = {
+                    amount: 100,
+                    customerEmail: 'test@example.com',
+                    customerName: 'Test User',
+                    customerMobile: '0500000000',
+                    trackId: 'TEST_' + Date.now(),
+                    currency: 'SAR',
+                    udf1: 'Test Session',
+                    udf2: 'Test Description'
+                };
+                
+                const response = await fetch('/api/urway/create-urway-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            ✅ تم إنشاء جلسة URWAY بنجاح
+                            
+                            تفاصيل الجلسة:
+                            - Pay ID: ${data.payid}
+                            - Payment URL: ${data.paymentUrl}
+                            - الرسالة: ${data.message}
+                            
+                            <br><br>
+                            <a href="${data.paymentUrl}" target="_blank" class="btn">
+                                🚀 الذهاب لصفحة الدفع
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ فشل في إنشاء جلسة URWAY
+                            
+                            تفاصيل الخطأ:
+                            - الرسالة: ${data.message}
+                            ${data.config ? `- الإعدادات: ${JSON.stringify(data.config, null, 2)}` : ''}
+                            ${data.urwayData ? `- بيانات URWAY: ${JSON.stringify(data.urwayData, null, 2)}` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ خطأ في اختبار الجلسة
+                        
+                        تفاصيل الخطأ:
+                        - الرسالة: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // تحديث معلومات البيئة
+        function updateEnvironmentInfo(config) {
+            document.getElementById('nodeEnv').textContent = config.NODE_ENV || 'غير محدد';
+            document.getElementById('nodeEnv').className = `status ${config.NODE_ENV ? 'set' : 'not-set'}`;
+            
+            document.getElementById('environment').textContent = config.isProduction ? 'Production' : 'Test';
+            document.getElementById('environment').className = `status set`;
+        }
+
+        // فحص تلقائي عند تحميل الصفحة
+        window.onload = function() {
+            checkServerConnection();
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+client/node_modules/
+server/node_modules/
+
+# Build output
+client/build/
+client/dist/
+server/build/
+server/dist/
+
+# dotenv environment variables
+.env
+server/.env
+client/.env
+
+# Misc
+.DS_Store
+*.pem
+*.env.*
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+Thumbs.db 

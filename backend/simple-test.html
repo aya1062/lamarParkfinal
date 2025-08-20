@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار بسيط</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 اختبار الخادم</h1>
+        <p>هذه صفحة اختبار بسيطة للتأكد من أن الخادم يعمل بشكل صحيح.</p>
+        
+        <button onclick="testServer()">اختبار الاتصال بالخادم</button>
+        <button onclick="testPaymentAPI()">اختبار API الدفع</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function testServer() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'جاري اختبار الاتصال...';
+            
+            try {
+                const response = await fetch('/');
+                const text = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <strong>✅ الخادم يعمل!</strong><br>
+                    <strong>الاستجابة:</strong> ${text}<br>
+                    <strong>الحالة:</strong> ${response.status}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <strong>❌ خطأ في الاتصال</strong><br>
+                    <strong>الخطأ:</strong> ${error.message}
+                `;
+            }
+        }
+
+        async function testPaymentAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'جاري اختبار API الدفع...';
+            
+            try {
+                const testData = {
+                    amount: 100.00,
+                    trackId: 'TEST_' + Date.now(),
+                    customerEmail: 'test@example.com',
+                    country: 'SA',
+                    currency: 'SAR'
+                };
+
+                const response = await fetch('/api/payments/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <strong>✅ API الدفع يعمل!</strong><br>
+                        <strong>الاستجابة:</strong> ${JSON.stringify(data, null, 2)}
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong>⚠️ API يعمل لكن هناك خطأ</strong><br>
+                        <strong>الخطأ:</strong> ${data.message}<br>
+                        <strong>التفاصيل:</strong> ${JSON.stringify(data, null, 2)}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <strong>❌ خطأ في API الدفع</strong><br>
+                    <strong>الخطأ:</strong> ${error.message}
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 

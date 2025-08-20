@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار URWAY - تشخيص متقدم</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.set {
+            background: #28a745;
+            color: white;
+        }
+        .status.not-set {
+            background: #dc3545;
+            color: white;
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        .value {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 اختبار URWAY - تشخيص متقدم</h1>
+            <p>فحص شامل لإعدادات URWAY وتشخيص المشاكل</p>
+        </div>
+        
+        <div class="content">
+            <!-- فحص الإعدادات الأساسية -->
+            <div class="section">
+                <h3>📋 فحص الإعدادات الأساسية</h3>
+                <button class="btn" onclick="checkBasicConfig()">فحص الإعدادات الأساسية</button>
+                <div id="basicConfigResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- فحص متغيرات البيئة -->
+            <div class="section">
+                <h3>🔍 فحص متغيرات البيئة</h3>
+                <button class="btn" onclick="checkEnvironmentVars()">فحص متغيرات البيئة</button>
+                <div id="envVarsResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- اختبار الاتصال بـ URWAY -->
+            <div class="section">
+                <h3>🌐 اختبار الاتصال بـ URWAY</h3>
+                <button class="btn btn-success" onclick="testUrwayConnection()">اختبار الاتصال</button>
+                <div id="connectionResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- اختبار إنشاء جلسة -->
+            <div class="section">
+                <h3>💳 اختبار إنشاء جلسة دفع</h3>
+                <button class="btn btn-danger" onclick="testCreateSession()">اختبار إنشاء جلسة</button>
+                <div id="sessionResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- تشخيص متقدم -->
+            <div class="section">
+                <h3>🔬 تشخيص متقدم</h3>
+                <button class="btn" onclick="advancedDiagnosis()">تشخيص متقدم</button>
+                <div id="diagnosisResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                return { error: error.message };
+            }
+        }
+
+        function showResult(elementId, data, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${type}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function checkBasicConfig() {
+            const result = await makeRequest(`${API_BASE}/urway/check-config`);
+            showResult('basicConfigResult', result, result.success ? 'success' : 'error');
+        }
+
+        async function checkEnvironmentVars() {
+            const result = await makeRequest(`${API_BASE}/urway/check-config`);
+            if (result.success && result.config) {
+                const envInfo = {
+                    message: 'فحص متغيرات البيئة',
+                    timestamp: new Date().toISOString(),
+                    environment: result.config.environment,
+                    variables: result.config.debug?.envVars || {},
+                    config: result.config.URWAY_CONFIG,
+                    recommendations: []
+                };
+
+                // تحليل البيانات
+                if (result.config.debug?.terminalIdValue === 'NULL') {
+                    envInfo.recommendations.push('❌ Terminal ID غير محدد - تحقق من URWAY_TERMINAL_ID_PROD');
+                }
+                if (result.config.debug?.passwordLength === 0) {
+                    envInfo.recommendations.push('❌ Password غير محدد - تحقق من URWAY_PASSWORD_PROD');
+                }
+                if (result.config.debug?.secretKeyLength === 0) {
+                    envInfo.recommendations.push('❌ Secret Key غير محدد - تحقق من URWAY_SECRET_KEY_PROD');
+                }
+
+                showResult('envVarsResult', envInfo, envInfo.recommendations.length > 0 ? 'warning' : 'success');
+            } else {
+                showResult('envVarsResult', result, 'error');
+            }
+        }
+
+        async function testUrwayConnection() {
+            const testData = {
+                amount: 100,
+                customerEmail: 'test@example.com',
+                customerName: 'Test User',
+                customerMobile: '0500000000',
+                trackId: 'TEST_CONNECTION_' + Date.now(),
+                currency: 'SAR'
+            };
+
+            const result = await makeRequest(`${API_BASE}/urway/create-urway-session`, {
+                method: 'POST',
+                body: JSON.stringify(testData)
+            });
+
+            const analysis = {
+                message: 'اختبار الاتصال بـ URWAY',
+                timestamp: new Date().toISOString(),
+                requestData: testData,
+                response: result,
+                analysis: {
+                    hasError: !!result.message && result.message.includes('error'),
+                    errorType: result.urwayData?.responseCode || 'unknown',
+                    terminalId: result.requestData?.terminalId || 'unknown',
+                    recommendations: []
+                }
+            };
+
+            if (analysis.analysis.hasError) {
+                if (analysis.analysis.errorType === '601') {
+                    analysis.analysis.recommendations.push('🔴 خطأ 601: System Error - تحقق من بيانات URWAY أو تواصل مع الدعم');
+                }
+                if (analysis.analysis.terminalId === 'lamar') {
+                    analysis.analysis.recommendations.push('🔴 Terminal ID غير صحيح - تحقق من ملف .env');
+                }
+            }
+
+            showResult('connectionResult', analysis, analysis.analysis.hasError ? 'error' : 'success');
+        }
+
+        async function testCreateSession() {
+            const sessionData = {
+                amount: 1150,
+                customerEmail: 'test@lamar.com',
+                customerName: 'Lamar Test',
+                customerMobile: '0500000000',
+                trackId: 'LAMAR_TEST_' + Date.now(),
+                currency: 'SAR',
+                udf1: 'Lamar Park',
+                udf2: 'Test Booking'
+            };
+
+            const result = await makeRequest(`${API_BASE}/urway/create-urway-session`, {
+                method: 'POST',
+                body: JSON.stringify(sessionData)
+            });
+
+            const analysis = {
+                message: 'اختبار إنشاء جلسة دفع',
+                timestamp: new Date().toISOString(),
+                requestData: sessionData,
+                response: result,
+                analysis: {
+                    success: result.success || false,
+                    hasPaymentUrl: !!result.paymentUrl,
+                    errorCode: result.urwayData?.responseCode,
+                    errorReason: result.urwayData?.reason,
+                    recommendations: []
+                }
+            };
+
+            if (!analysis.analysis.success) {
+                if (analysis.analysis.errorCode === '601') {
+                    analysis.analysis.recommendations.push('🔴 خطأ 601: تحقق من بيانات URWAY في ملف .env');
+                    analysis.analysis.recommendations.push('🔴 تأكد من أن الحساب مفعل في URWAY');
+                }
+                if (result.requestData?.terminalId === 'lamar') {
+                    analysis.analysis.recommendations.push('🔴 Terminal ID غير صحيح - يجب أن يكون الرقم الحقيقي');
+                }
+            } else {
+                analysis.analysis.recommendations.push('✅ تم إنشاء الجلسة بنجاح');
+            }
+
+            showResult('sessionResult', analysis, analysis.analysis.success ? 'success' : 'error');
+        }
+
+        async function advancedDiagnosis() {
+            const diagnosis = {
+                message: 'تشخيص متقدم لمشكلة URWAY',
+                timestamp: new Date().toISOString(),
+                steps: [
+                    '1. فحص ملف .env',
+                    '2. فحص متغيرات البيئة',
+                    '3. فحص إعدادات URWAY',
+                    '4. فحص الاتصال بالخادم'
+                ],
+                recommendations: [
+                    '🔧 تأكد من وجود ملف .env في المجلد الرئيسي',
+                    '🔧 تأكد من صحة أسماء المتغيرات: URWAY_TERMINAL_ID_PROD, URWAY_PASSWORD_PROD, URWAY_SECRET_KEY_PROD',
+                    '🔧 تأكد من أن الخادم يعمل على المنفذ 5000',
+                    '🔧 تأكد من أن الحساب مفعل في URWAY',
+                    '🔧 تواصل مع دعم URWAY إذا كانت البيانات صحيحة'
+                ],
+                nextSteps: [
+                    '1. تحقق من صفحة فحص الإعدادات',
+                    '2. راجع ملف .env',
+                    '3. أعد تشغيل الخادم',
+                    '4. اختبر الاتصال مرة أخرى'
+                ]
+            };
+
+            showResult('diagnosisResult', diagnosis, 'info');
+        }
+    </script>
+</body>
+</html> 

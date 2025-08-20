@@ -1,0 +1,422 @@
+Lamar API Documentation
+======================
+
+Base URL:
+http://localhost:5000/api/
+
+----------------------
+
+1. Users (Authentication & Management)
+--------------------------------------
+
+Register
+POST /users/register
+Body (JSON):
+{
+  "name": "User Name",
+  "email": "user@example.com",
+  "password": "yourpassword",
+  "phone": "+966 50 123 4567"
+}
+Response:
+{ "message": "User registered successfully" }
+
+Login
+POST /users/login
+Body (JSON):
+{
+  "email": "user@example.com",
+  "password": "yourpassword"
+}
+Response:
+{
+  "token": "JWT_TOKEN",
+  "user": { ...userObject }
+}
+
+Get All Users
+GET /users/
+Response: Array of user objects
+
+Get User by ID
+GET /users/:id
+Response: User object
+
+Update User
+PUT /users/:id
+Body (JSON): (fields to update)
+Response: Updated user object
+
+Delete User
+DELETE /users/:id
+Response: { "message": "User deleted" }
+
+----------------------
+
+2. Properties
+-------------
+
+Get All Properties
+GET /properties/
+Response: Array of property objects
+
+Get Property by ID
+GET /properties/:id
+Response: Property object
+
+Create Property
+POST /properties/
+Body (JSON):
+{
+  "name": "Property Name",
+  "type": "hotel",
+  "location": "Riyadh",
+  "price": 1200,
+  "rating": 4.9,
+  "reviewCount": 324,
+  "image": "https://...",
+  "images": ["https://..."],
+  "features": ["feature1", "feature2"],
+  "amenities": ["amenity1", "amenity2"],
+  "description": "Description here",
+  "available": true
+}
+Response: Created property object
+
+Update Property
+PUT /properties/:id
+Body (JSON): (fields to update)
+Response: Updated property object
+
+Delete Property
+DELETE /properties/:id
+Response: { "message": "Property deleted" }
+
+Check Availability
+POST /properties/check-availability
+Body (JSON):
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17"
+}
+Response:
+{
+  "success": true,
+  "data": {
+    "available": true,
+    "message": "Property is available"
+  }
+}
+
+----------------------
+
+3. Bookings
+-----------
+
+Get All Bookings
+GET /bookings/
+Response: Array of booking objects
+
+Get Booking by ID
+GET /bookings/:id
+Response: Booking object
+
+Create Booking
+POST /bookings/
+Body (JSON):
+{
+  "guest": {
+    "name": "Guest Name",
+    "email": "guest@email.com",
+    "phone": "+966 50 123 4567"
+  },
+  "property": "PROPERTY_ID",
+  "user": "USER_ID",
+  "dates": {
+    "checkIn": "2024-02-15",
+    "checkOut": "2024-02-17",
+    "nights": 2
+  },
+  "guests": 2,
+  "amount": 2400,
+  "status": "confirmed",
+  "paymentStatus": "paid"
+}
+Response: Created booking object
+
+Update Booking
+PUT /bookings/:id
+Body (JSON): (fields to update)
+Response: Updated booking object
+
+Delete Booking
+DELETE /bookings/:id
+Response: { "message": "Booking deleted" }
+
+----------------------
+
+4. Pricing (Dynamic Pricing)
+---------------------------
+
+Get Pricing
+GET /pricing?propertyId=PROPERTY_ID&month=2024-02
+Response:
+{
+  "success": true,
+  "pricing": [
+    {
+      "date": "2024-02-15",
+      "price": 1200,
+      "discountPrice": 1000,
+      "available": true
+    }
+  ]
+}
+
+Calculate Price
+POST /pricing/calculate
+Body (JSON):
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17"
+}
+Response:
+{
+  "success": true,
+  "data": {
+    "propertyId": "PROPERTY_ID",
+    "checkIn": "2024-02-15",
+    "checkOut": "2024-02-17",
+    "nights": 2,
+    "totalPrice": 2400,
+    "averagePricePerNight": 1200,
+    "breakdown": [
+      {
+        "date": "2024-02-15",
+        "price": 1200,
+        "originalPrice": 1200,
+        "discountApplied": false,
+        "available": true
+      }
+    ],
+    "hasUnavailableDates": false,
+    "unavailableDates": [],
+    "currency": "SAR"
+  }
+}
+
+Add Pricing
+POST /pricing/
+Body (JSON):
+{
+  "property": "PROPERTY_ID",
+  "date": "2024-02-15",
+  "price": 1200,
+  "discountPrice": 1000,
+  "available": true,
+  "reason": "Seasonal discount"
+}
+Response: Created pricing object
+
+Update Pricing
+PUT /pricing/:id
+Body (JSON): (fields to update)
+Response: Updated pricing object
+
+Delete Pricing
+DELETE /pricing/:id
+Response: { "success": true, "message": "Pricing deleted" }
+
+----------------------
+
+5. Checkout (Stripe Integration)
+-------------------------------
+
+Create Checkout Session
+POST /checkout/create-session
+Body (JSON):
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17",
+  "guests": 2,
+  "guestInfo": {
+    "name": "Guest Name",
+    "email": "guest@email.com",
+    "phone": "+966 50 123 4567"
+  },
+  "totalPrice": 2400,
+  "nights": 2
+}
+Response:
+{
+  "success": true,
+  "sessionId": "cs_test_...",
+  "sessionUrl": "https://checkout.stripe.com/..."
+}
+
+Get Session Details
+GET /checkout/session/:sessionId
+Response:
+{
+  "success": true,
+  "session": {
+    "id": "cs_test_...",
+    "amount_total": 240000,
+    "currency": "sar",
+    "status": "complete",
+    "metadata": {
+      "propertyId": "PROPERTY_ID",
+      "checkIn": "2024-02-15",
+      "checkOut": "2024-02-17",
+      "guests": "2",
+      "guestName": "Guest Name",
+      "guestEmail": "guest@email.com",
+      "guestPhone": "+966 50 123 4567",
+      "nights": "2",
+      "totalPrice": "2400"
+    }
+  }
+}
+
+Stripe Webhook
+POST /checkout/webhook
+Headers:
+- stripe-signature: whsec_...
+Body: Raw Stripe event data
+Response: { "received": true }
+
+----------------------
+
+6. Payments
+-----------
+
+Get All Payments
+GET /payments/
+Response: Array of payment objects
+
+Get Payment by ID
+GET /payments/:id
+Response: Payment object
+
+Get User Payments
+GET /payments/user
+Response: Array of user's payment objects
+
+Create Payment
+POST /payments/
+Body (JSON):
+{
+  "booking": "BOOKING_ID",
+  "user": "USER_ID",
+  "amount": 2400,
+  "status": "paid",
+  "paymentMethod": "stripe",
+  "stripeSessionId": "cs_test_...",
+  "stripePaymentIntentId": "pi_test_..."
+}
+Response: Created payment object
+
+Update Payment
+PUT /payments/:id
+Body (JSON): (fields to update)
+Response: Updated payment object
+
+Delete Payment
+DELETE /payments/:id
+Response: { "message": "Payment deleted" }
+
+----------------------
+
+Payment Flow Example
+-------------------
+
+1. Calculate Price:
+POST /api/pricing/calculate
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17"
+}
+
+2. Create Checkout Session:
+POST /api/checkout/create-session
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17",
+  "guests": 2,
+  "guestInfo": {
+    "name": "Guest Name",
+    "email": "guest@email.com",
+    "phone": "+966 50 123 4567"
+  },
+  "totalPrice": 2400,
+  "nights": 2
+}
+
+3. Redirect to Stripe Checkout (sessionUrl)
+
+4. Stripe Webhook confirms payment and creates booking automatically
+
+5. Get Session Details:
+GET /api/checkout/session/cs_test_...
+
+----------------------
+
+How to Test in Postman
+----------------------
+1. Set the request type (GET, POST, PUT, DELETE).
+2. Set the URL (e.g. http://localhost:5000/api/users/register).
+3. For POST/PUT, select "Body" → "raw" → "JSON" and paste the example JSON.
+4. Send the request and check the response.
+
+Example: Register User in Postman
+---------------------------------
+POST http://localhost:5000/api/users/register
+Body:
+{
+  "name": "أحمد المدير",
+  "email": "admin@lamarpark.sa",
+  "password": "123456",
+  "phone": "+966 50 123 4567"
+}
+
+Example: Login User in Postman
+------------------------------
+POST http://localhost:5000/api/users/login
+Body:
+{
+  "email": "admin@lamarpark.sa",
+  "password": "123456"
+}
+
+Example: Calculate Price in Postman
+-----------------------------------
+POST http://localhost:5000/api/pricing/calculate
+Body:
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17"
+}
+
+Example: Create Checkout Session in Postman
+-------------------------------------------
+POST http://localhost:5000/api/checkout/create-session
+Body:
+{
+  "propertyId": "PROPERTY_ID",
+  "checkIn": "2024-02-15",
+  "checkOut": "2024-02-17",
+  "guests": 2,
+  "guestInfo": {
+    "name": "أحمد محمد",
+    "email": "ahmed@example.com",
+    "phone": "+966 50 123 4567"
+  },
+  "totalPrice": 2400,
+  "nights": 2
+} 
