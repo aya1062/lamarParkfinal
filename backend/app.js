@@ -19,6 +19,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://lamarpark.up.railway.app',
   'https://your-frontend-domain.com',
+  'https://lamar-park.vercel.app',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
