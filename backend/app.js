@@ -20,6 +20,10 @@ const allowedOrigins = [
   'https://lamarpark.up.railway.app',
   'https://your-frontend-domain.com',
   'https://lamar-park.vercel.app',
+  'https://lamarparks.com',   // ← ضيفي ده
+  'http://lamarparks.com',
+  'https://www.lamarparks.com',   // ← ضيفي ده
+  'http://www.lamarparks.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
