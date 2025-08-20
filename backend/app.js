@@ -45,6 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/lamar', express.static(path.join(__dirname, 'client/public/lamar')));
 app.use('/imageProperety', express.static(path.join(__dirname, 'client/public/imageProperety')));
 
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
@@ -56,37 +57,31 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/urway', urwayRoutes);
 app.use('/api/settings', settingsRoutes);
 
-// Serve test payment page
+// Test routes
 app.get('/test-payment', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-payment.html'));
 });
 
-// Serve simple test page
 app.get('/simple-test', (req, res) => {
   res.sendFile(path.join(__dirname, 'simple-test.html'));
 });
 
-// Serve direct payment test page
 app.get('/test-direct-payment', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-direct-payment.html'));
 });
 
-// Serve URWAY direct test page
 app.get('/test-urway-direct', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-urway-direct.html'));
 });
 
-// Serve URWAY config test page
 app.get('/test-urway-config', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-urway-config.html'));
 });
 
-// Serve URWAY settings test page
 app.get('/test-urway-settings', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-urway-settings.html'));
 });
 
-// Serve URWAY config check page
 app.get('/test-urway-config-check', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-urway-config-check.html'));
 });
@@ -95,17 +90,9 @@ app.get('/test-urway-debug', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-urway-debug.html'));
 });
 
+// Root API check
 app.get('/', (req, res) => {
   res.send('Lamar API is running');
-});
-
-
-// Serve static files from the React frontend
-app.use(express.static(path.join(__dirname, 'client/dist')));
-
-// Any request that doesn't match an API route will be sent the React index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
 });
 
 module.exports = app;
