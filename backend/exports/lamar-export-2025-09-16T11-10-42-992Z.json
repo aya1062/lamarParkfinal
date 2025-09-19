@@ -1,0 +1,548 @@
+{
+  "exportedAt": "2025-09-16T11:10:42.991Z",
+  "database": "mongodb+srv://ayaahmed1062:Xj4WfnNlKcOMQx4S@cluster0.o6bdst7.mongodb.net/",
+  "counts": {
+    "properties": 11,
+    "hotels": 1,
+    "rooms": 0,
+    "pricing": 8,
+    "settings": 1
+  },
+  "properties": [
+    {
+      "_id": "6865a2b4cb8c1498cf4ccaa4",
+      "name": " فيلا رقم 1 – بريميور",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1800,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646517/lamar/properties/nqb15kg5iyq67hbijqdk.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646525/lamar/properties/egbrt32njmtbpj1ufovi.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646528/lamar/properties/mpink6bd0algisilekar.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646536/lamar/properties/etrxm8bamewjnisctttk.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646502/lamar/properties/kz4zu4zorpnzgy5hqgp1.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646506/lamar/properties/y90sbc0hmvk9d0n8fxr2.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646511/lamar/properties/hwv2fgoiwohklydeswnd.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751646516/lamar/properties/orofrj0tgco6wjnmizo8.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 1 – بريميور:",
+          "body": "غرفة نوم بإطلاله زجاجية داخلية مزودة بمناشف خاصة.,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام.,\nمطبخ ( استوديو امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ).,\nطاولة طعام دائريه فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام.,",
+          "_id": "6865b1092f12959105e91e07"
+        },
+        {
+          "title": "الجزء الخارجي من فيلا رقم 1 – بريميور:",
+          "body": "مسبح خارجي مع مصبات شلال جدارية .,\nمسطح أخضر .,\nجلسة خارجية واسعة بتصميم أنيق وإطلالة بانورامية على المسبح .,\nموقف سيارات خارجي .,\nمساحة الفيلا: 330 م² .,\nمسبح خارجي: الطول 7 متر * العرض 4 متر / العمق (من متر إلى مترين)",
+          "_id": "6865b17803fb64054dd81e91"
+        }
+      ],
+      "description": "حيث الديكورات الفنية والحديثة التي تأخذك الى عالم من الرقي والاناقة، تضم غرفة نوم ذات واجهة زجاجية داخلية خلابة تطل على غرف المعيشة و جلسة تلفاز عصرية وطاولة طعام فاخرة مزودة بإكسسوارات أدوات تقديم الطعام وصالة بجلسة داخلية مع مطبخ امريكي مجهز بالكامل ودورة مياه ومغاسل فاخرة ومسبح خارجي.\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 850,
+      "videoUrl": "https://www.youtube.com/embed/jZxRBNJdM_4"
+    },
+    {
+      "_id": "6865b79c7e7075f5d9bec18e",
+      "name": " شاليه رقم 3 – فيلا بألعاب مائية للأطفال",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1150,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751867121/lamar/properties/omvbzzhk5bpb9y9i33cf.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في شاليه رقم 3 – فيلا بألعاب مائية للأطفال:",
+          "body": "مجلس عربي داخلي بإطلالة زجاجية .,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام .,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ),\nطاولة طعام فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .\n",
+          "_id": "6865b9089fbf921cda46e799"
+        },
+        {
+          "title": "الجزء الخارجي من شاليه رقم 3 – فيلا بألعاب مائية للأطفال:",
+          "body": "مسبح خارجي بألعاب مائية أو رملية (على حسب اختيار العميل) .,\nمسطح أخضر .,\nجلسة خارجية بتصميم أنيق .,\nموقف سيارات خارجي .,\nمساحة الفيلا: 330 م² .,\nمسبح خارجي: الطول 7 متر * العرض 3 متر / العمق (90سم)\n",
+          "_id": "6865b9799fbf921cda46e7a2"
+        }
+      ],
+      "description": "تصميم فريد ومميز يجمع بين العراقة والحداثة حيث يتكون من مجلس عربي داخلي ذات واجهة زجاجية عصرية تطل على غرف المعيشة وواجهة زجاجية خارجية تطل على المسبح و جلسة تلفاز عصرية وطاولة طعام فاخرة مزودة بإكسسوارات أدوات تقديم الطعام وصالة بجلسة داخلية ومطبخ أمريكي مجهز بالكامل ودورة مياه ومغاسل فاخرة ومسبح خارجي بألعاب مائية أو رملية (على حسب اختيار العميل). ملاحظة: يتم تغيير المياه الموجودة في المسبح الى رمل اثناء الشتاء فقط حرصاً على صحة الاطفال",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 705
+    },
+    {
+      "_id": "6865b7a27e7075f5d9bec18f",
+      "name": " فيلا رقم 4 - فيلا بمسبح داخلي",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1150,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647328/lamar/properties/urbxg89jrqmwzppr2udy.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647327/lamar/properties/hfmfvegaobr2r9hjgw1p.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647329/lamar/properties/yqbhmpon91ahftloj3h2.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647332/lamar/properties/y7vdj4q05locyn6mfpiy.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 7 – فيلا جونيور:",
+          "body": "غرفة نوم بإطلاله زجاجية داخلية علي الصاله والحديقه الخارجيه,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ),\nطاولة طعام فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .",
+          "_id": "6865b9799fbf921cda46e7ad"
+        },
+        {
+          "title": "الجزء الخارجي من فيلا رقم 7 – فيلا جونيور:",
+          "body": "مسبح خارجي مع مصبات شلال جدارية .,\nكراسي مسبح مزودة بمناشف ومظلة .,\nمسطح أخضر .,\nجلسة خارجية بتصميم أنيق .,\nموقف سيارات خارجي .,\nمساحة الفيلا: 330 م² .,\nمسبح خارجي: الطول 6 متر * العرض 4 متر / العمق ( من متر إلى مترين )\n",
+          "_id": "6865b9e69fbf921cda46e7b5"
+        }
+      ],
+      "description": "تجربة إقامة فاخرة في أجواء راقية. تتميز الفيلا بتصميم أنيق ومساحات مدروسة بعناية لتمنحك أقصى درجات الراحة. تضم غرف نوم مريحة، صالة معيشة رحبة، مطبخ مجهز بالكامل، وحديقة خاصة تمنحك الخصوصية والاسترخاء. مثالية للعائلات أو الأزواج الباحثين عن عطلة هادئة بمستوى راق\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 750
+    },
+    {
+      "_id": "6865ba4e9fbf921cda46e7c6",
+      "name": " فيلا رقم 5 – فيلا مع مسبح خاص",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1150,
+      "discountPrice": 750,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647418/lamar/properties/m68q4vq1jfhjh7ul1kmc.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647422/lamar/properties/s1sozhtzzpnkczzes1d4.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647421/lamar/properties/pjd7god0ph1apea8cfj5.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647422/lamar/properties/t6skb7wnid0didzalan0.jpg"
+      ],
+      "videoUrl": "",
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 5 – فيلا مع مسبح خاص:",
+          "body": "غرفة نوم بجناح فندقي مزودة بمناشف خاصة وتلفاز وتسريحة بمرآة ومرفق دورة مياه بمغسله مميزه.,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام .,\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ) .,\nطاولة طعام فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .,\nمسبح داخلي بواجهة زجاجية .\n",
+          "_id": "6865ba4e9fbf921cda46e7c7"
+        },
+        {
+          "title": "الجزء الخارجي فيلا رقم 5 – فيلا مع مسبح خاص:",
+          "body": "مسطح أخضر .,\nجلسة خارجية بمظلة مصممة بشكل أنيق .,\nموقف خارجي للسيارات .,\nمساحة الفيلا: 450 م² .,\nمسبح داخلي: الطول 6 متر * العرض 3متر / العمق (2 متر) .\n",
+          "_id": "6865ba4e9fbf921cda46e7c8"
+        }
+      ],
+      "description": "تجربة فاخرة بكل التفاصيل. فيلا خاصة في الرياض تتميز بمسبح خاص يضفي أجواء من الراحة والاستجمام. مصممة بذوق عصري وتحتوي على مساحات واسعة تناسب العائلات والتجمعات، مع مرافق متكاملة تضمن إقامة ممتعة ومميزة. مثالية لقضاء عطلة نهاية الأسبوع أو مناسبة خاصة في جو من الخصوصية والهدوء\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0
+    },
+    {
+      "_id": "6865ba867e7075f5d9bec190",
+      "name": " فيلا رقم 6 – مخيم شعبي بمشب نار",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1800,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647516/lamar/properties/elc2xilj6n60ufahrus5.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647518/lamar/properties/yfm3v66n3wtfggqygia4.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647518/lamar/properties/o9y1jvysfvvj5aervwzf.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647520/lamar/properties/mn4q8j4jp1jwgegkbjqy.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 6 – مخيم شعبي بمشب نار:",
+          "body": "مجلس عربي داخلي بإطلالة زجاجية .,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام .,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ),\nطاولة طعام فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .,\n",
+          "_id": "6865bab39fbf921cda46e81b"
+        },
+        {
+          "title": "الجزء الخارجي من فيلا رقم 6 – مخيم شعبي بمشب نار:",
+          "body": "مخيم شعبي مجهز بالكامل بكل أدوات القهوه اللازمه,\nمسطح أخضر .,\nجلسة خارجية بتصميم أنيق .,\nمساحة الفيلا: 330 م² .\n",
+          "_id": "6865bb0b9fbf921cda46e829"
+        }
+      ],
+      "description": "تجربة فريدة تجمع بين الفخامة والأصالة! استمتع بأجواء راقية داخل فيلا أنيقة مجهزة بالكامل، وتذوق طعم التراث في المخيم الشعبي المميز الذي يضم مشب نار تقليدي يضفي دفئًا وخصوصية لأمسيات لا تُنسى. مثالية للجلسات العائلية واللقاءات الودية في قلب أجواء تراثية وسط الرياض\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 1500
+    },
+    {
+      "_id": "6865ba8e7e7075f5d9bec191",
+      "name": " فيلا رقم 7 – فيلا جونيور",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1200,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647632/lamar/properties/rwjsfkfnm7xb1y0mnofj.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647636/lamar/properties/iokb4jzdis1srk8p8etf.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647634/lamar/properties/zrq0kcuw1wj6mtif1lew.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647634/lamar/properties/wbhoxbellitz3z6ufd6c.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 7 – فيلا جونيور:",
+          "body": "غرفة نوم بإطلاله زجاجية داخلية علي الصاله والحديقه الخارجيه,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ),\nطاولة طعام فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .",
+          "_id": "6865bb0b9fbf921cda46e83a"
+        },
+        {
+          "title": "الجزء الخارجي من فيلا رقم 7 – فيلا جونيور:",
+          "body": "مسبح خارجي مع مصبات شلال جدارية .,\nكراسي مسبح مزودة بمناشف ومظلة .,\nمسطح أخضر .,\nجلسة خارجية بتصميم أنيق .,\nموقف سيارات خارجي .,\nمساحة الفيلا: 330 م² .,\nمسبح خارجي: الطول 6 متر * العرض 4 متر / العمق ( من متر إلى مترين )\n",
+          "_id": "6865bb5f9fbf921cda46e847"
+        }
+      ],
+      "description": "تجربة إقامة فاخرة في أجواء راقية. تتميز الفيلا بتصميم أنيق ومساحات مدروسة بعناية لتمنحك أقصى درجات الراحة. تضم غرف نوم مريحة، صالة معيشة رحبة، مطبخ مجهز بالكامل، وحديقة خاصة تمنحك الخصوصية والاسترخاء. مثالية للعائلات أو الأزواج الباحثين عن عطلة هادئة بمستوى راق\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 850
+    },
+    {
+      "_id": "6865ba9f7e7075f5d9bec192",
+      "name": " فيلا رقم 8",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1200,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647728/lamar/properties/faptoabaf1glpizpgzv0.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647733/lamar/properties/xf5oieotmmmmnduzmcrc.jpg"
+      ],
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي في فيلا رقم 8:",
+          "body": "غرفة نوم بإطلاله زجاجية داخلية علي الصاله والحديقه الخارجيه,\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام .,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ) .,\nطاولة طعام دائريه فاخرة مزودة ب 5 كراسي و مزودة بأدوات تقديم الطعام .\n",
+          "_id": "6865bb5f9fbf921cda46e85a"
+        },
+        {
+          "title": "الجزء الخارجي من فيلا رقم 8:",
+          "body": "مسبح خارجي مع مصبات شلال جدارية .,\nمسطح أخضر .,\nجلسة خارجية واسعة بتصميم أنيق وإطلالة بانورامية على المسبح .,\nموقف سيارات خارجي .,\nمساحة الفيلا: 330 م² .,\nمسبح خارجي: الطول 6 متر * العرض 4 متر / العمق ( من متر إلى مترين )\n",
+          "_id": "6865bbde9fbf921cda46e866"
+        }
+      ],
+      "description": "تجربة فاخرة تجمع بين الأناقة والراحة. تقع في موقع مميز وتتميز بتصميم معماري عصري ومساحات داخلية واسعة. تضم غرف نوم مريحة، مجلس أنيق، مطبخ متكامل، وحديقة خاصة مع مسبح. مثالية للإقامة العائلية أو الاستجمام في أجواء من الخصوصية والهدوء\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0,
+      "discountPrice": 850
+    },
+    {
+      "_id": "6865bc919fbf921cda46e883",
+      "name": " فيلا رقم 10 – فيلا فاخرة VIP مع مسبح خاص",
+      "type": "chalet",
+      "location": "السعودية",
+      "price": 1850,
+      "discountPrice": 1350,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647913/lamar/properties/lcdwi78cielacx36ewsb.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647917/lamar/properties/gzefpb1rk38jidaonqud.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647916/lamar/properties/pcakmbitg58nwivbeluk.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751647919/lamar/properties/nmt9tj1eeoy7tz00bcip.jpg"
+      ],
+      "videoUrl": "",
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "الجزء الداخلي من فيلا رقم 10 – فيلا فاخرة VIP مع مسبح خاص:",
+          "body": "غرفة نوم بجناح فندقي مزودة بمناشف خاصة و تلفاز وتسريحة بمرآة ومرفق دورة مياه مزود بجاكوزي لفردين .,\nمطبخ ( استوديوا امريكي ) مجهز بالكامل ( ثلاجة – سطح كهربائي – غلاية – مايكروويف),\nدورة مياه ذات مغاسل خارجيه خلابه مجهزة بمستلزمات العناية الشخصية ولوازم الإستحمام .,\nالضيافة المتوفرة: ( مكينة قهوة خاصة – كبسولات قهوة – ماء ) .,\nطاولة طعام فاخرة مزودة ب 10 كراسي و مزودة بأدوات تقديم الطعام .,\nركن خاص للخدمة .\n",
+          "_id": "6865bc919fbf921cda46e884"
+        },
+        {
+          "title": "الجزء الخارجي فيلا رقم 10 – فيلا فاخرة VIP مع مسبح خاص:",
+          "body": "مسطح أخضر .,\nمسبح خارجي مزود بكراسي المسبح .,\nشاشة معلقة للعرض السينمائي .,\nجلسة خارجية بتصميم عصري وأنيق مزودة بركن تقديم الخدمات .,\nمساحة الفيلا: 650 م² .,\nمسبح خارجي : الطول 6 متر * العرض 4 متر / العمق ( من متر إلى 2 متر)\n",
+          "_id": "6865bc919fbf921cda46e885"
+        }
+      ],
+      "description": "فيلا فاخرة VIP بتصميم راقٍ ومسبح خاص، توفر لك تجربة إقامة استثنائية في أجواء من الهدوء والخصوصية. مجهزة بأحدث وسائل الراحة، وتجمع بين الفخامة والراحة في كل زاوية. مثالية للعائلات أو الباحثين عن عطلة مميزة وسط أجواء راقية",
+      "available": true,
+      "status": "active",
+      "__v": 0
+    },
+    {
+      "_id": "6865df7fc191d4f0c9b430ae",
+      "name": "غرفتين وصالة ديلوكس - حي اليرموك",
+      "type": "hotel",
+      "location": "حي اليرموك",
+      "price": 200,
+      "discountPrice": null,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648425/lamar/properties/yofmrvvgacgvsgjtfa20.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648425/lamar/properties/axtt1gefnx5ufheeomg9.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648428/lamar/properties/hkq7sk53bd4w3z8dcblo.jpg"
+      ],
+      "videoUrl": "",
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "مواصفات غرفتين وصالة ديلوكس – حي اليرموك:",
+          "body": "غرفه مزدوجه بدورة مياه ماستر,\nغرفه بسريرين منفصله بدورة مياه,\nصاله + مطبخ امريكي,\nمتاج واي فاي – TV – ثلاجه – غلاية,",
+          "_id": "6865df7fc191d4f0c9b430af"
+        }
+      ],
+      "description": "استمتع بإقامة فاخرة في غرفتين وصالة ديلوكس فندق أبل حي اليرموك بالرياض. تتميز المساحة الواسعة بتصميم عصري ومريح، مع خدمات مثل الواي فاي، شاشة تلفاز، وثلاجة. احجز الآن لتجربة إقامة لا تُنسى في قلب الرياض.",
+      "available": true,
+      "status": "active",
+      "__v": 0
+    },
+    {
+      "_id": "6865e2b3c191d4f0c9b43283",
+      "name": "غرفة وصالة ديلوكس - حي اليرموك",
+      "type": "hotel",
+      "location": "حي اليرموك",
+      "price": 348,
+      "discountPrice": null,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648470/lamar/properties/fzj6nljr2ykdrwttnnwd.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648471/lamar/properties/zaoxyr5zb9ik0opieark.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648470/lamar/properties/tgy1ab7bwvtl9jkwwpsm.jpg"
+      ],
+      "videoUrl": "",
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "مواصفات غرفة وصالة ديلوكس – حي اليرموك:",
+          "body": "غرفة نوم كبيرة بسرير مزدوج بالاضافه الي صاله و مطبخ و بدورة مياه.,\nدورة مياه مجهزة بمستلزمات العناية الشخصية.,\nجميع الغرف مكتملة بالديكورات والأثاث الفاخر.,\nمتاج واي فاي – TV – ثلاجه – غلايه.",
+          "_id": "6865e2b3c191d4f0c9b43284"
+        }
+      ],
+      "description": "استمتع بإقامة مريحة في غرفة مزدوجة بفندق أبل بحي اليرموك بالرياض. توفر الغرفة تصميمًا عصريًا وأثاثًا فاخرًا، بالإضافة إلى خدمات مثل الواي فاي المجاني وتلفزيون وثلاجة لضمان راحتك التامة. احجز الآن لتجربة إقامة مميزة في قلب الرياض!\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0
+    },
+    {
+      "_id": "6865e2f8c191d4f0c9b43321",
+      "name": "غرفة مزدوجة - حي اليرموك",
+      "type": "hotel",
+      "location": "حي اليرموك",
+      "price": 250,
+      "discountPrice": null,
+      "rating": 0,
+      "reviewCount": 0,
+      "images": [
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648506/lamar/properties/bcklj4uziyrihojzczkc.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648512/lamar/properties/h7nwmp1jybl29sv464fr.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648513/lamar/properties/toidptf7srge2f0a448q.jpg",
+        "https://res.cloudinary.com/dysgbwjsr/image/upload/v1751648513/lamar/properties/mzuzgllvetvhhv71tlrm.jpg"
+      ],
+      "videoUrl": "",
+      "features": [
+        ""
+      ],
+      "amenities": [
+        {
+          "title": "مواصفات غرفة مزدوجة – حي اليرموك:",
+          "body": "غرفة نوم كبيرة بسرير مزدوج وجلسه جانبية مرفقة بدورة مياه.,\nدورة مياه مجهزة بمستلزمات العناية الشخصية.,\nجميع الغرف مكتملة بالديكورات والأثاث الفاخر.,\nمتاج واي فاي – TV – ثلاجه – غلايه",
+          "_id": "6865e2f8c191d4f0c9b43322"
+        }
+      ],
+      "description": "تمتع بإقامة مريحة وفاخرة مع تصميم عصري وأثاث فاخر. توفر الغرفة كافة وسائل الراحة مثل الواي فاي المجاني، تلفزيون، وثلاجة. استمتع بتجربة إقامة مثالية في غرفة مزدوجة - فندق أبل حي اليرموك  في موقع مميز وسط الرياض. احجز الآن!\r\n",
+      "available": true,
+      "status": "active",
+      "__v": 0
+    }
+  ],
+  "hotels": [
+    {
+      "_id": "68c49c46199a4db5044991f7",
+      "name": "ابل",
+      "type": "hotel",
+      "location": "حي اليرموك",
+      "address": {
+        "city": "اليرموك",
+        "country": "السعودية"
+      },
+      "description": "hglujnjgh",
+      "shortDescription": "hjlyh;ji",
+      "images": [],
+      "rating": 0,
+      "reviewCount": 0,
+      "features": [],
+      "amenities": [],
+      "policies": {
+        "checkIn": "15:00",
+        "checkOut": "12:00",
+        "pets": false,
+        "smoking": false,
+        "children": "Children of all ages welcome"
+      },
+      "contact": {
+        "phone": "097654437567",
+        "email": "aya@gmail.com"
+      },
+      "status": "active",
+      "isFeatured": false,
+      "bookingSettings": {
+        "minStay": 1,
+        "maxStay": 30,
+        "advanceBooking": 365,
+        "sameDayBooking": true
+      },
+      "stats": {
+        "totalRooms": 0,
+        "totalChalets": 0,
+        "occupancyRate": 0,
+        "averageRating": 0
+      },
+      "createdAt": "2025-09-12T22:18:46.755Z",
+      "updatedAt": "2025-09-12T22:18:46.755Z",
+      "__v": 0
+    }
+  ],
+  "rooms": [],
+  "pricing": [
+    {
+      "_id": "68645e005a8bc12842b3b4c3",
+      "property": "68640b5085d6f41d6644b754",
+      "date": "2025-07-04",
+      "price": 0,
+      "available": false,
+      "reason": "ej;ajfk",
+      "__v": 0
+    },
+    {
+      "_id": "68645eee5a8bc12842b3b4d9",
+      "property": "68644d492191b17eacc2e49f",
+      "date": "2025-07-04",
+      "price": 67,
+      "available": true,
+      "reason": "بيس",
+      "__v": 0
+    },
+    {
+      "_id": "6865a56e7e6bdeaa454bb720",
+      "property": "6865a2b4cb8c1498cf4ccaa4",
+      "date": "2025-07-03",
+      "price": 1800,
+      "available": true,
+      "reason": "",
+      "__v": 0,
+      "discountPrice": 200
+    },
+    {
+      "_id": "6866344c8f6e452e2cb58f03",
+      "property": "6865a2b4cb8c1498cf4ccaa4",
+      "date": "2025-07-09",
+      "price": 0,
+      "available": false,
+      "reason": "",
+      "__v": 0
+    },
+    {
+      "_id": "6867c01325ccc24f06584be0",
+      "property": "6865ba8e7e7075f5d9bec191",
+      "date": "2025-07-31",
+      "price": 4000,
+      "available": true,
+      "reason": "",
+      "__v": 0
+    },
+    {
+      "_id": "6867c0de25ccc24f06584c47",
+      "property": "6865a2b4cb8c1498cf4ccaa4",
+      "date": "2025-07-29",
+      "price": 1800,
+      "available": true,
+      "reason": "",
+      "__v": 0
+    },
+    {
+      "_id": "6867c10425ccc24f06584c4a",
+      "property": "6865a2b4cb8c1498cf4ccaa4",
+      "date": "2025-07-22",
+      "price": 1200,
+      "available": false,
+      "reason": "",
+      "__v": 0
+    },
+    {
+      "_id": "6867c29125ccc24f06584d92",
+      "property": "6865b7a27e7075f5d9bec18f",
+      "date": "2025-07-17",
+      "price": 1200,
+      "available": true,
+      "reason": "",
+      "__v": 0
+    }
+  ],
+  "settings": [
+    {
+      "_id": "686c1da40cc48746ed83bfa4",
+      "general": {
+        "siteName": "لمار ",
+        "siteDescription": "",
+        "contactEmail": "",
+        "contactPhone": "",
+        "address": "",
+        "currency": "SAR",
+        "language": "ar"
+      },
+      "booking": {
+        "cancellationHours": 24,
+        "maxAdvanceBookingDays": 365,
+        "minBookingDays": 1,
+        "autoConfirmBookings": false,
+        "requirePaymentUpfront": false
+      },
+      "payment": {
+        "enableCreditCard": true,
+        "enableCashOnArrival": true,
+        "enableBankTransfer": false,
+        "taxRate": 15,
+        "processingFee": 0
+      },
+      "notifications": {
+        "emailBookingConfirmation": true,
+        "emailBookingReminder": true,
+        "emailCancellation": true,
+        "smsBookingConfirmation": false,
+        "smsBookingReminder": false,
+        "adminEmailNotifications": true
+      },
+      "createdAt": "2025-07-07T19:19:00.244Z",
+      "updatedAt": "2025-07-08T07:32:57.652Z",
+      "__v": 0
+    }
+  ]
+}

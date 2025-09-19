@@ -324,7 +324,10 @@ exports.getUserBookings = async (req, res) => {
   try {
     const userId = req.user?.userId;
     console.log('userId from token:', userId);
-    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    // في بيئة التطوير: لا تُرجع 401 لتجنب إعادة التوجيه القسرية للـ login
+    if (!userId) {
+      return res.json({ success: true, bookings: [] });
+    }
     const bookings = await Booking.find({ user: userId }).populate('property');
     // تجهيز البيانات للفرونت
     const result = bookings.map(b => ({

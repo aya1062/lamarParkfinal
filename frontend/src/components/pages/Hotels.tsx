@@ -18,15 +18,19 @@ const Hotels = () => {
 
   React.useEffect(() => {
     setLoading(true);
-    api.getProperties({ type: 'hotel', ...filters }).then((res) => {
-      if (res.success && res.data && Array.isArray(res.data.properties)) {
-        setHotels(res.data.properties);
-      } else {
-        setHotels([]);
-      }
-      setLoading(false);
-    });
-  }, [filters]);
+    const params: any = { type: 'hotel' };
+    if (filters.location) params.city = filters.location; // خريطة بسيطة للمدينة
+    // يمكن لاحقاً إضافة فلترة تقييم/سعر عند دعمها في الـ API
+    api.getHotels(params)
+      .then((res) => {
+        const list = res?.data?.hotels || [];
+        setHotels(list.filter((h: any) => h.type === 'hotel'));
+      })
+      .catch((err) => {
+        console.error('Error fetching hotels:', err);
+      })
+      .finally(() => setLoading(false));
+  }, [filters.location]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-8">

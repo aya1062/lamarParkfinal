@@ -1,20 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Crown, LogOut, Settings, BarChart3 } from 'lucide-react';
+import { Menu, X, User, Crown, LogOut, Settings, BarChart3, Hotel } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
+import { api } from '../../utils/api';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showHotelsMenu, setShowHotelsMenu] = useState(false);
+  const [showChaletsMenu, setShowChaletsMenu] = useState(false); // يستخدم لقائمة المنتجعات
+  const [hotels, setHotels] = useState<any[]>([]);
+  const [chalets, setChalets] = useState<any[]>([]); // سيحمل المنتجعات
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
 
+  useEffect(() => {
+    // جلب الفنادق والمنتجعات ثم فصلها حسب النوع (بدون فلترة الحالة لعرض الجميع)
+    api.getHotels().then((res) => {
+      const list = res?.data?.hotels || [];
+      setHotels(list.filter((h: any) => h.type === 'hotel').slice(0, 6));
+      setChalets(list.filter((h: any) => h.type === 'resort').slice(0, 6));
+    });
+  }, []);
+
   const navItems = [
     { name: 'الرئيسية', path: '/' },
-    { name: 'الشاليهات', path: '/chalets' },
+    { name: 'المنتجعات', path: '/resorts' },
     { name: 'الفنادق', path: '/hotels' },
+    { name: 'حجز الغرف', path: '/room-booking' },
     { name: 'من نحن', path: '/about' },
     { name: 'تواصل معنا', path: '/contact' },
   ];
@@ -46,9 +61,23 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8 space-x-reverse">
-            {navItems.map((item) => (
+            {navItems.map((item) => {
+              const isHotels = item.path === '/hotels';
+              const isChalets = item.path === '/resorts';
+              return (
+                <div
+                  key={item.path}
+                  className="relative"
+                  onMouseEnter={() => {
+                    if (isHotels) setShowHotelsMenu(true);
+                    if (isChalets) setShowChaletsMenu(true);
+                  }}
+                  onMouseLeave={() => {
+                    if (isHotels) setShowHotelsMenu(false);
+                    if (isChalets) setShowChaletsMenu(false);
+                  }}
+                >
               <Link
-                key={item.path}
                 to={item.path}
                 className={`px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                   isActive(item.path)
@@ -58,7 +87,89 @@ const Navbar = () => {
               >
                 {item.name}
               </Link>
-            ))}
+
+                  {isHotels && showHotelsMenu && (
+                    <div className="absolute right-0 mt-3 w-[420px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 animate-fade-in">
+                      <div className="text-sm font-semibold text-gray-900 mb-3 px-2">الفنادق</div>
+                      <div className="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                        {hotels && hotels.length > 0 ? hotels.map((h) => {
+                          const img = Array.isArray(h.images) && h.images.length
+                            ? (typeof h.images[0] === 'string' ? h.images[0] : h.images[0]?.url)
+                            : (h.image || 'https://via.placeholder.com/200x120?text=Hotel');
+                          return (
+                            <Link
+                              key={h._id}
+                              to={`/hotel/${h._id}`}
+                              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition"
+                            >
+                              <img src={img} alt={h.name} className="w-14 h-14 rounded object-cover flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <h4 className="font-medium text-gray-900 text-sm truncate">{h.name}</h4>
+                                  <span className="text-xs text-gold whitespace-nowrap">{h.rating || 0} ★</span>
+                                </div>
+                                <div className="text-xs text-gray-600 truncate">{h.location}</div>
+                              </div>
+                            </Link>
+                          );
+                        }) : (
+                          <div className="py-6 text-center text-gray-600">لا توجد فنادق</div>
+                        )}
+                      </div>
+                      <div className="mt-3 text-center">
+                        <Link 
+                          to="/hotels" 
+                          onClick={() => setShowHotelsMenu(false)}
+                          className="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-gold text-white hover:bg-gold-light transition text-sm"
+                        >
+                          عرض كل الفنادق
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {isChalets && showChaletsMenu && (
+                    <div className="absolute right-0 mt-3 w-[420px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 animate-fade-in">
+                      <div className="text-sm font-semibold text-gray-900 mb-3 px-2">المنتجعات</div>
+                      <div className="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                        {chalets && chalets.length > 0 ? chalets.map((c) => {
+                          const img = Array.isArray(c.images) && c.images.length
+                            ? (typeof c.images[0] === 'string' ? c.images[0] : c.images[0]?.url)
+                            : (c.image || 'https://via.placeholder.com/200x120?text=Resort');
+                          return (
+                            <Link
+                              key={c._id}
+                              to={`/resort/${c._id}`}
+                              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition"
+                            >
+                              <img src={img} alt={c.name} className="w-14 h-14 rounded object-cover flex-shrink-0" />
+                              <div className="min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <h4 className="font-medium text-gray-900 text-sm truncate">{c.name}</h4>
+                                  <span className="text-xs text-gold whitespace-nowrap">{c.rating || 0} ★</span>
+                                </div>
+                                <div className="text-xs text-gray-600 truncate">{c.location}</div>
+                              </div>
+                            </Link>
+                          );
+                        }) : (
+                          <div className="py-6 text-center text-gray-600">لا توجد منتجعات</div>
+                        )}
+                      </div>
+                      <div className="mt-3 text-center">
+                        <Link 
+                          to="/resorts" 
+                          onClick={() => setShowChaletsMenu(false)}
+                          className="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-gold text-white hover:bg-gold-light transition text-sm"
+                        >
+                          عرض كل المنتجعات
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* User Menu */}
@@ -88,7 +199,6 @@ const Navbar = () => {
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        <User className="h-4 w-4 ml-2" />
                         لوحة التحكم
                       </Link>
                     )}
@@ -99,7 +209,6 @@ const Navbar = () => {
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        <BarChart3 className="h-4 w-4 ml-2" />
                         لوحة الإدارة
                       </Link>
                     )}
@@ -108,7 +217,6 @@ const Navbar = () => {
                       onClick={handleLogout}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                     >
-                      <LogOut className="h-4 w-4 ml-2" />
                       تسجيل الخروج
                     </button>
                   </div>

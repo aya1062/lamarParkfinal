@@ -1,6 +1,7 @@
 const Property = require('../models/Property');
 const Booking = require('../models/Booking');
 const Pricing = require('../models/Pricing');
+const Hotel = require('../models/Hotel');
 // إضافة متطلبات cloudinary و multer
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
@@ -74,6 +75,8 @@ exports.getAllProperties = async (req, res) => {
     const filter = {};
     if (req.query.type) filter.type = req.query.type;
     if (req.query.featured !== undefined) filter.featured = req.query.featured === 'true';
+    if (req.query.status) filter.status = req.query.status;
+    if (req.query.hotel) filter.hotel = req.query.hotel;
     const properties = await Property.find(filter);
 
     // إذا لم تكن هناك عقارات، إنشاء عقار تجريبي
@@ -146,28 +149,67 @@ exports.getPropertyById = async (req, res) => {
 
 exports.createProperty = async (req, res) => {
   try {
-    const { name, type, location, price, discountPrice, amenities } = req.body;
+    const { name, type, location, price, discountPrice, amenities, hotel, chaletSettings, roomSettings } = req.body;
     if (!name || !type || !location || !price) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
+
+    // التحقق من علاقات الأب
+    if (type === 'chalet' || type === 'room') {
+      if (!hotel) {
+        return res.status(400).json({ success: false, message: type === 'chalet' ? 'يجب اختيار المنتجع التابع له الشاليه' : 'يجب اختيار الفندق التابع له الغرفة' });
+      }
+      const parentHotel = await Hotel.findById(hotel);
+      if (!parentHotel) {
+        return res.status(404).json({ success: false, message: 'المنتجع/الفندق غير موجود' });
+      }
+    }
+
     let images = [];
     if (req.files && req.files.length > 0) {
       images = req.files.map(file => file.path);
     }
-    // تحويل المرافق من JSON string إلى object
+
+    // تحويل المرافق
     let amenitiesArray = [];
     if (amenities) {
       try {
-        amenitiesArray = JSON.parse(amenities);
+        amenitiesArray = typeof amenities === 'string' ? JSON.parse(amenities) : amenities;
       } catch (err) {
         return res.status(400).json({ success: false, message: 'Invalid amenities format' });
       }
     }
+
+    // إعدادات الشاليه
+    let chaletSettingsObj = undefined;
+    if (chaletSettings) {
+      try {
+        chaletSettingsObj = typeof chaletSettings === 'string' ? JSON.parse(chaletSettings) : chaletSettings;
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'تنسيق إعدادات الشاليه غير صحيح' });
+      }
+    }
+
+    // إعدادات الغرفة (ستوك، مواصفات، تسعير)
+    let roomSettingsObj = undefined;
+    if (type === 'room') {
+      try {
+        roomSettingsObj = roomSettings ? (typeof roomSettings === 'string' ? JSON.parse(roomSettings) : roomSettings) : {};
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'تنسيق إعدادات الغرفة غير صحيح' });
+      }
+      // إعداد افتراضي للستوك لو لم يرسل
+      if (!roomSettingsObj.availability) roomSettingsObj.availability = { isActive: true, totalUnits: 1, availableUnits: 1 };
+      if (!roomSettingsObj.pricing) roomSettingsObj.pricing = { basePrice: Number(price) || 0, currency: 'SAR' };
+    }
+
     const property = new Property({ 
       ...req.body, 
       images, 
       discountPrice,
-      amenities: amenitiesArray
+      amenities: amenitiesArray,
+      chaletSettings: chaletSettingsObj,
+      roomSettings: roomSettingsObj
     });
     await property.save();
     res.status(201).json({ success: true, message: 'Property created successfully', property });
@@ -179,58 +221,76 @@ exports.createProperty = async (req, res) => {
 exports.updateProperty = async (req, res) => {
   try {
     let updateData = { ...req.body };
+
+    const existing = await Property.findById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Property not found' });
+    }
+
+    const finalType = updateData.type || existing.type;
+    if (finalType === 'chalet' || finalType === 'room') {
+      const hotelId = updateData.hotel || existing.hotel;
+      if (!hotelId) {
+        return res.status(400).json({ success: false, message: finalType === 'chalet' ? 'يجب اختيار المنتجع التابع له الشاليه' : 'يجب اختيار الفندق التابع له الغرفة' });
+      }
+      const parentHotel = await Hotel.findById(hotelId);
+      if (!parentHotel) {
+        return res.status(404).json({ success: false, message: 'المنتجع/الفندق غير موجود' });
+      }
+      updateData.hotel = hotelId;
+    }
     
-    // Handle new file uploads
+    // الصور الجديدة
     if (req.files && req.files.length > 0) {
       updateData.images = req.files.map(file => file.path);
     } else if (req.body.images) {
       updateData.images = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
     }
     
-    // Handle images to be removed
+    // حذف صور
     if (req.body.imagesToRemove) {
       try {
         const imagesToRemove = JSON.parse(req.body.imagesToRemove);
-        
         if (Array.isArray(imagesToRemove) && imagesToRemove.length > 0) {
-          // If we have new images, filter them with the ones to remove
-          if (updateData.images) {
-            updateData.images = updateData.images.filter(
-              img => !imagesToRemove.includes(img)
-            );
-          }
-          
-          // Also remove from existing images in the database
-          const existing = await Property.findById(req.params.id);
-          
-          if (existing && existing.images) {
+          const existingDoc = await Property.findById(req.params.id);
+          if (existingDoc && existingDoc.images) {
             updateData.images = [
               ...(updateData.images || []),
-              ...existing.images.filter(img => !imagesToRemove.includes(img))
-            ].filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
+              ...existingDoc.images.filter(img => !imagesToRemove.includes(img))
+            ].filter((v, i, a) => a.indexOf(v) === i);
           }
         }
       } catch (err) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Invalid imagesToRemove format',
-          error: err.message
-        });
+        return res.status(400).json({ success: false, message: 'Invalid imagesToRemove format' });
       }
     }
     
-    // Parse amenities if it's a string
+    // Parse amenities
     if (req.body.amenities) {
       if (typeof req.body.amenities === 'string') {
         try {
           updateData.amenities = JSON.parse(req.body.amenities);
         } catch (err) {
-          return res.status(400).json({ 
-            success: false, 
-            message: 'Invalid amenities format',
-            error: err.message
-          });
+          return res.status(400).json({ success: false, message: 'Invalid amenities format' });
         }
+      }
+    }
+
+    // Parse chaletSettings
+    if (updateData.chaletSettings && typeof updateData.chaletSettings === 'string') {
+      try {
+        updateData.chaletSettings = JSON.parse(updateData.chaletSettings);
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'تنسيق إعدادات الشاليه غير صحيح' });
+      }
+    }
+
+    // Parse roomSettings
+    if (updateData.roomSettings && typeof updateData.roomSettings === 'string') {
+      try {
+        updateData.roomSettings = JSON.parse(updateData.roomSettings);
+      } catch (err) {
+        return res.status(400).json({ success: false, message: 'تنسيق إعدادات الغرفة غير صحيح' });
       }
     }
     
@@ -241,23 +301,12 @@ exports.updateProperty = async (req, res) => {
     );
     
     if (!property) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Property not found' 
-      });
+      return res.status(404).json({ success: false, message: 'Property not found' });
     }
     
-    res.json({ 
-      success: true, 
-      message: 'Property updated successfully', 
-      property 
-    });
+    res.json({ success: true, message: 'Property updated successfully', property });
   } catch (err) {
-    res.status(500).json({ 
-      success: false, 
-      message: err.message,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -408,7 +457,7 @@ exports.getActivePropertiesStats = async (req, res) => {
     // عد جميع العقارات النشطة بغض النظر عن تاريخ الإنشاء
     const thisYearCount = await Property.countDocuments({ status: 'active' });
     // عد العقارات النشطة التي أُنشئت السنة الماضية (للمقارنة فقط)
-    const lastYearCount = await Property.countDocuments({ status: 'active', createdAt: { $gte: startOfLastYear, $lt: endOfLastYear } });
+    const lastYearCount = await Property.countDocuments({ status: 'active', createdAt: { $gte: startOfLastYear, $lt: endOfThisYear } });
 
     let change = 0;
     let changeType = 'increase';
@@ -426,6 +475,28 @@ exports.getActivePropertiesStats = async (req, res) => {
       change: `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`,
       changeType
     });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Bulk assign all existing chalets to a specific hotel by name
+exports.assignChaletsToHotelByName = async (req, res) => {
+  try {
+    const { hotelName } = req.body;
+    if (!hotelName) {
+      return res.status(400).json({ success: false, message: 'hotelName مطلوب' });
+    }
+
+    const hotel = await Hotel.findOne({ name: { $regex: new RegExp(hotelName, 'i') } });
+    if (!hotel) {
+      return res.status(404).json({ success: false, message: 'الفندق/المنتجع غير موجود' });
+    }
+
+    const query = { type: 'chalet', $or: [ { hotel: { $exists: false } }, { hotel: null }, { hotel: { $ne: hotel._id } } ] };
+    const result = await Property.updateMany(query, { $set: { hotel: hotel._id } });
+
+    res.json({ success: true, message: 'تم ربط الشاليهات بالمنتجع', hotel: { id: hotel._id, name: hotel.name }, matched: result.matchedCount ?? result.nMatched, modified: result.modifiedCount ?? result.nModified });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.lamarparks.com/api';
+// const API_URL = 'https://api.lamarparks.com/api'; 
+const API_URL = 'http://localhost:5000/api';
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(
@@ -62,6 +63,47 @@ export const api = {
     }
   },
 
+  // جلب الفنادق والمنتجعات
+  getHotels: async (filters?: any) => {
+    try {
+      const res = await axios.get(`${API_URL}/hotels`, { params: filters });
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch hotels' };
+    }
+  },
+
+  // جلب فندق بالمعرف
+  getHotelById: async (id: string) => {
+    try {
+      const res = await axios.get(`${API_URL}/hotels/${id}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch hotel' };
+    }
+  },
+
+  // جلب الشاليهات فقط
+  getChalets: async (filters?: any) => {
+    try {
+      const params = { ...(filters || {}), type: 'chalet' };
+      const res = await axios.get(`${API_URL}/properties`, { params });
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch chalets' };
+    }
+  },
+
+  // جلب الغرف حسب الفندق
+  getRoomsByHotel: async (hotelId: string) => {
+    try {
+      const res = await axios.get(`${API_URL}/rooms`, { params: { hotel: hotelId } });
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch rooms' };
+    }
+  },
+
   // جلب عقار واحد حسب الـ ID
   getPropertyById: async (id: string) => {
     try {
@@ -88,8 +130,8 @@ export const api = {
   // إرسال رسالة اتصال
   sendContactMessage: async (messageData: any) => {
     try {
-      const res = await axios.post(`${API_URL}/contact`, messageData);
-    return { success: true, message: 'تم إرسال رسالتك بنجاح' };
+      await axios.post(`${API_URL}/contact`, messageData);
+      return { success: true, message: 'تم إرسال رسالتك بنجاح' };
     } catch (err: any) {
       return { success: false, message: 'فشل في إرسال الرسالة' };
     }
@@ -108,10 +150,10 @@ export const api = {
   // جلب الأسعار لعقار معين وشهر معين
   getPricing: async (propertyId: string, month: string) => {
     try {
-      const res = await axios.get(`${API_URL}/pricing`, {
+      const response = await axios.get(`${API_URL}/pricing`, {
         params: { propertyId, month }
       });
-      return { success: true, data: res.data };
+      return { success: true, data: response.data };
     } catch (err: any) {
       return { success: false, message: err.response?.data?.message || 'Failed to fetch pricing' };
     }

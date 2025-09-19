@@ -1,25 +1,17 @@
-import React, { useState } from 'react';
-import { Calendar, Users, MapPin, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
-  const [bookingData, setBookingData] = useState({
-    checkIn: '',
-    checkOut: '',
-    guests: '2',
-    location: 'الرياض'
-  });
-
-  const handleSearch = () => {
-    console.log('Searching with:', bookingData);
-  };
-
   return (
     <div 
-      className="relative h-screen bg-cover bg-center bg-no-repeat"
+			className="relative h-screen bg-cover bg-center bg-no-repeat overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/hero-bg.jpg')`,
+				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`,
       }}
     >
+			{/* Decorative gold glows */}
+			<div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-yellow-500 opacity-10 blur-3xl"></div>
+			<div className="pointer-events-none absolute -bottom-24 -left-24 h-[28rem] w-[28rem] rounded-full bg-yellow-600 opacity-10 blur-3xl"></div>
+
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center text-white max-w-4xl px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -30,76 +22,25 @@ const Hero = () => {
             اكتشف أفضل الفنادق والشاليهات الفاخرة في المملكة العربية السعودية
           </p>
 
-          {/* Booking Box */}
-          <div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Location */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-700 font-medium">
-                  <MapPin className="h-4 w-4 ml-2 text-gold" />
-                  الوجهة
-                </label>
-                <select 
-                  value={bookingData.location}
-                  onChange={(e) => setBookingData({...bookingData, location: e.target.value})}
-                  className="input-rtl text-gray-700"
-                >
-                  <option value="الرياض">الرياض</option>
-                  <option value="جدة">جدة</option>
-                  <option value="الدمام">الدمام</option>
-                  <option value="أبها">أبها</option>
-                  <option value="الطائف">الطائف</option>
-                </select>
-              </div>
+					{/* CTA Buttons */}
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+						<Link
+							to="/hotels"
+							className="group relative inline-flex items-center justify-center rounded-xl px-10 py-5 font-semibold text-xl bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-xl transition transform hover:translate-y-[-1px] hover:brightness-110 hover:ring-2 hover:ring-yellow-400/60 focus:outline-none"
+						>
+							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition bg-white"></span>
+							<span className="relative z-10">حجز فندق</span>
+							<span className="absolute -inset-0.5 rounded-xl blur opacity-30 group-hover:opacity-50 bg-gradient-to-r from-yellow-400 to-yellow-600" aria-hidden="true"></span>
+						</Link>
 
-              {/* Check-in Date */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-700 font-medium">
-                  <Calendar className="h-4 w-4 ml-2 text-gold" />
-                  تاريخ الوصول
-                </label>
-                <input 
-                  type="date"
-                  value={bookingData.checkIn}
-                  onChange={(e) => setBookingData({...bookingData, checkIn: e.target.value})}
-                  className="input-rtl text-gray-700"
-                />
-              </div>
-
-              {/* Check-out Date */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-700 font-medium">
-                  <Calendar className="h-4 w-4 ml-2 text-gold" />
-                  تاريخ المغادرة
-                </label>
-                <input 
-                  type="date"
-                  value={bookingData.checkOut}
-                  onChange={(e) => setBookingData({...bookingData, checkOut: e.target.value})}
-                  className="input-rtl text-gray-700"
-                />
-              </div>
-
-              {/* Guests */}
-              <div className="space-y-2">
-                <label className="flex items-center text-gray-700 font-medium">
-                  <Users className="h-4 w-4 ml-2 text-gold" />
-                  عدد الأشخاص
-                </label>
-                <select 
-                  value={bookingData.guests}
-                  onChange={(e) => setBookingData({...bookingData, guests: e.target.value})}
-                  className="input-rtl text-gray-700"
-                >
-                  <option value="1">شخص واحد</option>
-                  <option value="2">شخصان</option>
-                  <option value="3">3 أشخاص</option>
-                  <option value="4">4 أشخاص</option>
-                  <option value="5">5 أشخاص</option>
-                  <option value="6+">6+ أشخاص</option>
-                </select>
-              </div>
-            </div>
+						<Link
+							to="/chalets"
+							className="group relative inline-flex items-center justify-center rounded-xl px-10 py-5 font-semibold text-xl bg-white text-black shadow-xl border border-white/80 transition transform hover:translate-y-[-1px] hover:bg-yellow-50 hover:ring-2 hover:ring-yellow-400/60 focus:outline-none"
+						>
+							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-5 transition bg-black"></span>
+							<span className="relative z-10">حجز شالية</span>
+							<span className="absolute -inset-0.5 rounded-xl blur opacity-10 group-hover:opacity-20 bg-white" aria-hidden="true"></span>
+						</Link>
           </div>
         </div>
       </div>

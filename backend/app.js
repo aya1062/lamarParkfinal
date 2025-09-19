@@ -10,12 +10,17 @@ const checkoutRoutes = require('./routes/checkoutRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const urwayRoutes = require('./routes/urwayRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const hotelRoutes = require('./routes/hotelRoutes');
+const roomRoutes = require('./routes/roomRoutes');
+const roomBookingRoutes = require('./routes/roomBookingRoutes');
+const exportRoutes = require('./routes/exportRoutes');
 const path = require("path");
 
 const app = express();
 
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost:5173',
   'https://lamarpark.up.railway.app',
   'https://your-frontend-domain.com',
@@ -60,6 +65,10 @@ app.use('/api/checkout', checkoutRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/urway', urwayRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/hotels', hotelRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/room-bookings', roomBookingRoutes);
+app.use('/api/export', exportRoutes);
 
 // Test routes
 app.get('/test-payment', (req, res) => {

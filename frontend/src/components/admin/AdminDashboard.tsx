@@ -221,18 +221,25 @@ const AdminDashboard = () => {
 
   const quickActions = [
     {
-      title: 'إضافة عقار جديد',
-      description: 'أضف فندق أو شاليه جديد',
-      icon: Plus,
+      title: 'إدارة الفنادق والمنتجعات',
+      description: 'إضافة وإدارة الفنادق والمنتجعات',
+      icon: Building,
+      link: '/admin/hotels',
+      color: 'bg-blue-500'
+    },
+    {
+      title: 'إدارة الشاليهات والغرف',
+      description: 'إضافة وإدارة الشاليهات والغرف ضمن العقارات',
+      icon: Building,
       link: '/admin/properties',
-      color: 'bg-green-500'
+      color: 'bg-purple-500'
     },
     {
       title: 'عرض الحجوزات',
       description: 'إدارة ومتابعة الحجوزات',
       icon: Eye,
       link: '/admin/bookings',
-      color: 'bg-blue-500'
+      color: 'bg-orange-500'
     },
     {
       title: 'إدارة التسعير',
@@ -246,7 +253,7 @@ const AdminDashboard = () => {
       description: 'إضافة وإدارة حسابات المستخدمين',
       icon: UserCheck,
       link: '/admin/accounts',
-      color: 'bg-purple-500'
+      color: 'bg-indigo-500'
     }
   ];
 
@@ -297,7 +304,7 @@ const AdminDashboard = () => {
           {/* Quick Actions */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6">إجراءات سريعة</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {quickActions.map((action, index) => (
                 <Link
                   key={index}

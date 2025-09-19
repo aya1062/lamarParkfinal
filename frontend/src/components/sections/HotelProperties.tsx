@@ -4,20 +4,20 @@ import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
 
 const HotelProperties = () => {
-  const [properties, setProperties] = useState<any[]>([]);
+  const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
-    api.getProperties().then((res) => {
-      if (res.success && res.data && Array.isArray(res.data.properties)) {
-        // فلترة الفنادق النشطة فقط
-        const hotelProperties = res.data.properties.filter((p: any) => 
-          p.status === 'active' && p.type === 'hotel'
+    api.getHotels().then((res) => {
+      if (res.success && res.data && Array.isArray(res.data.hotels)) {
+        // فلترة الفنادق فقط
+        const featuredHotels = res.data.hotels.filter((h: any) => 
+          h.type === 'hotel'
         );
-        setProperties(hotelProperties);
+        setHotels(featuredHotels);
       } else {
         setError('تعذر تحميل الفنادق');
       }
@@ -51,14 +51,18 @@ const HotelProperties = () => {
         ) : error ? (
           <div className="text-center text-red-500">{error}</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.length === 0 ? (
-              <div className="col-span-full text-center text-gray-500">لا توجد فنادق مفعلة للعرض</div>
-            ) : (
-              properties.slice(0, 6).map((property) => (
-                <PropertyCard key={property._id || property.id} property={property} />
-              ))
-            )}
+          <div className="overflow-x-auto">
+            <div className="flex justify-center gap-6 pb-4 min-w-max">
+              {hotels.length === 0 ? (
+                <div className="text-center text-gray-500 w-full">لا توجد فنادق للعرض</div>
+              ) : (
+                hotels.slice(0, 3).map((hotel) => (
+                  <div key={hotel._id || hotel.id} className="flex-shrink-0 w-80">
+                    <PropertyCard property={hotel} />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 

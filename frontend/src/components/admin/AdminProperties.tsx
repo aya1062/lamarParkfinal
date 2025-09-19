@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2, Eye, Search, Filter, MapPin, Star, X, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Search, Filter, MapPin, Star, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,16 +11,41 @@ const AdminProperties = () => {
   const [filterType, setFilterType] = useState('all');
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hotels, setHotels] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const [newProperty, setNewProperty] = useState({
     name: '',
     type: 'hotel',
+    hotel: '',
     location: '',
     price: '',
     discountPrice: '',
     videoUrl: '',
     description: '',
     amenities: [{ title: '', body: '' }],
+    roomSettings: {
+      specifications: {
+        size: 0,
+        floor: 0,
+        view: 'interior',
+        bedType: 'double',
+        maxOccupancy: 1,
+        maxAdults: 1,
+        maxChildren: 0
+      },
+      pricing: {
+        basePrice: 0,
+        currency: 'SAR',
+        extraPersonPrice: 0,
+        extraBedPrice: 0
+      },
+      availability: {
+        isActive: true,
+        totalUnits: 1,
+        availableUnits: 1
+      }
+    }
   });
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -35,25 +60,112 @@ const AdminProperties = () => {
 
   const navigate = useNavigate();
 
+  // Helper: resolve hotel name from object or ID
+  const getHotelName = (hotelField: any): string => {
+    if (!hotelField) return '';
+    if (typeof hotelField === 'object') return hotelField?.name || '';
+    const found = hotels.find((h: any) => h?._id === hotelField);
+    return found?.name || '';
+  };
+
+  const isSelected = (id: string) => selectedIds.includes(id);
+  const toggleSelected = (id: string) => {
+    setSelectedIds((prev) => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+  const selectAllCurrent = (list: any[]) => {
+    setSelectedIds(list.map(p => p._id));
+  };
+  const clearSelection = () => setSelectedIds([]);
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`سيتم حذف ${selectedIds.length} عنصر/عناصر. هل أنت متأكد؟`)) return;
+    try {
+      await Promise.allSettled(selectedIds.map(id => axios.delete(`${API_URL}/properties/${id}`)));
+      clearSelection();
+      fetchProperties();
+      alert('تم حذف العناصر المحددة');
+    } catch (err: any) {
+      alert('حدث خطأ أثناء الحذف الجماعي');
+    }
+  };
+
+  const handleCloneProperty = async (property: any) => {
+    try {
+      // 1) إنشاء نسخة بدون صور عبر POST
+      const basePayload: any = {
+        name: `${property.name} - نسخة`,
+        type: property.type,
+        location: property.location || '',
+        price: property.price ?? property?.roomSettings?.pricing?.basePrice ?? 0,
+        discountPrice: property.discountPrice ?? '',
+        videoUrl: property.videoUrl || '',
+        description: property.description || '',
+        amenities: Array.isArray(property.amenities) ? property.amenities : [],
+      };
+      if (property.type === 'room' || property.type === 'chalet') {
+        const hotelId = (property.hotel && typeof property.hotel === 'object') ? property.hotel._id : property.hotel;
+        basePayload.hotel = hotelId || '';
+      }
+      if (property.type === 'room' && property.roomSettings) {
+        basePayload.roomSettings = property.roomSettings;
+      }
+
+      const formData = new FormData();
+      Object.entries(basePayload).forEach(([key, value]) => {
+        if (key === 'amenities' || key === 'roomSettings') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+      });
+
+      const createRes = await axios.post(`${API_URL}/properties`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (!createRes.data?.success) {
+        alert('فشل إنشاء النسخة');
+        return;
+      }
+      const newId = createRes.data.property?._id || createRes.data.property?.id;
+
+      // 2) نسخ الصور الحالية عبر PUT كروابط (بدون إعادة رفع)
+      const imgs = Array.isArray(property.images) ? property.images : [];
+      if (newId && imgs.length > 0) {
+        const putData = new FormData();
+        imgs.forEach((img: string) => putData.append('images', img));
+        await axios.put(`${API_URL}/properties/${newId}`, putData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      }
+
+      fetchProperties();
+      alert('تم إنشاء نسخة من العقار');
+    } catch (err: any) {
+      alert('حدث خطأ أثناء إنشاء النسخة');
+    }
+  };
+
   useEffect(() => {
     fetchProperties();
+    fetchHotels();
   }, []);
 
   const fetchProperties = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${API_URL}/properties`);
-      if (res.data.success && Array.isArray(res.data.properties)) {
-        setProperties(res.data.properties);
-      } else {
-        setProperties([]);
-        console.error('Failed to fetch properties:', res.data.message);
-      }
-    } catch (error: any) {
-      console.error('Error fetching properties:', error);
-      setProperties([]);
+      const data = Array.isArray(res.data) ? res.data : (res.data.properties || []);
+      setProperties(data);
+    } catch (err) {
+      console.error('Failed to fetch properties', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchHotels = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/hotels`);
+      if (res.data?.success) setHotels(res.data.hotels || []);
+    } catch (err) {
+      console.error('Failed to fetch hotels', err);
     }
   };
 
@@ -82,13 +194,27 @@ const AdminProperties = () => {
       const formData = new FormData();
       
       // إضافة البيانات الأساسية
-      Object.entries(newProperty).forEach(([key, value]) => {
+      // فلترة المرافق الفارغة
+      const cleanedAmenities = (newProperty.amenities || []).filter((a) => (a.title && a.title.trim()) || (a.body && a.body.trim()));
+
+      Object.entries({
+        ...newProperty,
+        amenities: cleanedAmenities
+      }).forEach(([key, value]) => {
         if (key === 'amenities') {
           // تحويل المرافق إلى JSON string
+          formData.append(key, JSON.stringify(value));
+        } else if (key === 'roomSettings') {
+          // تحويل إعدادات الغرفة إلى JSON string
           formData.append(key, JSON.stringify(value));
         } else if (key === 'videoUrl') {
           // تحويل رابط الفيديو إلى embed
           formData.append(key, convertToEmbedUrl(value));
+        } else if (key === 'discountPrice') {
+          // اجعل الخصم اختياريًا: لا ترسل الحقل إن كان فارغًا
+          if (value !== '' && value !== null && value !== undefined) {
+            formData.append(key, String(value));
+          }
         } else {
           formData.append(key, value);
         }
@@ -103,7 +229,39 @@ const AdminProperties = () => {
       });
       
       if (response.data.success) {
-        setNewProperty({ name: '', type: 'hotel', location: '', price: '', discountPrice: '', videoUrl: '', description: '', amenities: [{ title: '', body: '' }] });
+        setNewProperty({ 
+          name: '', 
+          type: 'hotel', 
+          hotel: '', 
+          location: '', 
+          price: '', 
+          discountPrice: '', 
+          videoUrl: '', 
+          description: '', 
+          amenities: [{ title: '', body: '' }],
+          roomSettings: {
+            specifications: {
+              size: 0,
+              floor: 0,
+              view: 'interior',
+              bedType: 'double',
+              maxOccupancy: 1,
+              maxAdults: 1,
+              maxChildren: 0
+            },
+            pricing: {
+              basePrice: 0,
+              currency: 'SAR',
+              extraPersonPrice: 0,
+              extraBedPrice: 0
+            },
+            availability: {
+              isActive: true,
+              totalUnits: 1,
+              availableUnits: 1
+            }
+          }
+        });
         setSelectedImages([]);
         setImagePreviews([]);
         setShowAddModal(false);
@@ -250,6 +408,16 @@ const AdminProperties = () => {
         if (key === 'amenities') {
           const amenitiesStr = JSON.stringify(value);
           formData.append(key, amenitiesStr);
+        } else if (key === 'chaletSettings') {
+          if (value !== null && value !== undefined && value !== '') {
+            const str = typeof value === 'string' ? value : JSON.stringify(value);
+            formData.append(key, str);
+          }
+        } else if (key === 'roomSettings') {
+          if (value !== null && value !== undefined && value !== '') {
+            const str = typeof value === 'string' ? value : JSON.stringify(value);
+            formData.append(key, str);
+          }
         } else if (key === 'videoUrl') {
           const videoUrl = convertToEmbedUrl(String(value));
           formData.append(key, videoUrl);
@@ -258,6 +426,16 @@ const AdminProperties = () => {
         }
       });
       
+      // Normalize hotel field to always be an ID when type is room/chalet
+      if (['room', 'chalet'].includes(String(editProperty.type))) {
+        const hotelId = (editProperty.hotel && typeof editProperty.hotel === 'object')
+          ? editProperty.hotel._id
+          : editProperty.hotel;
+        if (hotelId) {
+          formData.set('hotel', String(hotelId));
+        }
+      }
+
       // Add new images
       editSelectedImages.forEach((file) => {
         formData.append('images', file);
@@ -298,21 +476,7 @@ const AdminProperties = () => {
     setShowGalleryModal(true);
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: string) => {
-    try {
-      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-      const response = await axios.patch(`${API_URL}/properties/${id}/status`, { status: newStatus });
-      if (response.data.success) {
-        fetchProperties();
-        alert(`تم ${newStatus === 'active' ? 'تفعيل' : 'إلغاء تفعيل'} العقار بنجاح`);
-      } else {
-        alert('فشل في تغيير حالة العقار: ' + response.data.message);
-      }
-    } catch (error: any) {
-      console.error('Error toggling property status:', error);
-      alert('فشل في تغيير حالة العقار: ' + (error.response?.data?.message || error.message));
-    }
-  };
+  // تم إلغاء خاصية الإخفاء/العرض من الرئيسية
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch = property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -373,12 +537,42 @@ const AdminProperties = () => {
           </div>
         </div>
 
+        {/* Bulk actions */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <button
+              className={`px-3 py-2 rounded-lg text-white ${selectedIds.length ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'}`}
+              disabled={!selectedIds.length}
+              onClick={handleBulkDelete}
+            >
+              حذف المحدد ({selectedIds.length})
+            </button>
+            <button
+              className="px-3 py-2 rounded-lg border"
+              onClick={() => selectAllCurrent(filteredProperties)}
+            >
+              تحديد الكل (الظاهر)
+            </button>
+            {selectedIds.length > 0 && (
+              <button className="px-3 py-2 rounded-lg border" onClick={clearSelection}>مسح التحديد</button>
+            )}
+          </div>
+        </div>
+
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? 'جاري التحميل...' : (
             filteredProperties.map((property) => (
               <div key={property._id} className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="relative">
+                  {/* Select checkbox */}
+                  <div className="absolute top-3 right-3 z-10 bg-white/90 rounded-md p-1 shadow">
+                    <input
+                      type="checkbox"
+                      checked={isSelected(property._id)}
+                      onChange={() => toggleSelected(property._id)}
+                    />
+                  </div>
                   <img
                     src={property.images && property.images.length > 0 ? property.images[0] : 'https://via.placeholder.com/400x300?text=No+Image'}
                     alt={property.name}
@@ -443,18 +637,22 @@ const AdminProperties = () => {
                       <Edit className="h-4 w-4 ml-1" />
                       <span className="text-sm">تعديل</span>
                     </button>
+                    <button className="flex-1 bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300 flex items-center justify-center"
+                      onClick={() => handleCloneProperty(property)}>
+                      <span className="text-sm">نسخ</span>
+                    </button>
                     <button className="flex-1 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center justify-center" onClick={() => handleDeleteProperty(property._id)}>
                       <Trash2 className="h-4 w-4 ml-1" />
                       <span className="text-sm">حذف</span>
                     </button>
-                    <button
-                      className={`flex-1 ${property.status === 'active' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-600'} px-3 py-2 rounded-lg flex items-center justify-center`}
-                      onClick={() => handleToggleStatus(property._id, property.status)}
-                    >
-                      {property.status === 'active' ? <EyeOff className="h-4 w-4 ml-1" /> : <Eye className="h-4 w-4 ml-1" />}
-                      {property.status === 'active' ? 'إخفاء من الرئيسية' : 'عرض في الرئيسية'}
-                    </button>
                   </div>
+
+                  {(property.type === 'chalet' || property.type === 'room') && property.hotel && (
+                    <div className="mt-3 text-sm text-gray-600">
+                      تابع لـ: <span className="font-semibold">{getHotelName(property.hotel) || (property.type === 'room' ? 'فندق' : 'منتجع')}</span>
+                    </div>
+                  )}
+
                 </div>
               </div>
             ))
@@ -497,23 +695,44 @@ const AdminProperties = () => {
                   >
                     <option value="hotel">فندق</option>
                     <option value="chalet">شاليه</option>
+                    <option value="room">غرفة</option>
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    الموقع *
-                  </label>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">الموقع *</label>
                   <input
                     type="text"
                     value={newProperty.location}
-                    onChange={(e) => setNewProperty({...newProperty, location: e.target.value})}
+                    onChange={(e) => setNewProperty({ ...newProperty, location: e.target.value })}
                     required
                     className="input-rtl"
-                    placeholder="المدينة"
+                    placeholder="أدخل الموقع (مثال: الرياض، المملكة العربية السعودية)"
                   />
                 </div>
 
+                {/* اختيار الفندق للأب في كل من الشاليه والغرفة */}
+                {['chalet','room'].includes(newProperty.type) && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {newProperty.type === 'chalet' ? 'المنتجع/الفندق التابع له الشاليه *' : 'الفندق التابع له الغرفة *'}
+                  </label>
+                    <select
+                      value={(newProperty as any).hotel || ''}
+                      onChange={(e) => setNewProperty({ ...newProperty, hotel: e.target.value })}
+                    required
+                    className="input-rtl"
+                    >
+                      <option value="">اختر الفندق</option>
+                      {hotels.map((h: any) => (
+                        <option key={h._id} value={h._id}>{h.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                </div>
+
+              {/* تسعير أساسي */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     السعر لليلة (ريال) *
@@ -528,18 +747,125 @@ const AdminProperties = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    سعر الخصم العام (اختياري)
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">سعر الخصم العام (اختياري)</label>
                   <input
                     type="number"
                     value={newProperty.discountPrice}
-                    onChange={(e) => setNewProperty({...newProperty, discountPrice: e.target.value})}
+                    onChange={(e) => setNewProperty({ ...newProperty, discountPrice: e.target.value })}
                     className="input-rtl"
                     placeholder="خصم عام (ريال)"
                   />
                 </div>
+
+              {/* إعدادات الغرفة عند اختيار النوع غرفة */}
+              {newProperty.type === 'room' && (
+                <div className="space-y-6">
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">مواصفات الغرفة</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">المساحة (م²)</label>
+                  <input
+                    type="number"
+                    className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), size: Number(e.target.value)||0 } } }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الطابق</label>
+                        <input
+                          type="number"
+                          className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), floor: Number(e.target.value)||0 } } }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الإطلالة</label>
+                        <input
+                          type="text"
+                          placeholder="مثال: sea/garden"
+                          className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), view: e.target.value } } }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">نوع السرير</label>
+                        <select
+                          className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), bedType: e.target.value } } }))}
+                        >
+                          <option value="double">سرير مزدوج</option>
+                          <option value="single">سرير فردي</option>
+                          <option value="queen">كوين</option>
+                          <option value="king">كينج</option>
+                          <option value="twin">توأم</option>
+                          <option value="sofa_bed">أريكة سرير</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الحد الأقصى للإشغال</label>
+                        <input
+                          type="number"
+                          className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), maxOccupancy: Number(e.target.value)||1 } } }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">عدد البالغين</label>
+                        <input
+                          type="number"
+                          className="input-rtl"
+                          onChange={(e) => setNewProperty((prev: any) => ({...prev, roomSettings: { ...(prev.roomSettings||{}), specifications: { ...(prev.roomSettings?.specifications||{}), maxAdults: Number(e.target.value)||1 } } }))}
+                        />
+                      </div>
+                </div>
               </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">التسعير المتقدم</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">السعر الأساسي</label>
+                        <input type="number" className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),basePrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">العملة</label>
+                        <select className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),currency:e.target.value}}}))}>
+                          <option value="SAR">ريال سعودي</option>
+                          <option value="USD">دولار</option>
+                          <option value="EUR">يورو</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">سعر الشخص الإضافي</label>
+                        <input type="number" className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),extraPersonPrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">سعر السرير الإضافي</label>
+                        <input type="number" className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),extraBedPrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">التوفر (ستوك)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">إجمالي الوحدات</label>
+                        <input type="number" className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),totalUnits:Number(e.target.value)||1}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الوحدات المتاحة</label>
+                        <input type="number" className="input-rtl" onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),availableUnits:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" defaultChecked onChange={(e)=>setNewProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),isActive:e.target.checked}}}))} />
+                        <label className="text-sm font-medium text-gray-700">نشط</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -721,8 +1047,113 @@ const AdminProperties = () => {
                   >
                     <option value="hotel">فندق</option>
                     <option value="chalet">شاليه</option>
+                    <option value="room">غرفة</option>
                   </select>
                 </div>
+
+                {editProperty.type === 'chalet' || editProperty.type === 'room' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{editProperty.type === 'chalet' ? 'المنتجع/الفندق التابع له الشاليه *' : 'الفندق التابع له الغرفة *'}</label>
+                    <select
+                      value={(editProperty.hotel && typeof editProperty.hotel === 'object' ? editProperty.hotel._id : editProperty.hotel) || ''}
+                      onChange={(e) => setEditProperty({ ...editProperty, hotel: e.target.value })}
+                      required
+                      className="input-rtl"
+                    >
+                      <option value="">اختر الفندق</option>
+                      {hotels.map((h: any) => (
+                        <option key={h._id} value={h._id}>{h.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
+              </div>
+
+              {editProperty.type === 'room' && (
+                <div className="space-y-6">
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">مواصفات الغرفة</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">المساحة (م²)</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.specifications?.size || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),size:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الطابق</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.specifications?.floor || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),floor:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الإطلالة</label>
+                        <input type="text" className="input-rtl" value={editProperty.roomSettings?.specifications?.view || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),view:e.target.value}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">نوع السرير</label>
+                        <select className="input-rtl" value={editProperty.roomSettings?.specifications?.bedType || 'double'} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),bedType:e.target.value}}}))}>
+                          <option value="double">سرير مزدوج</option>
+                          <option value="single">سرير فردي</option>
+                          <option value="queen">كوين</option>
+                          <option value="king">كينج</option>
+                          <option value="twin">توأم</option>
+                          <option value="sofa_bed">أريكة سرير</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الحد الأقصى للإشغال</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.specifications?.maxOccupancy || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),maxOccupancy:Number(e.target.value)||1}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">عدد البالغين</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.specifications?.maxAdults || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),specifications:{...(prev.roomSettings?.specifications||{}),maxAdults:Number(e.target.value)||1}}}))} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">التسعير المتقدم</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">السعر الأساسي</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.pricing?.basePrice || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),basePrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">العملة</label>
+                        <select className="input-rtl" value={editProperty.roomSettings?.pricing?.currency || 'SAR'} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),currency:e.target.value}}}))}>
+                          <option value="SAR">ريال سعودي</option>
+                          <option value="USD">دولار</option>
+                          <option value="EUR">يورو</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">سعر الشخص الإضافي</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.pricing?.extraPersonPrice || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),extraPersonPrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">سعر السرير الإضافي</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.pricing?.extraBedPrice || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),pricing:{...(prev.roomSettings?.pricing||{}),extraBedPrice:Number(e.target.value)||0}}}))} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-4">التوفر (ستوك)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">إجمالي الوحدات</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.availability?.totalUnits || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),totalUnits:Number(e.target.value)||1}}}))} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">الوحدات المتاحة</label>
+                        <input type="number" className="input-rtl" value={editProperty.roomSettings?.availability?.availableUnits || ''} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),availableUnits:Number(e.target.value)||0}}}))} />
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" className="mr-2" checked={!!editProperty.roomSettings?.availability?.isActive} onChange={(e)=>setEditProperty((prev:any)=>({...prev,roomSettings:{...(prev.roomSettings||{}),availability:{...(prev.roomSettings?.availability||{}),isActive:e.target.checked}}}))} />
+                        <label className="text-sm font-medium text-gray-700">نشط</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">الموقع *</label>
                   <input
@@ -752,7 +1183,6 @@ const AdminProperties = () => {
                     className="input-rtl"
                     placeholder="خصم عام (ريال)"
                   />
-                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">رابط الفيديو (اختياري)</label>

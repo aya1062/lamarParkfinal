@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const propertyController = require('../controllers/propertyController');
 const upload = propertyController.upload;
+const { authenticateToken, isAdmin } = require('../middleware/authMiddleware');
 
 // تعديل الراوتر ليستخدم الصور الستاتيك مؤقتاً
 
@@ -53,5 +54,8 @@ router.put(
 router.delete('/:id', propertyController.deleteProperty);
 router.patch('/:id/status', propertyController.updatePropertyStatus);
 router.post('/check-availability', propertyController.checkAvailability);
+
+// Admin-only utility endpoint to bulk-assign chalets to a hotel by name
+router.post('/admin/assign-chalets', authenticateToken, isAdmin, propertyController.assignChaletsToHotelByName);
 
 module.exports = router;
