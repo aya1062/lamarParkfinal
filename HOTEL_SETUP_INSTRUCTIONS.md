@@ -105,3 +105,6 @@ node scripts/seedHotels.js
 
 
 
+
+
+

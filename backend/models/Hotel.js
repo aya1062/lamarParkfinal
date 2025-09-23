@@ -53,6 +53,7 @@ const hotelSchema = new mongoose.Schema({
     min: 0 
   },
   features: [String], // المميزات العامة
+  instructions: [String], // التعليمات الخاصة بالفندق
   amenities: [{
     title: { type: String },
     body: { type: String },

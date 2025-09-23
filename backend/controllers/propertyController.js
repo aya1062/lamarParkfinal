@@ -79,36 +79,10 @@ exports.getAllProperties = async (req, res) => {
     if (req.query.hotel) filter.hotel = req.query.hotel;
     const properties = await Property.find(filter);
 
-    // إذا لم تكن هناك عقارات، إنشاء عقار تجريبي
-    if (properties.length === 0) {
-      console.log('No properties found, creating sample property...');
-      const sampleProperty = new Property({
-        name: 'شاليه لامار بارك الفاخر',
-        type: 'chalet',
-        location: 'الرياض، المملكة العربية السعودية',
-        price: 800,
-        discountPrice: 650,
-        rating: 4.8,
-        reviewCount: 127,
-        images: [
-          '/lamar/chalet1/0C3A6982.jpg',
-          '/lamar/chalet1/0C3A6994.JPG',
-          '/lamar/chalet1/0C3A6997.JPG'
-        ],
-        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        features: ['مسبح خاص', 'مطبخ مجهز', 'حديقة خاصة', 'موقف سيارات'],
-        amenities: [
-          { title: 'مسبح خاص', body: 'مسبح خارجي مع إضاءة ليلية' },
-          { title: 'مطبخ مجهز', body: 'مطبخ كامل مع جميع الأدوات' },
-          { title: 'حديقة خاصة', body: 'حديقة واسعة مع منطقة جلوس' }
-        ],
-        description: 'شاليه فاخر في قلب الطبيعة مع إطلالة رائعة ومرافق متكاملة',
-        available: true,
-        status: 'active'
-      });
-      await sampleProperty.save();
-      properties.push(sampleProperty);
-    }
+    // تم تعطيل إنشاء عقار تجريبي افتراضي. لتفعيله يدويًا استخدم المتغير التالي
+    // if (properties.length === 0 && process.env.ENABLE_SAMPLE_PROPERTY === 'true') {
+    //   ... إنشاء بيانات تجريبية ...
+    // }
 
     // جلب سعر اليوم الحالي (أو أقرب يوم متاح) لكل عقار
     const today = new Date().toISOString().split('T')[0];

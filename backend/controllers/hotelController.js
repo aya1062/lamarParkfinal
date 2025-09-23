@@ -120,7 +120,7 @@ exports.createHotel = async (req, res) => {
   try {
     const {
       name, type, location, address, description, shortDescription,
-      features, amenities, policies, contact, bookingSettings
+      features, instructions, amenities, policies, contact, bookingSettings
     } = req.body;
 
     if (!name || !type || !location || !description) {
@@ -136,10 +136,10 @@ exports.createHotel = async (req, res) => {
       const validFiles = req.files.filter((f) => !!f.path);
       if (validFiles.length > 0) {
         images = validFiles.map((file, index) => ({
-          url: file.path,
-          alt: `${name} - صورة ${index + 1}`,
-          isMain: index === 0
-        }));
+        url: file.path,
+        alt: `${name} - صورة ${index + 1}`,
+        isMain: index === 0
+      }));
       }
     }
 
@@ -177,6 +177,7 @@ exports.createHotel = async (req, res) => {
       shortDescription,
       ...(images ? { images } : {}),
       features: features ? (typeof features === 'string' ? JSON.parse(features) : features) : [],
+      instructions: instructions ? (typeof instructions === 'string' ? JSON.parse(instructions) : instructions) : [],
       amenities: amenitiesArray,
       policies: policies ? (typeof policies === 'string' ? JSON.parse(policies) : policies) : {},
       contact: contact ? (typeof contact === 'string' ? JSON.parse(contact) : contact) : {},
@@ -220,8 +221,20 @@ exports.updateHotel = async (req, res) => {
       }
     }
 
+    // معالجة الصور الموجودة
+    if (updateData.images && typeof updateData.images === 'string') {
+      try {
+        updateData.images = JSON.parse(updateData.images);
+      } catch (err) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'تنسيق الصور غير صحيح' 
+        });
+      }
+    }
+
     // معالجة البيانات المعقدة
-    ['amenities', 'address', 'policies', 'contact', 'bookingSettings'].forEach(field => {
+    ['amenities', 'address', 'policies', 'contact', 'bookingSettings', 'instructions'].forEach(field => {
       if (updateData[field] && typeof updateData[field] === 'string') {
         try {
           updateData[field] = JSON.parse(updateData[field]);
