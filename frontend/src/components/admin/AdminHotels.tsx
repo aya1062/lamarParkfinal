@@ -24,6 +24,13 @@ interface Hotel {
     email: string;
     whatsapp?: string;
   };
+  instructions: string[];
+  amenities: Array<{
+    title: string;
+    body: string;
+    icon: string;
+    category: string;
+  }>;
   stats: {
     totalRooms: number;
     totalChalets: number;
@@ -53,7 +60,9 @@ const AdminHotels: React.FC = () => {
       phone: '',
       email: '',
       whatsapp: ''
-    }
+    },
+    instructions: [''],
+    amenities: [{ title: '', body: '', icon: '', category: 'general' }]
   });
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -211,6 +220,8 @@ const AdminHotels: React.FC = () => {
       description: hotel.description || '',
       shortDescription: hotel.shortDescription || '',
       videoUrl: hotel.videoUrl || '',
+      instructions: hotel.instructions || [''],
+      amenities: hotel.amenities || [{ title: '', body: '', icon: '', category: 'general' }],
       contact: {
         phone: hotel.contact?.phone || '',
         email: hotel.contact?.email || '',
@@ -235,6 +246,8 @@ const AdminHotels: React.FC = () => {
       fd.append('description', formData.description);
       fd.append('shortDescription', formData.shortDescription || '');
       if (formData.videoUrl) fd.append('videoUrl', formData.videoUrl);
+      fd.append('instructions', JSON.stringify(formData.instructions.filter(inst => inst.trim() !== '')));
+      fd.append('amenities', JSON.stringify(formData.amenities.filter(amenity => amenity.title.trim() !== '')));
       fd.append('contact', JSON.stringify({ phone: formData.contact.phone, email: formData.contact.email, whatsapp: formData.contact.whatsapp || formData.contact.phone }));
       selectedImages.forEach((file) => fd.append('images', file));
 
@@ -242,7 +255,13 @@ const AdminHotels: React.FC = () => {
       if (editingHotel) {
         // Preserve existing images if present
         if (imagePreviews.length > 0 && selectedImages.length === 0) {
-          fd.append('images', JSON.stringify(imagePreviews));
+          // Convert image previews to proper format
+          const existingImages = imagePreviews.map(img => ({
+            url: img,
+            alt: `${formData.name} - صورة`,
+            isMain: false
+          }));
+          fd.append('images', JSON.stringify(existingImages));
         }
         res = await fetch(`http://localhost:5000/api/hotels/${editingHotel._id}`, {
           method: 'PUT',
@@ -253,14 +272,14 @@ const AdminHotels: React.FC = () => {
         });
       } else {
         res = await fetch('http://localhost:5000/api/hotels', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
           body: fd
-        });
+      });
       }
-
+      
       const data = await res.json();
       if (data.success) {
         setShowModal(false);
@@ -275,6 +294,8 @@ const AdminHotels: React.FC = () => {
           description: '',
           shortDescription: '',
           videoUrl: '',
+          instructions: [''],
+          amenities: [{ title: '', body: '', icon: '', category: 'general' }],
           contact: { phone: '', email: '', whatsapp: '' }
         });
         fetchHotels();
@@ -340,7 +361,7 @@ const AdminHotels: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">إدارة الفنادق والمنتجعات</h1>
         <button
-          onClick={() => { setShowModal(true); setEditingHotel(null); setSelectedImages([]); setImagePreviews([]); setFormData({ name:'', type:'hotel', location:'', address:{city:'', country:''}, description:'', shortDescription:'', videoUrl:'', contact:{phone:'', email:'', whatsapp:''}}); }}
+          onClick={() => { setShowModal(true); setEditingHotel(null); setSelectedImages([]); setImagePreviews([]); setFormData({ name:'', type:'hotel', location:'', address:{city:'', country:''}, description:'', shortDescription:'', videoUrl:'', instructions:[''], amenities:[{ title: '', body: '', icon: '', category: 'general' }], contact:{phone:'', email:'', whatsapp:''}}); }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
@@ -416,8 +437,8 @@ const AdminHotels: React.FC = () => {
                   'https://via.placeholder.com/400x300?text=No+Image'}
                 alt={hotel.images && hotel.images.length > 0 && typeof hotel.images[0] === 'object' ? 
                   hotel.images[0].alt : hotel.name}
-                className="w-full h-full object-cover"
-              />
+                  className="w-full h-full object-cover"
+                />
               
               {/* Status Badge */}
               <div className="absolute top-2 right-2">
@@ -457,18 +478,53 @@ const AdminHotels: React.FC = () => {
                 {hotel.shortDescription || hotel.description}
               </p>
 
+              {/* Instructions */}
+              {hotel.instructions && hotel.instructions.length > 0 && (
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">التعليمات الخاصة:</h4>
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    {hotel.instructions.slice(0, 2).map((instruction, index) => (
+                      <li key={index} className="flex items-start gap-1">
+                        <span className="text-blue-500 mt-0.5">•</span>
+                        <span className="line-clamp-1">{instruction}</span>
+                      </li>
+                    ))}
+                    {hotel.instructions.length > 2 && (
+                      <li className="text-blue-500 text-xs">+{hotel.instructions.length - 2} تعليمة أخرى</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {/* Amenities */}
+              {hotel.amenities && hotel.amenities.length > 0 && (
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-1">المرافق والخدمات:</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {hotel.amenities.slice(0, 3).map((amenity, index) => (
+                      <span key={index} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                        {amenity.title}
+                      </span>
+                    ))}
+                    {hotel.amenities.length > 3 && (
+                      <span className="text-xs text-green-500">+{hotel.amenities.length - 3} أخرى</span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Stats */}
               <div className="grid grid-cols-1 gap-2 mb-4 text-sm">
                 {hotel.type === 'hotel' ? (
-                  <div className="text-center bg-blue-50 rounded-lg p-2">
-                    <div className="font-semibold text-blue-600">{hotel.stats.totalRooms}</div>
-                    <div className="text-blue-500">غرف</div>
-                  </div>
+                <div className="text-center bg-blue-50 rounded-lg p-2">
+                  <div className="font-semibold text-blue-600">{hotel.stats.totalRooms}</div>
+                  <div className="text-blue-500">غرف</div>
+                </div>
                 ) : (
-                  <div className="text-center bg-green-50 rounded-lg p-2">
-                    <div className="font-semibold text-green-600">{hotel.stats.totalChalets}</div>
-                    <div className="text-green-500">شاليهات</div>
-                  </div>
+                <div className="text-center bg-green-50 rounded-lg p-2">
+                  <div className="font-semibold text-green-600">{hotel.stats.totalChalets}</div>
+                  <div className="text-green-500">شاليهات</div>
+                </div>
                 )}
               </div>
 
@@ -618,6 +674,147 @@ const AdminHotels: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">التعليمات الخاصة</label>
+                  <div className="space-y-2">
+                    {formData.instructions.map((instruction, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={instruction}
+                          onChange={(e) => {
+                            const newInstructions = [...formData.instructions];
+                            newInstructions[index] = e.target.value;
+                            setFormData({ ...formData, instructions: newInstructions });
+                          }}
+                          className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+                          placeholder={`تعليمة ${index + 1}`}
+                        />
+                        {formData.instructions.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newInstructions = formData.instructions.filter((_, i) => i !== index);
+                              setFormData({ ...formData, instructions: newInstructions });
+                            }}
+                            className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                          >
+                            حذف
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, instructions: [...formData.instructions, ''] });
+                      }}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      إضافة تعليمة جديدة
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">المرافق والخدمات</label>
+                  <div className="space-y-3">
+                    {formData.amenities.map((amenity, index) => (
+                      <div key={index} className="border border-gray-300 rounded-lg p-4 space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">اسم المرفق</label>
+                            <input
+                              type="text"
+                              value={amenity.title || ''}
+                              onChange={(e) => {
+                                const newAmenities = [...formData.amenities];
+                                newAmenities[index] = { ...newAmenities[index], title: e.target.value };
+                                setFormData({ ...formData, amenities: newAmenities });
+                              }}
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                              placeholder="مثال: مسبح خارجي"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">التصنيف</label>
+                            <select
+                              value={amenity.category || 'general'}
+                              onChange={(e) => {
+                                const newAmenities = [...formData.amenities];
+                                newAmenities[index] = { ...newAmenities[index], category: e.target.value };
+                                setFormData({ ...formData, amenities: newAmenities });
+                              }}
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                            >
+                              <option value="general">عامة</option>
+                              <option value="room">الغرف</option>
+                              <option value="dining">المطاعم والمقاهي</option>
+                              <option value="recreation">الترفيه والرياضة</option>
+                              <option value="business">الأعمال</option>
+                              <option value="transportation">المواصلات</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">الوصف (اختياري)</label>
+                            <input
+                              type="text"
+                              value={amenity.body || ''}
+                              onChange={(e) => {
+                                const newAmenities = [...formData.amenities];
+                                newAmenities[index] = { ...newAmenities[index], body: e.target.value };
+                                setFormData({ ...formData, amenities: newAmenities });
+                              }}
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                              placeholder="وصف مختصر للمرفق"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">الأيقونة (اختياري)</label>
+                            <input
+                              type="text"
+                              value={amenity.icon || ''}
+                              onChange={(e) => {
+                                const newAmenities = [...formData.amenities];
+                                newAmenities[index] = { ...newAmenities[index], icon: e.target.value };
+                                setFormData({ ...formData, amenities: newAmenities });
+                              }}
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                              placeholder="مثال: 🏊‍♂️ أو 🍽️"
+                            />
+                          </div>
+                        </div>
+                        {formData.amenities.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newAmenities = formData.amenities.filter((_, i) => i !== index);
+                              setFormData({ ...formData, amenities: newAmenities });
+                            }}
+                            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                          >
+                            حذف هذا المرفق
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({ 
+                          ...formData, 
+                          amenities: [...formData.amenities, { title: '', body: '', icon: '', category: 'general' }] 
+                        });
+                      }}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                    >
+                      إضافة مرفق جديد
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"><Video className="w-4 h-4" /> رابط الفيديو (اختياري)</label>
                   <input
                     type="url"
@@ -663,17 +860,17 @@ const AdminHotels: React.FC = () => {
                     placeholder="أدخل البريد الإلكتروني (اختياري)"
                   />
                 </div>
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">رقم واتساب (اختياري)</label>
-                  <input
+                <input
                     type="tel"
                     name="contact.whatsapp"
                     value={formData.contact.whatsapp}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     placeholder="إن تُرك فارغاً سيتم استخدام رقم الهاتف"
-                  />
-                </div>
+                />
+              </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">

@@ -260,6 +260,192 @@ const HotelDetails: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Hotel Information Section */}
+                <div className="mb-10 space-y-8">
+                    {/* Hotel Basic Info */}
+                    <div className="bg-white rounded-xl shadow-lg p-8">
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h1 className="text-3xl font-bold text-gray-900">{hotel?.name}</h1>
+                                <div className="flex items-center space-x-2 space-x-reverse">
+                                    <div className="flex items-center">
+                                        <Star className="h-5 w-5 text-gold fill-current" />
+                                        <span className="font-semibold mr-1">{hotel?.rating || 0}</span>
+                                    </div>
+                                    <span className="text-gray-600">({hotel?.reviewCount || 0} تقييم)</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center text-gray-600 mb-4">
+                                <MapPin className="h-5 w-5 ml-2 text-gold" />
+                                <span>{hotel?.location}</span>
+                            </div>
+
+                            {hotel?.description && (
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap mb-6">
+                                    {hotel.description}
+                                </p>
+                            )}
+
+                            {hotel?.shortDescription && (
+                                <p className="text-gray-600 text-lg mb-6">
+                                    {hotel.shortDescription}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Hotel Features Grid */}
+                        {hotel?.features && hotel.features.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                                {hotel.features.map((feature: string, index: number) => (
+                                    <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
+                                        <div className="font-semibold text-gray-900">{feature}</div>
+                                        <div className="text-sm text-gray-600">ميزة</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Hotel Instructions */}
+                        {hotel?.instructions && hotel.instructions.length > 0 && (
+                            <div className="mb-8">
+                                <h3 className="text-xl font-semibold text-gray-800 mb-4">التعليمات الخاصة</h3>
+                                <div className="bg-blue-50 rounded-lg p-6">
+                                    <ul className="space-y-3">
+                                        {hotel.instructions.map((instruction: string, index: number) => (
+                                            <li key={index} className="flex items-start gap-3">
+                                                <span className="text-blue-500 font-bold mt-1 text-lg">•</span>
+                                                <span className="text-gray-700 text-lg">{instruction}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Hotel Amenities */}
+                        {hotel?.amenities && hotel.amenities.length > 0 && (
+                            <div className="mb-8">
+                                <h3 className="text-xl font-semibold text-gray-800 mb-6">المرافق والخدمات</h3>
+                                
+                                {/* Group amenities by category */}
+                                {(() => {
+                                    const groupedAmenities = hotel.amenities.reduce((acc: any, amenity: any) => {
+                                        const category = amenity.category || 'general';
+                                        if (!acc[category]) {
+                                            acc[category] = [];
+                                        }
+                                        acc[category].push(amenity);
+                                        return acc;
+                                    }, {});
+
+                                    const categoryNames: { [key: string]: string } = {
+                                        'general': 'عامة',
+                                        'room': 'الغرف',
+                                        'dining': 'المطاعم والمقاهي',
+                                        'recreation': 'الترفيه والرياضة',
+                                        'business': 'الأعمال',
+                                        'transportation': 'المواصلات'
+                                    };
+
+                                    return Object.entries(groupedAmenities).map(([category, amenities]: [string, any]) => (
+                                        <div key={category} className="mb-6">
+                                            <h4 className="text-lg font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-gold rounded-full"></span>
+                                                {categoryNames[category] || category}
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                {amenities.map((amenity: any, index: number) => (
+                                                    <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                        <div className="flex-shrink-0 mt-1">
+                                                            {amenity.icon ? (
+                                                                <span className="text-2xl">{amenity.icon}</span>
+                                                            ) : (
+                                                                <span className="text-gold text-xl">✓</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="font-medium text-gray-900 mb-1">{amenity.title}</div>
+                                                            {amenity.body && (
+                                                                <div className="text-sm text-gray-600 leading-relaxed">{amenity.body}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ));
+                                })()}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Contact & Policies */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Contact Information */}
+                        {hotel?.contact && (
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <h3 className="text-xl font-semibold text-gray-800 mb-4">معلومات التواصل</h3>
+                                <div className="space-y-3">
+                                    {hotel.contact.phone && (
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <span className="text-gold text-xl">📞</span>
+                                            <span className="text-lg">{hotel.contact.phone}</span>
+                                        </div>
+                                    )}
+                                    {hotel.contact.email && (
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <span className="text-gold text-xl">✉️</span>
+                                            <span className="text-lg">{hotel.contact.email}</span>
+                                        </div>
+                                    )}
+                                    {hotel.contact.whatsapp && (
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <span className="text-gold text-xl">💬</span>
+                                            <span className="text-lg">{hotel.contact.whatsapp}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Hotel Policies */}
+                        {hotel?.policies && (
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <h3 className="text-xl font-semibold text-gray-800 mb-4">السياسات</h3>
+                                <div className="space-y-3 text-gray-600">
+                                    {hotel.policies.checkIn && (
+                                        <div className="flex justify-between">
+                                            <span>تسجيل الوصول:</span>
+                                            <span className="font-medium">{hotel.policies.checkIn}</span>
+                                        </div>
+                                    )}
+                                    {hotel.policies.checkOut && (
+                                        <div className="flex justify-between">
+                                            <span>تسجيل المغادرة:</span>
+                                            <span className="font-medium">{hotel.policies.checkOut}</span>
+                                        </div>
+                                    )}
+                                    {hotel.policies.cancellation && (
+                                        <div className="flex justify-between">
+                                            <span>سياسة الإلغاء:</span>
+                                            <span className="font-medium">{hotel.policies.cancellation}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between">
+                                        <span>الحيوانات الأليفة:</span>
+                                        <span className="font-medium">{hotel.policies.pets ? 'مسموحة' : 'غير مسموحة'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>التدخين:</span>
+                                        <span className="font-medium">{hotel.policies.smoking ? 'مسموح' : 'ممنوع'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* Rooms/Chalets with sidebar layout 1:3 */}
                 <div className="mb-10 grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Listings (left) */}

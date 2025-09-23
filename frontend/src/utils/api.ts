@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.lamarparks.com/api'; 
-// const API_URL = 'http://localhost:5000/api';
+// const API_URL = 'https://api.lamarparks.com/api'; 
+const API_URL = 'http://localhost:5000/api';
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(

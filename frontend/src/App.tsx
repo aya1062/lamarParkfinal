@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import PrivateRoute from './components/common/PrivateRoute';
 import Toast from './components/common/Toast';
@@ -35,10 +35,22 @@ import PaymentTest from './components/pages/PaymentTest';
 import NotFound from './components/pages/NotFound';
 import Policies from './components/pages/Policies';
 
+// مكون لإجبار الصفحة على البدء من الأعلى
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 function App() {
 	return (
 		<ErrorBoundary>
 			<Router>
+				<ScrollToTop />
 				<div className="min-h-screen bg-gray-50 flex flex-col">
 					<Toast />
 					<Navbar />

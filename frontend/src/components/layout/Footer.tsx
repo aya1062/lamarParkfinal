@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2 space-x-reverse">
               <img 
-                src="/imageProperety/logo2.png" 
+                src="/lamar/new logo.png" 
                 alt="لامار بارك" 
                 className="h-8 w-8 object-contain"
               />

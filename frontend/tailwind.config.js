@@ -5,6 +5,9 @@ export default {
     extend: {
       fontFamily: {
         'cairo': ['Cairo', 'sans-serif'],
+        'amiri': ['Amiri', 'serif'],
+        'vazir': ['Vazirmatn', 'sans-serif'],
+        'sans': ['Vazirmatn', 'Amiri', 'Cairo', 'sans-serif'],
       },
       colors: {
         'gold': '#D4AF37',

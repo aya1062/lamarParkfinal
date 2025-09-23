@@ -50,13 +50,10 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 space-x-reverse">
             <img 
-              src="/imageProperety/logo2.png" 
+              src="/lamar/new logo.png" 
               alt="لامار بارك" 
-              className="h-16 w-16 object-contain"
+              className="h-32 w-32 object-contain"
             />
-            <span className="text-2xl font-bold text-gray-900">
-              لامار بارك
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

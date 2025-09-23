@@ -3,11 +3,50 @@
 @tailwind utilities;
 
 * {
-  font-family: 'Cairo', sans-serif;
+  font-family: 'Vazirmatn', 'Amiri', 'Cairo', sans-serif !important;
+}
+
+html {
+  font-family: 'Vazirmatn', 'Amiri', 'Cairo', sans-serif !important;
+  scroll-behavior: smooth;
 }
 
 body {
   direction: rtl;
+  font-family: 'Vazirmatn', 'Amiri', 'Cairo', sans-serif !important;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* إصلاح مشكلة التمرير في RTL */
+html, body {
+  scroll-padding-top: 0;
+  scroll-snap-type: y mandatory;
+}
+
+/* التأكد من أن الصفحة تبدأ من الأعلى */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* إصلاح مشكلة RTL مع التمرير */
+* {
+  scroll-behavior: smooth;
+}
+
+/* إجبار الصفحة على البدء من الأعلى */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+}
+
+/* إصلاح مشكلة التمرير في المتصفحات المختلفة */
+@supports (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 .gold-gradient {
