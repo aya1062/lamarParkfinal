@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Crown, LogOut, Settings, BarChart3, Hotel } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 import { api } from '../../utils/api';
@@ -29,7 +29,7 @@ const Navbar = () => {
     { name: 'الرئيسية', path: '/' },
     { name: 'المنتجعات', path: '/resorts' },
     { name: 'الفنادق', path: '/hotels' },
-    { name: 'حجز الغرف', path: '/room-booking' },
+    // { name: 'حجز الغرف', path: '/room-booking' },
     { name: 'من نحن', path: '/about' },
     { name: 'تواصل معنا', path: '/contact' },
   ];
@@ -52,7 +52,10 @@ const Navbar = () => {
             <img 
               src="/lamar/new logo.png" 
               alt="لامار بارك" 
-              className="h-32 w-32 object-contain"
+              className="h-28 w-28 object-contain"
+              width={128}
+              height={128}
+              decoding="async"
             />
           </Link>
 
@@ -98,8 +101,8 @@ const Navbar = () => {
                               key={h._id}
                               to={`/hotel/${h._id}`}
                               className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition"
-                            >
-                              <img src={img} alt={h.name} className="w-14 h-14 rounded object-cover flex-shrink-0" />
+                                >
+                              <img src={img} alt={h.name} className="w-14 h-14 rounded object-cover flex-shrink-0" width={56} height={56} loading="lazy" decoding="async" />
                               <div className="min-w-0">
                                 <div className="flex items-center justify-between gap-2">
                                   <h4 className="font-medium text-gray-900 text-sm truncate">{h.name}</h4>
@@ -138,8 +141,8 @@ const Navbar = () => {
                               key={c._id}
                               to={`/resort/${c._id}`}
                               className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition"
-                            >
-                              <img src={img} alt={c.name} className="w-14 h-14 rounded object-cover flex-shrink-0" />
+                                >
+                              <img src={img} alt={c.name} className="w-14 h-14 rounded object-cover flex-shrink-0" width={56} height={56} loading="lazy" decoding="async" />
                               <div className="min-w-0">
                                 <div className="flex items-center justify-between gap-2">
                                   <h4 className="font-medium text-gray-900 text-sm truncate">{c.name}</h4>

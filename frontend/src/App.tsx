@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import PrivateRoute from './components/common/PrivateRoute';
@@ -6,34 +6,34 @@ import Toast from './components/common/Toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './components/pages/Home';
-import Chalets from './components/pages/Chalets';
-import Hotels from './components/pages/Hotels';
-import Resorts from './components/pages/Resorts';
-import PropertyDetails from './components/pages/PropertyDetails';
-import HotelDetails from './components/pages/HotelDetails';
-import Booking from './components/pages/Booking';
-import Checkout from './components/pages/Checkout';
-import BookingSuccess from './components/pages/BookingSuccess';
-import About from './components/pages/About';
-import Contact from './components/pages/Contact';
-import Login from './components/pages/Login';
-import Register from './components/pages/Register';
-import UserDashboard from './components/pages/UserDashboard';
-import AdminDashboard from './components/admin/AdminDashboard';
-import AdminProperties from './components/admin/AdminProperties';
-import AdminBookings from './components/admin/AdminBookings';
-import AdminPayments from './components/admin/AdminPayments';
-import AdminUsers from './components/admin/AdminUsers';
-import AdminSettings from './components/admin/AdminSettings';
-import AdminAccountManagement from './components/admin/AdminAccountManagement';
-import AdminPricing from './components/admin/AdminPricing';
-import AdminHotels from './components/admin/AdminHotels';
-import RoomBooking from './components/pages/RoomBooking';
-import Payment from './components/pages/Payment';
-import PaymentResponse from './components/pages/PaymentResponse';
-import PaymentTest from './components/pages/PaymentTest';
-import NotFound from './components/pages/NotFound';
-import Policies from './components/pages/Policies';
+const Chalets = React.lazy(() => import('./components/pages/Chalets'));
+const Hotels = React.lazy(() => import('./components/pages/Hotels'));
+const Resorts = React.lazy(() => import('./components/pages/Resorts'));
+const PropertyDetails = React.lazy(() => import('./components/pages/PropertyDetails'));
+const HotelDetails = React.lazy(() => import('./components/pages/HotelDetails'));
+const Booking = React.lazy(() => import('./components/pages/Booking'));
+const Checkout = React.lazy(() => import('./components/pages/Checkout'));
+const BookingSuccess = React.lazy(() => import('./components/pages/BookingSuccess'));
+const About = React.lazy(() => import('./components/pages/About'));
+const Contact = React.lazy(() => import('./components/pages/Contact'));
+const Login = React.lazy(() => import('./components/pages/Login'));
+const Register = React.lazy(() => import('./components/pages/Register'));
+const UserDashboard = React.lazy(() => import('./components/pages/UserDashboard'));
+const AdminDashboard = React.lazy(() => import('./components/admin/AdminDashboard'));
+const AdminProperties = React.lazy(() => import('./components/admin/AdminProperties'));
+const AdminBookings = React.lazy(() => import('./components/admin/AdminBookings'));
+const AdminPayments = React.lazy(() => import('./components/admin/AdminPayments'));
+const AdminUsers = React.lazy(() => import('./components/admin/AdminUsers'));
+const AdminSettings = React.lazy(() => import('./components/admin/AdminSettings'));
+const AdminAccountManagement = React.lazy(() => import('./components/admin/AdminAccountManagement'));
+const AdminPricing = React.lazy(() => import('./components/admin/AdminPricing'));
+const AdminHotels = React.lazy(() => import('./components/admin/AdminHotels'));
+const RoomBooking = React.lazy(() => import('./components/pages/RoomBooking'));
+const Payment = React.lazy(() => import('./components/pages/Payment'));
+const PaymentResponse = React.lazy(() => import('./components/pages/PaymentResponse'));
+const PaymentTest = React.lazy(() => import('./components/pages/PaymentTest'));
+const NotFound = React.lazy(() => import('./components/pages/NotFound'));
+const Policies = React.lazy(() => import('./components/pages/Policies'));
 
 // مكون لإجبار الصفحة على البدء من الأعلى
 const ScrollToTop = () => {
@@ -55,7 +55,8 @@ function App() {
 					<Toast />
 					<Navbar />
 					<main className="flex-1">
-						<Routes>
+                    <Suspense fallback={<div style={{ display: 'none' }}>.</div>}>
+                        <Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/chalets" element={<Chalets />} />
                             <Route path="/hotels" element={<Hotels />} />
@@ -132,7 +133,8 @@ function App() {
 							
 							{/* 404 Page */}
 							{/* <Route path="*" element={<NotFound />} /> */}
-						</Routes>
+                        </Routes>
+                    </Suspense>
 					</main>
 					<Footer />
 				</div>

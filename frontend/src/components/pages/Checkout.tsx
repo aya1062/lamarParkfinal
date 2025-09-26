@@ -43,7 +43,7 @@ const Checkout = () => {
   const [priceCalculation, setPriceCalculation] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'cash_on_arrival' | 'urway'>('cash_on_arrival');
+  const [paymentMethod, setPaymentMethod] = useState<'cash_on_arrival'>('cash_on_arrival');
 
   // التواريخ من URL
   const checkIn = searchParams.get('checkIn');
@@ -106,7 +106,7 @@ const Checkout = () => {
   }, [id, checkIn, checkOut]);
 
   // عند تغيير طريقة الدفع، امسح الأخطاء القديمة
-  const handlePaymentMethodChange = (method: 'cash_on_arrival' | 'urway') => {
+  const handlePaymentMethodChange = (method: 'cash_on_arrival') => {
     setPaymentMethod(method);
     setError(null);
   };
@@ -144,23 +144,6 @@ const Checkout = () => {
           navigate('/booking/success', { state: { booking: res.booking } });
         } else {
           setError(res.message || 'فشل في إنشاء الحجز');
-        }
-      } else if (paymentMethod === 'urway') {
-        // URWAY Payment
-        const res = await api.createUrwaySession({
-          amount: priceCalculation.totalPrice,
-          customerEmail: data.email,
-          customerName: data.fullName,
-          customerMobile: data.phone,
-          trackId: 'ORDER_' + Date.now(),
-          currency: 'SAR',
-          udf1: `Booking for ${property?.name}`,
-          udf2: `${checkIn} to ${checkOut}`
-        });
-        if (res.success && res.paymentUrl) {
-          window.location.href = res.paymentUrl;
-        } else {
-          setError(res.message || 'فشل في إنشاء جلسة الدفع عبر URWAY');
         }
       }
     } catch (err) {
@@ -203,43 +186,7 @@ const Checkout = () => {
     <div className="min-h-screen bg-gray-50 pt-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* أزرار اختبار سريعة */}
-        <div className="mb-4 flex gap-2">
-          <button
-            onClick={() => {
-              const testUrway = async () => {
-                try {
-                  const res = await api.createUrwaySession({
-                    amount: priceCalculation?.totalPrice || 100,
-                    customerEmail: 'test@example.com',
-                    customerName: 'Test User',
-                    customerMobile: '+966501234567',
-                    trackId: 'CHECKOUT_TEST_' + Date.now(),
-                    currency: 'SAR'
-                  });
-                  
-                  if (res.success && res.paymentUrl) {
-                    window.location.href = res.paymentUrl;
-                  } else {
-                    toast.error(res.message || 'فشل في إنشاء جلسة URWAY');
-                  }
-                } catch (err) {
-                  toast.error('خطأ في اختبار URWAY');
-                }
-              };
-              testUrway();
-            }}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            اختبار URWAY من Checkout
-          </button>
-          
-          <button
-            onClick={() => window.open('http://localhost:5000/test-direct-payment', '_blank')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            صفحة اختبار الدفع
-          </button>
-        </div>
+        <div className="mb-4" />
         
         {/* Header */}
         <div className="mb-8">
@@ -273,22 +220,11 @@ const Checkout = () => {
                         type="radio"
                         name="paymentMethod"
                         value="cash_on_arrival"
-                        checked={paymentMethod === 'cash_on_arrival'}
+                        checked
                         onChange={() => handlePaymentMethodChange('cash_on_arrival')}
                         className="form-radio text-gold"
                       />
                       <span className="ml-2">الدفع عند الوصول</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="urway"
-                        checked={paymentMethod === 'urway'}
-                        onChange={() => handlePaymentMethodChange('urway')}
-                        className="form-radio text-gold"
-                      />
-                      <span className="ml-2">بطاقة بنكية (URWAY)</span>
                     </label>
                   </div>
                 </div>

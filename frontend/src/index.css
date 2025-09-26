@@ -50,7 +50,7 @@ html {
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, #D4AF37 0%, #F4E683 100%);
+  background: linear-gradient(135deg, #DfB86c 0%, #e8cfa0 100%);
 }
 
 .glass-effect {
@@ -60,7 +60,7 @@ html {
 
 @layer components {
   .btn-gold {
-    @apply bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
+    @apply bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
   }
   
   .card-luxury {
@@ -68,6 +68,6 @@ html {
   }
   
   .input-rtl {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all duration-200 text-right;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#DfB86c] focus:ring-2 focus:ring-[#DfB86c]/30 transition-all duration-200 text-right;
   }
 }

@@ -10,8 +10,8 @@ export default {
         'sans': ['Vazirmatn', 'Amiri', 'Cairo', 'sans-serif'],
       },
       colors: {
-        'gold': '#D4AF37',
-        'gold-light': '#F4E683',
+        'gold': '#DfB86c',
+        'gold-light': '#e8cfa0',
       },
       spacing: {
         '18': '4.5rem',

@@ -44,7 +44,7 @@ const Toast: React.FC = () => {
         },
         loading: {
           style: {
-            background: '#D4AF37',
+            background: '#DfB86c',
           },
         },
       }}

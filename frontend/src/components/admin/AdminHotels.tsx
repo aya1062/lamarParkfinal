@@ -96,58 +96,9 @@ const AdminHotels: React.FC = () => {
             hotel.location.toLowerCase().includes(filter.search.toLowerCase())
           );
         }
-        
-        // Fetch real statistics for each hotel/resort
-        const hotelsWithStats = await Promise.all(
-          filteredHotels.map(async (hotel: Hotel) => {
-            try {
-              let roomsCount = 0;
-              let chaletsCount = 0;
-              
-              if (hotel.type === 'hotel') {
-                // Fetch rooms from both Room model and Property model (type: room)
-                const [roomsResponse, propertiesResponse] = await Promise.all([
-                  fetch(`http://localhost:5000/api/rooms?hotel=${hotel._id}`),
-                  fetch(`http://localhost:5000/api/properties?type=room&hotel=${hotel._id}`)
-                ]);
-                
-                const roomsData = await roomsResponse.json();
-                const propertiesData = await propertiesResponse.json();
-                
-                const roomModelCount = roomsData.success ? (roomsData.rooms?.length || 0) : 0;
-                const propertyModelCount = propertiesData.success ? (propertiesData.properties?.length || 0) : 0;
-                
-                roomsCount = roomModelCount + propertyModelCount;
-              } else if (hotel.type === 'resort') {
-                // Fetch chalets count for resorts
-                const chaletsResponse = await fetch(`http://localhost:5000/api/properties?type=chalet&hotel=${hotel._id}`);
-                const chaletsData = await chaletsResponse.json();
-                chaletsCount = chaletsData.success ? (chaletsData.properties?.length || 0) : 0;
-              }
-              
-              return {
-                ...hotel,
-                stats: {
-                  totalRooms: roomsCount,
-                  totalChalets: chaletsCount,
-                  occupancyRate: hotel.stats?.occupancyRate || 0
-                }
-              };
-            } catch (err) {
-              console.error(`Error fetching stats for hotel ${hotel._id}:`, err);
-              return {
-                ...hotel,
-                stats: {
-                  totalRooms: 0,
-                  totalChalets: 0,
-                  occupancyRate: 0
-                }
-              };
-            }
-          })
-        );
-        
-        setHotels(hotelsWithStats);
+
+        // Avoid N+1: show list without per-hotel stat fetches. Stats can be fetched on details view.
+        setHotels(filteredHotels);
       } else {
         setError(data.message || 'فشل في جلب الفنادق');
       }
@@ -438,6 +389,9 @@ const AdminHotels: React.FC = () => {
                 alt={hotel.images && hotel.images.length > 0 && typeof hotel.images[0] === 'object' ? 
                   hotel.images[0].alt : hotel.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  width={400}
+                  height={192}
                 />
               
               {/* Status Badge */}

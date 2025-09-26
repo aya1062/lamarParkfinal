@@ -26,7 +26,7 @@ const FeaturedProperties = () => {
   }, []);
 
   const handleViewAllResorts = () => {
-    navigate('/chalets');
+    navigate('/resorts');
   };
 
   return (

@@ -12,6 +12,10 @@ const Footer = () => {
                 src="/lamar/new logo.png" 
                 alt="لامار بارك" 
                 className="h-8 w-8 object-contain"
+                width={32}
+                height={32}
+                decoding="async"
+                loading="lazy"
               />
               <span className="text-2xl font-bold">لامار بارك</span>
             </div>

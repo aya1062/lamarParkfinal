@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Search, Filter, Calendar, User, MapPin, CreditCard, Eye, Check, X, Trash2 } from 'lucide-react';
 import { api } from '../../utils/api';
+import { useDebounce } from '../../hooks/useDebounce';
 import toast from 'react-hot-toast';
 
 const AdminBookings = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 400);
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,15 +70,36 @@ const AdminBookings = () => {
     }
   };
 
-  const filteredBookings = bookings.filter((booking) => {
-    const guestName = booking.guest?.name || booking.user?.name || '';
-    const propertyName = booking.property?.name || '';
-    const matchesSearch = guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (booking._id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      propertyName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredBookings = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    const startOfToday = new Date();
+    startOfToday.setHours(0,0,0,0);
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    const startOfMonth = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
+
+    return bookings.filter((booking) => {
+      const guestName = booking.guest?.name || booking.user?.name || '';
+      const propertyName = booking.property?.name || '';
+      const matchesSearch = guestName.toLowerCase().includes(term) ||
+        (booking._id || '').toLowerCase().includes(term) ||
+        propertyName.toLowerCase().includes(term);
+      const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+
+      let matchesDate = true;
+      const checkIn = new Date(booking.checkIn || booking.dates?.checkIn || 0);
+      if (dateFilter === 'today') matchesDate = checkIn >= startOfToday;
+      else if (dateFilter === 'week') matchesDate = checkIn >= startOfWeek;
+      else if (dateFilter === 'month') matchesDate = checkIn >= startOfMonth;
+
+      return matchesSearch && matchesStatus && matchesDate;
+    });
+  }, [bookings, debouncedSearch, statusFilter, dateFilter]);
+
+  const pagedBookings = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredBookings.slice(start, start + pageSize);
+  }, [filteredBookings, page, pageSize]);
 
   // تأكيد الحجز
   const handleConfirmBooking = async (booking: any) => {
@@ -209,7 +234,7 @@ const AdminBookings = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredBookings.map((booking) => (
+                  pagedBookings.map((booking) => (
                     <tr key={booking._id} className="border-b hover:bg-gray-50">
                       <td className="py-3 px-4 font-bold">{booking.bookingNumber}</td>
                       <td className="py-3 px-4">
@@ -261,6 +286,35 @@ const AdminBookings = () => {
                 )}
               </tbody>
             </table>
+            {/* Pagination */}
+            <div className="flex items-center justify-between py-4">
+              <div className="text-sm text-gray-600">
+                عرض {Math.min((page - 1) * pageSize + 1, filteredBookings.length)}-
+                {Math.min(page * pageSize, filteredBookings.length)} من {filteredBookings.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  className="px-3 py-1 rounded border disabled:opacity-50"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >السابق</button>
+                <span className="text-sm">صفحة {page}</span>
+                <button
+                  className="px-3 py-1 rounded border disabled:opacity-50"
+                  onClick={() => setPage((p) => (p * pageSize < filteredBookings.length ? p + 1 : p))}
+                  disabled={page * pageSize >= filteredBookings.length}
+                >التالي</button>
+                <select
+                  className="ml-2 border rounded px-2 py-1 text-sm"
+                  value={pageSize}
+                  onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </div>
           </div>
         )}
 

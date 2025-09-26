@@ -36,9 +36,9 @@ const HotelProperties = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             فنادق لمار المميزة
           </h2>
-          <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4">
+          {/* <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4">
             <span className="text-xl font-bold">فندق أبل حي اليرموك</span>
-          </div>
+          </div> */}
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             استمتع بإقامة فاخرة في أفضل فنادق المملكة مع خدمات عصرية ومرافق متطورة
             <br />

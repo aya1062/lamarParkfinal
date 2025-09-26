@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { 
   CreditCard, 
   DollarSign, 
@@ -21,6 +21,8 @@ const AdminPayments = () => {
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   useEffect(() => {
     fetchPayments();
@@ -81,10 +83,15 @@ const AdminPayments = () => {
     }
   };
 
-  const filteredPayments = payments.filter(payment => {
-    if (filter === 'all') return true;
-    return payment.status === filter;
-  });
+  const filteredPayments = useMemo(() => {
+    if (filter === 'all') return payments;
+    return payments.filter(payment => payment.status === filter);
+  }, [payments, filter]);
+
+  const pagedPayments = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredPayments.slice(start, start + pageSize);
+  }, [filteredPayments, page, pageSize]);
 
   const totalRevenue = payments
     .filter(p => p.status === 'paid')
@@ -222,7 +229,7 @@ const AdminPayments = () => {
                     </td>
                 </tr>
               ) : (
-                filteredPayments.map((payment) => (
+                pagedPayments.map((payment) => (
                   <tr key={payment._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -285,8 +292,26 @@ const AdminPayments = () => {
               )}
               </tbody>
             </table>
-          </div>
         </div>
+        </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-gray-600">
+          عرض {Math.min((page - 1) * pageSize + 1, filteredPayments.length)}-
+          {Math.min(page * pageSize, filteredPayments.length)} من {filteredPayments.length}
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="px-3 py-1 rounded border disabled:opacity-50" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>السابق</button>
+          <span className="text-sm">صفحة {page}</span>
+          <button className="px-3 py-1 rounded border disabled:opacity-50" onClick={() => setPage(p => (p * pageSize < filteredPayments.length ? p + 1 : p))} disabled={page * pageSize >= filteredPayments.length}>التالي</button>
+          <select className="ml-2 border rounded px-2 py-1 text-sm" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
+      </div>
 
       {/* Payment Details Modal */}
       {showDetails && selectedPayment && (

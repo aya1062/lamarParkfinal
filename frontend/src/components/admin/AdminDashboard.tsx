@@ -26,18 +26,44 @@ const AdminDashboard = () => {
   const totalRevenue = revenueStats.length > 0 ? revenueStats.reduce((a, b) => a + b, 0) : null;
 
   useEffect(() => {
-    const fetchRevenue = async () => {
+    let mounted = true;
+    (async () => {
       setRevenueLoading(true);
       setRevenueError(null);
-      const res = await api.getYearlyRevenueStats();
-      if (res.success) {
-        setRevenueStats(res.monthlyRevenue);
-      } else {
-        setRevenueError(res.message || 'تعذر جلب بيانات الإيرادات');
-      }
+      const [rev, book, newUsersRes, activeCount, totalBookStats, activePropsStats, totalRevStats] = await Promise.all([
+        api.getYearlyRevenueStats(),
+        api.getYearlyBookingStats(),
+        api.getNewUsersStats(),
+        api.getActivePropertiesCount(),
+        api.getTotalBookingsStats(),
+        api.getActivePropertiesStats(),
+        api.getTotalRevenueStats()
+      ]);
+
+      if (!mounted) return;
+
+      if (rev.success) setRevenueStats(rev.monthlyRevenue); else setRevenueError(rev.message || 'تعذر جلب بيانات الإيرادات');
       setRevenueLoading(false);
-    };
-    fetchRevenue();
+
+      if (book.success) setBookingStats(book.monthlyBookings); else setBookingError(book.message || 'تعذر جلب إحصائيات الحجوزات');
+      setBookingLoading(false);
+
+      if (newUsersRes.success) setNewUsers(newUsersRes.count);
+      setNewUsersLoading(false);
+
+      if (activeCount.success) setActiveProperties(activeCount.count);
+      setActivePropertiesLoading(false);
+
+      if (totalBookStats.success) setTotalBookingsStats(totalBookStats);
+      setTotalBookingsStatsLoading(false);
+
+      if (activePropsStats.success) setActivePropertiesStats(activePropsStats);
+      setActivePropertiesStatsLoading(false);
+
+      if (totalRevStats.success) setTotalRevenueStats(totalRevStats);
+      setTotalRevenueStatsLoading(false);
+    })();
+    return () => { mounted = false; };
   }, []);
 
   // إحصائيات الحجوزات السنوية
@@ -45,20 +71,7 @@ const AdminDashboard = () => {
   const [bookingLoading, setBookingLoading] = useState(true);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBookingStats = async () => {
-      setBookingLoading(true);
-      setBookingError(null);
-      const res = await api.getYearlyBookingStats();
-      if (res.success) {
-        setBookingStats(res.monthlyBookings);
-      } else {
-        setBookingError(res.message || 'تعذر جلب إحصائيات الحجوزات');
-      }
-      setBookingLoading(false);
-    };
-    fetchBookingStats();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   const totalBookings = bookingStats.length > 0 ? bookingStats.reduce((a, b) => a + b, 0) : null;
 
@@ -66,79 +79,28 @@ const AdminDashboard = () => {
   const [newUsers, setNewUsers] = useState<number | null>(null);
   const [newUsersLoading, setNewUsersLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNewUsers = async () => {
-      setNewUsersLoading(true);
-      const res = await api.getNewUsersStats();
-      if (res.success) {
-        setNewUsers(res.count);
-      }
-      setNewUsersLoading(false);
-    };
-    fetchNewUsers();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   // تعريف متغيرات العقارات النشطة قبل stats
   const [activeProperties, setActiveProperties] = useState<number | null>(null);
   const [activePropertiesLoading, setActivePropertiesLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchActiveProperties = async () => {
-      setActivePropertiesLoading(true);
-      const res = await api.getActivePropertiesCount();
-      if (res.success) {
-        setActiveProperties(res.count);
-      }
-      setActivePropertiesLoading(false);
-    };
-    fetchActiveProperties();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   // إجمالي الحجوزات
   const [totalBookingsStats, setTotalBookingsStats] = useState<{count: number, change: string, changeType: string} | null>(null);
   const [totalBookingsStatsLoading, setTotalBookingsStatsLoading] = useState(true);
-  useEffect(() => {
-    const fetchTotalBookingsStats = async () => {
-      setTotalBookingsStatsLoading(true);
-      const res = await api.getTotalBookingsStats();
-      if (res.success) {
-        setTotalBookingsStats(res);
-      }
-      setTotalBookingsStatsLoading(false);
-    };
-    fetchTotalBookingsStats();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   // العقارات النشطة
   const [activePropertiesStats, setActivePropertiesStats] = useState<{count: number, change: string, changeType: string} | null>(null);
   const [activePropertiesStatsLoading, setActivePropertiesStatsLoading] = useState(true);
-  useEffect(() => {
-    const fetchActivePropertiesStats = async () => {
-      setActivePropertiesStatsLoading(true);
-      const res = await api.getActivePropertiesStats();
-      console.log('activePropertiesStats (API response):', res); // ← طباعة للتشخيص
-      if (res.success) {
-        setActivePropertiesStats(res);
-      }
-      setActivePropertiesStatsLoading(false);
-    };
-    fetchActivePropertiesStats();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   // إجمالي الإيرادات
   const [totalRevenueStats, setTotalRevenueStats] = useState<{total: number, change: string, changeType: string} | null>(null);
   const [totalRevenueStatsLoading, setTotalRevenueStatsLoading] = useState(true);
-  useEffect(() => {
-    const fetchTotalRevenueStats = async () => {
-      setTotalRevenueStatsLoading(true);
-      const res = await api.getTotalRevenueStats();
-      if (res.success) {
-        setTotalRevenueStats(res);
-      }
-      setTotalRevenueStatsLoading(false);
-    };
-    fetchTotalRevenueStats();
-  }, []);
+  // دمجنا جلب الإحصائيات أعلاه في Promise.all
 
   // العملاء الجدد
   const [newUsersStats, setNewUsersStats] = useState<{count: number, change: string, changeType: string} | null>(null);

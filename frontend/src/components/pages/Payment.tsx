@@ -63,9 +63,7 @@ const Payment: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        setSuccess('تم إنشاء عملية الدفع بنجاح');
-        // Redirect to URWAY payment page
-        window.location.href = data.paymentUrl;
+        setSuccess('تم تأكيد الحجز والدفع عند الوصول');
       } else {
         setError(data.message || 'حدث خطأ في إنشاء عملية الدفع');
       }

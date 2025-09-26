@@ -205,6 +205,9 @@ const HotelDetails: React.FC = () => {
                                     src={url}
                                     alt={hotel.name}
                                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+                                    width={1200}
+                                    height={500}
+                                    decoding="async"
                                   />
                                 );
                               })}
@@ -465,6 +468,10 @@ const HotelDetails: React.FC = () => {
                                             src={getFirstImageUrl((room as any).images, 'https://placehold.co/600x400?text=Room')}
                                             alt={room.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition"
+                                            width={600}
+                                            height={192}
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                         <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center">
                                             <BedDouble className="h-3.5 w-3.5 ml-1" />

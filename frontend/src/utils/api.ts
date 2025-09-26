@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.lamarparks.com/api'; 
-// const API_URL = 'http://localhost:5000/api';
+// const API_URL = 'https://api.lamarparks.com/api'; 
+const API_URL = 'http://localhost:5000/api';
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(
@@ -28,6 +28,28 @@ axios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+// بسيط: كاش داخل الذاكرة مع TTL لطلبات GET المتكررة
+type CacheEntry = { timestamp: number; ttl: number; data: any };
+const getCache = new Map<string, CacheEntry>();
+
+function buildCacheKey(url: string, params?: Record<string, any>) {
+  const p = params ? JSON.stringify(params) : '';
+  return `${url}?${p}`;
+}
+
+async function cachedGet<T = any>(url: string, params?: any, ttlMs: number = 60_000): Promise<T> {
+  const key = buildCacheKey(url, params);
+  const now = Date.now();
+  const hit = getCache.get(key);
+  if (hit && now - hit.timestamp < hit.ttl) {
+    return hit.data as T;
+  }
+  const res = await axios.get(url, { params });
+  const data = res.data;
+  getCache.set(key, { timestamp: now, ttl: ttlMs, data });
+  return data as T;
+}
 
 export const api = {
   // تسجيل الدخول
@@ -66,8 +88,8 @@ export const api = {
   // جلب الفنادق والمنتجعات
   getHotels: async (filters?: any) => {
     try {
-      const res = await axios.get(`${API_URL}/hotels`, { params: filters });
-      return { success: true, data: res.data };
+      const data = await cachedGet(`${API_URL}/hotels`, filters, 30_000);
+      return { success: true, data };
     } catch (err: any) {
       return { success: false, message: err.response?.data?.message || 'Failed to fetch hotels' };
     }
@@ -140,8 +162,8 @@ export const api = {
   // الحصول على الحجوزات
   getBookings: async () => {
     try {
-      const res = await axios.get(`${API_URL}/bookings`);
-      return { success: true, data: res.data };
+      const data = await cachedGet(`${API_URL}/bookings`, undefined, 20_000);
+      return { success: true, data };
     } catch (err: any) {
       return { success: false, message: err.response?.data?.message || 'Failed to fetch bookings' };
     }
@@ -223,8 +245,8 @@ export const api = {
   // جلب جميع المدفوعات
   getAllPayments: async () => {
     try {
-      const res = await axios.get(`${API_URL}/payments`);
-      return { success: true, data: res.data };
+      const data = await cachedGet(`${API_URL}/payments`, undefined, 20_000);
+      return { success: true, data };
     } catch (err: any) {
       return { success: false, message: err.response?.data?.message || 'Failed to fetch payments' };
     }
@@ -350,15 +372,7 @@ export const api = {
     }
   },
 
-  // إنشاء جلسة URWAY
-  createUrwaySession: async (data: any) => {
-    try {
-      const res = await axios.post(`${API_URL}/urway/create-urway-session`, data);
-      return { success: true, ...res.data };
-    } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'URWAY session failed' };
-    }
-  },
+  // ملاحظة: تم إزالة تكامل URWAY
 
   // إنشاء دفع مباشر
   createPayment: async (data: any) => {

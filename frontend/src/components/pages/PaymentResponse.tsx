@@ -10,58 +10,10 @@ const PaymentResponse: React.FC = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const processPaymentResponse = async () => {
-      try {
-        // Get all URL parameters from URWAY response
-        const params = Object.fromEntries(searchParams.entries());
-        
-        // Send response to backend for verification
-        const response = await fetch('/api/urway/callback?' + searchParams.toString());
-        const data = await response.json();
-
-        if (data.success) {
-          setPaymentStatus('success');
-          setMessage('تم إتمام عملية الدفع بنجاح!');
-          
-          // إنشاء الحجز بعد نجاح الدفع
-          const pendingBooking = localStorage.getItem('pendingBooking');
-          if (pendingBooking) {
-            try {
-              const bookingData = JSON.parse(pendingBooking);
-              const bookingResponse = await fetch('/api/bookings', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  ...bookingData,
-                  status: 'confirmed',
-                  paymentStatus: 'paid',
-                  paymentMethod: 'urway'
-                })
-              });
-              
-              if (bookingResponse.ok) {
-                localStorage.removeItem('pendingBooking');
-              }
-            } catch (error) {
-              console.error('Error creating booking after payment:', error);
-            }
-          }
-        } else {
-          setPaymentStatus('failed');
-          setMessage(data.message || 'فشلت عملية الدفع');
-        }
-      } catch (error) {
-        console.error('Payment response error:', error);
-        setPaymentStatus('failed');
-        setMessage('حدث خطأ في معالجة استجابة الدفع');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    processPaymentResponse();
+    // URWAY مُعطل. ارجاع فشل بشكل آمن.
+    setPaymentStatus('failed');
+    setMessage('تم تعطيل بوابة الدفع.');
+    setLoading(false);
   }, [searchParams]);
 
   const handleContinue = () => {
