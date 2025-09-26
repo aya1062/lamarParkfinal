@@ -232,35 +232,11 @@ export const api = {
   },
 
   // احذف أو عطل كل دوال Stripe (createCheckoutSession وأي دوال أو تعليقات تخص Stripe)
-  // جلب تفاصيل جلسة الدفع
-  getSessionDetails: async (sessionId: string) => {
-    try {
-      const res = await axios.get(`${API_URL}/checkout/session/${sessionId}`);
-      return { success: true, data: res.data.session };
-    } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to get session details' };
-    }
-  },
+  // تم تعطيل جميع تكاملات الدفع
 
-  // جلب جميع المدفوعات
-  getAllPayments: async () => {
-    try {
-      const data = await cachedGet(`${API_URL}/payments`, undefined, 20_000);
-      return { success: true, data };
-    } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to fetch payments' };
-    }
-  },
+  // getAllPayments: disabled
 
-  // جلب مدفوعات المستخدم
-  getUserPayments: async () => {
-    try {
-      const res = await axios.get(`${API_URL}/payments/user`);
-      return { success: true, data: res.data };
-    } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to fetch user payments' };
-    }
-  },
+  // getUserPayments: disabled
 
   // جلب جميع المستخدمين
   getAllUsers: async () => {
@@ -374,15 +350,7 @@ export const api = {
 
   // ملاحظة: تم إزالة تكامل URWAY
 
-  // إنشاء دفع مباشر
-  createPayment: async (data: any) => {
-    try {
-      const res = await axios.post(`${API_URL}/payments/create`, data);
-      return { success: true, ...res.data };
-    } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Payment creation failed' };
-    }
-  },
+  // createPayment: disabled
 
   // تحديث حالة الحجز
   updateBookingStatus: async (bookingId: string, status: string) => {

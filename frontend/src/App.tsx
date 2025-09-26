@@ -29,9 +29,7 @@ const AdminAccountManagement = React.lazy(() => import('./components/admin/Admin
 const AdminPricing = React.lazy(() => import('./components/admin/AdminPricing'));
 const AdminHotels = React.lazy(() => import('./components/admin/AdminHotels'));
 const RoomBooking = React.lazy(() => import('./components/pages/RoomBooking'));
-const Payment = React.lazy(() => import('./components/pages/Payment'));
-const PaymentResponse = React.lazy(() => import('./components/pages/PaymentResponse'));
-const PaymentTest = React.lazy(() => import('./components/pages/PaymentTest'));
+// Payment pages removed
 const NotFound = React.lazy(() => import('./components/pages/NotFound'));
 const Policies = React.lazy(() => import('./components/pages/Policies'));
 
@@ -67,9 +65,7 @@ function App() {
 							<Route path="/booking/:id" element={<Booking />} />
 							<Route path="/checkout/:id" element={<Checkout />} />
 							<Route path="/booking/success" element={<BookingSuccess />} />
-							<Route path="/payment" element={<Payment />} />
-							<Route path="/payment/response" element={<PaymentResponse />} />
-							<Route path="/payment/test" element={<PaymentTest />} />
+                            {/* Payment routes removed */}
 							<Route path="/about" element={<About />} />
 							<Route path="/contact" element={<Contact />} />
 							<Route path="/policies" element={<Policies />} />

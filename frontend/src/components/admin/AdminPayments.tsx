@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [filter, setFilter] = useState('all');
@@ -25,18 +25,14 @@ const AdminPayments = () => {
   const [pageSize, setPageSize] = useState(20);
 
   useEffect(() => {
-    fetchPayments();
+    setPayments([]);
   }, []);
 
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const res = await api.getAllPayments();
-      if (res.success) {
-        setPayments(res.data || []);
-      } else {
-        toast.error('فشل في جلب المدفوعات');
-      }
+      // تم تعطيل منظومة الدفع. لا توجد بيانات لعرضها.
+      setPayments([]);
     } catch (error) {
       toast.error('حدث خطأ أثناء جلب المدفوعات');
     } finally {

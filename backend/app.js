@@ -4,11 +4,10 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
+// const paymentRoutes = require('./routes/paymentRoutes');
 const pricingRoutes = require('./routes/pricingRoutes');
-const checkoutRoutes = require('./routes/checkoutRoutes');
+// const checkoutRoutes = require('./routes/checkoutRoutes');
 const contactRoutes = require('./routes/contactRoutes');
-const urwayRoutes = require('./routes/urwayRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
@@ -59,11 +58,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/payments', paymentRoutes);
+// app.use('/api/payments', paymentRoutes);
 app.use('/api/pricing', pricingRoutes);
-app.use('/api/checkout', checkoutRoutes);
+// app.use('/api/checkout', checkoutRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/urway', urwayRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/rooms', roomRoutes);
@@ -71,37 +69,13 @@ app.use('/api/room-bookings', roomBookingRoutes);
 app.use('/api/export', exportRoutes);
 
 // Test routes
-app.get('/test-payment', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-payment.html'));
-});
-
-app.get('/simple-test', (req, res) => {
-  res.sendFile(path.join(__dirname, 'simple-test.html'));
-});
+// Payment test pages removed
 
 app.get('/test-direct-payment', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-direct-payment.html'));
 });
 
-app.get('/test-urway-direct', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-urway-direct.html'));
-});
-
-app.get('/test-urway-config', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-urway-config.html'));
-});
-
-app.get('/test-urway-settings', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-urway-settings.html'));
-});
-
-app.get('/test-urway-config-check', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-urway-config-check.html'));
-});
-
-app.get('/test-urway-debug', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-urway-debug.html'));
-});
+// URWAY routes and test pages removed
 
 // Root API check
 app.get('/', (req, res) => {

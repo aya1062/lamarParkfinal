@@ -55,14 +55,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Demo Credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-blue-800 mb-2">بيانات تجريبية:</h3>
-          <div className="text-xs text-blue-700 space-y-1">
-            <p><strong>مدير:</strong> admin@lamarpark.sa / 123456</p>
-            <p><strong>عميل:</strong> customer@example.com / 123456</p>
-          </div>
-        </div>
 
         {/* Login Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">

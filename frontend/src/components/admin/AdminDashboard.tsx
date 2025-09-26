@@ -143,14 +143,7 @@ const AdminDashboard = () => {
       icon: Building,
       color: 'bg-green-500'
     },
-    {
-      title: 'إجمالي الإيرادات',
-      value: totalRevenueStatsLoading ? '...' : totalRevenueStats ? `${totalRevenueStats.total.toLocaleString('ar-EG')} ريال` : '0 ريال',
-      change: totalRevenueStatsLoading ? '...' : totalRevenueStats ? totalRevenueStats.change : '0%',
-      changeType: totalRevenueStats && totalRevenueStats.changeType === 'decrease' ? 'decrease' : 'increase',
-      icon: CreditCard,
-      color: 'bg-gold'
-    },
+    // حذف بطاقة الإيرادات المرتبطة بالدفع المباشر مؤقتاً
     {
       title: 'العملاء الجدد',
       value: newUsersStatsLoading ? '...' : newUsersStats ? newUsersStats.count.toLocaleString('ar-EG') : '0',

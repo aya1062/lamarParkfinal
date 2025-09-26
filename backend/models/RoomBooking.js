@@ -65,7 +65,7 @@ const roomBookingSchema = new mongoose.Schema({
   // طريقة الدفع
   paymentMethod: { 
     type: String, 
-    enum: ['cash', 'card', 'bank_transfer', 'urway', 'cash_on_arrival'], 
+    enum: ['cash', 'card', 'bank_transfer', 'cash_on_arrival'], 
     default: 'cash' 
   },
   // تفاصيل الدفع
