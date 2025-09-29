@@ -320,7 +320,7 @@ const Booking = () => {
           </button>
           
           <button
-            onClick={() => window.open('http://localhost:5000/test-direct-payment', '_blank')}
+            onClick={() => window.open('https://api.lamarparks.com/test-direct-payment', '_blank')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             صفحة اختبار الدفع

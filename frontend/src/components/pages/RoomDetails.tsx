@@ -45,7 +45,7 @@ const RoomDetails: React.FC = () => {
 
     const hotel = (room as any).hotel || {};
 
-    const API_BASE = 'http://localhost:5000';
+    const API_BASE = 'https://api.lamarparks.com';
     const absolutize = (url: string) => {
         if (!url) return url;
         if (/^https?:\/\//i.test(url)) return url;

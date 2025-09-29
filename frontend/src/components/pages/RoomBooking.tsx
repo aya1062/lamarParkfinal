@@ -119,7 +119,7 @@ const RoomBooking: React.FC = () => {
 
   const fetchHotels = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/hotels');
+      const response = await fetch('https://api.lamarparks.com/api/hotels');
       const data = await response.json();
       if (data.success) {
         setHotels(data.hotels);
@@ -132,7 +132,7 @@ const RoomBooking: React.FC = () => {
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/rooms?hotel=${selectedHotel}`);
+      const response = await fetch(`https://api.lamarparks.com/api/rooms?hotel=${selectedHotel}`);
       const data = await response.json();
       if (data.success) {
         setRooms(data.rooms);
@@ -153,7 +153,7 @@ const RoomBooking: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/rooms/check-availability', {
+      const response = await fetch('https://api.lamarparks.com/api/rooms/check-availability', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -189,7 +189,7 @@ const RoomBooking: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/room-bookings', {
+      const response = await fetch('https://api.lamarparks.com/api/room-bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

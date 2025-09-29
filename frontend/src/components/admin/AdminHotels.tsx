@@ -88,7 +88,7 @@ const AdminHotels: React.FC = () => {
       if (filter.type) params.append('type', filter.type);
       if (filter.status) params.append('status', filter.status);
       
-      const response = await fetch(`http://localhost:5000/api/hotels?${params.toString()}`);
+      const response = await fetch(`https://api.lamarparks.com/api/hotels?${params.toString()}`);
       const data = await response.json();
       
       if (data.success) {
@@ -117,7 +117,7 @@ const AdminHotels: React.FC = () => {
     if (!confirm('هل أنت متأكد من حذف هذا الفندق/المنتجع؟')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/hotels/${hotelId}`, {
+      const response = await fetch(`https://api.lamarparks.com/api/hotels/${hotelId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -138,7 +138,7 @@ const AdminHotels: React.FC = () => {
 
   const handleStatusChange = async (hotelId: string, newStatus: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/hotels/${hotelId}/status`, {
+      const response = await fetch(`https://api.lamarparks.com/api/hotels/${hotelId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -221,7 +221,7 @@ const AdminHotels: React.FC = () => {
           }));
           fd.append('images', JSON.stringify(existingImages));
         }
-        res = await fetch(`http://localhost:5000/api/hotels/${editingHotel._id}`, {
+        res = await fetch(`https://api.lamarparks.com/api/hotels/${editingHotel._id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -229,7 +229,7 @@ const AdminHotels: React.FC = () => {
           body: fd
         });
       } else {
-        res = await fetch('http://localhost:5000/api/hotels', {
+        res = await fetch('https://api.lamarparks.com/api/hotels', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

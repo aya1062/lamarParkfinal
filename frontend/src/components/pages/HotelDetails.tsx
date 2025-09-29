@@ -159,7 +159,7 @@ const HotelDetails: React.FC = () => {
         return Array.from(set);
     }, [rooms]);
 
-    const API_BASE = 'http://localhost:5000';
+    const API_BASE = 'https://api.lamarparks.com';
     const absolutize = (url: string) => {
         if (!url) return url;
         if (/^https?:\/\//i.test(url)) return url;

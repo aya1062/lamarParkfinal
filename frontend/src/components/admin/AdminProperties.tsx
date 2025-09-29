@@ -3,7 +3,7 @@ import { Plus, Edit, Trash2, Eye, Search, Filter, MapPin, Star, X } from 'lucide
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://api.lamarparks.com/api';
 
 const AdminProperties = () => {
   const [showAddModal, setShowAddModal] = useState(false);
