@@ -77,6 +77,7 @@ const hotelSchema = new mongoose.Schema({
     email: { type: String },
     website: { type: String },
     whatsapp: { type: String },
+    mapsUrl: { type: String },
     socialMedia: {
       facebook: { type: String },
       instagram: { type: String },

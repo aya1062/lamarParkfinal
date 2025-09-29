@@ -23,7 +23,9 @@ interface Hotel {
     phone: string;
     email: string;
     whatsapp?: string;
+    mapsUrl?: string;
   };
+  policies?: { checkIn?: string; checkOut?: string };
   instructions: string[];
   amenities: Array<{
     title: string;
@@ -59,8 +61,10 @@ const AdminHotels: React.FC = () => {
     contact: {
       phone: '',
       email: '',
-      whatsapp: ''
+      whatsapp: '',
+      mapsUrl: ''
     },
+    policies: { checkIn: '15:00', checkOut: '12:00' },
     instructions: [''],
     amenities: [{ title: '', body: '', icon: '', category: 'general' }]
   });
@@ -173,10 +177,12 @@ const AdminHotels: React.FC = () => {
       videoUrl: hotel.videoUrl || '',
       instructions: hotel.instructions || [''],
       amenities: hotel.amenities || [{ title: '', body: '', icon: '', category: 'general' }],
+      policies: hotel.policies || { checkIn: '15:00', checkOut: '12:00' },
       contact: {
         phone: hotel.contact?.phone || '',
         email: hotel.contact?.email || '',
-        whatsapp: (hotel as any).contact?.whatsapp || ''
+        whatsapp: (hotel as any).contact?.whatsapp || '',
+        mapsUrl: (hotel as any).contact?.mapsUrl || ''
       }
     });
     // Existing images previews (support url string or object)
@@ -199,7 +205,8 @@ const AdminHotels: React.FC = () => {
       if (formData.videoUrl) fd.append('videoUrl', formData.videoUrl);
       fd.append('instructions', JSON.stringify(formData.instructions.filter(inst => inst.trim() !== '')));
       fd.append('amenities', JSON.stringify(formData.amenities.filter(amenity => amenity.title.trim() !== '')));
-      fd.append('contact', JSON.stringify({ phone: formData.contact.phone, email: formData.contact.email, whatsapp: formData.contact.whatsapp || formData.contact.phone }));
+      fd.append('policies', JSON.stringify({ checkIn: formData.policies.checkIn, checkOut: formData.policies.checkOut }));
+      fd.append('contact', JSON.stringify({ phone: formData.contact.phone, email: formData.contact.email, whatsapp: formData.contact.whatsapp || formData.contact.phone, mapsUrl: formData.contact.mapsUrl }));
       selectedImages.forEach((file) => fd.append('images', file));
 
       let res;
@@ -245,9 +252,10 @@ const AdminHotels: React.FC = () => {
           description: '',
           shortDescription: '',
           videoUrl: '',
+          policies: { checkIn: '15:00', checkOut: '12:00' },
           instructions: [''],
           amenities: [{ title: '', body: '', icon: '', category: 'general' }],
-          contact: { phone: '', email: '', whatsapp: '' }
+          contact: { phone: '', email: '', whatsapp: '', mapsUrl: '' }
         });
         fetchHotels();
         alert(editingHotel ? 'تم تحديث الفندق/المنتجع' : 'تم إنشاء الفندق/المنتجع بنجاح');
@@ -780,6 +788,30 @@ const AdminHotels: React.FC = () => {
                   />
                 </div>
 
+                {/* Policies */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">تسجيل الوصول</label>
+                  <input
+                    type="text"
+                    name="policies.checkIn"
+                    value={(formData as any).policies?.checkIn}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="مثال: 15:00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">تسجيل المغادرة</label>
+                  <input
+                    type="text"
+                    name="policies.checkOut"
+                    value={(formData as any).policies?.checkOut}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="مثال: 12:00"
+                  />
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"><ImageIcon className="w-4 h-4" /> صور (يمكن اختيار عدة صور)</label>
                   <input type="file" accept="image/*" multiple onChange={onImagesChange} className="w-full" />
@@ -812,6 +844,17 @@ const AdminHotels: React.FC = () => {
                     onChange={handleInputChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     placeholder="أدخل البريد الإلكتروني (اختياري)"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">رابط الموقع على الخريطة (Maps URL)</label>
+                  <input
+                    type="url"
+                    name="contact.mapsUrl"
+                    value={(formData as any).contact.mapsUrl}
+                    onChange={handleInputChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="https://maps.google.com/?q=..."
                   />
                 </div>
               <div>

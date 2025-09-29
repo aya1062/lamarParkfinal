@@ -13,6 +13,7 @@ const hotelRoutes = require('./routes/hotelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const roomBookingRoutes = require('./routes/roomBookingRoutes');
 const exportRoutes = require('./routes/exportRoutes');
+const partnerRoutes = require('./routes/partnerRoutes');
 const path = require("path");
 
 const app = express();
@@ -67,6 +68,7 @@ app.use('/api/hotels', hotelRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/room-bookings', roomBookingRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/partners', partnerRoutes);
 
 // Test routes
 // Payment test pages removed

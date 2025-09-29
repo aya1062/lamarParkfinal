@@ -46,15 +46,15 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-lg relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-14">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 space-x-reverse">
             <img 
               src="/lamar/new logo.png" 
               alt="لامار بارك" 
-              className="h-28 w-28 object-contain"
-              width={128}
-              height={128}
+              className="h-14 w-24 object-contain md:h-16 md:w-28"
+              width={140}
+              height={70}
               decoding="async"
             />
           </Link>

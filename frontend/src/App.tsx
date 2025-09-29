@@ -11,6 +11,7 @@ const Hotels = React.lazy(() => import('./components/pages/Hotels'));
 const Resorts = React.lazy(() => import('./components/pages/Resorts'));
 const PropertyDetails = React.lazy(() => import('./components/pages/PropertyDetails'));
 const HotelDetails = React.lazy(() => import('./components/pages/HotelDetails'));
+const RoomDetails = React.lazy(() => import('./components/pages/RoomDetails'));
 const Booking = React.lazy(() => import('./components/pages/Booking'));
 const Checkout = React.lazy(() => import('./components/pages/Checkout'));
 const BookingSuccess = React.lazy(() => import('./components/pages/BookingSuccess'));
@@ -28,6 +29,7 @@ const AdminSettings = React.lazy(() => import('./components/admin/AdminSettings'
 const AdminAccountManagement = React.lazy(() => import('./components/admin/AdminAccountManagement'));
 const AdminPricing = React.lazy(() => import('./components/admin/AdminPricing'));
 const AdminHotels = React.lazy(() => import('./components/admin/AdminHotels'));
+const AdminPartners = React.lazy(() => import('./components/admin/AdminPartners'));
 const RoomBooking = React.lazy(() => import('./components/pages/RoomBooking'));
 // Payment pages removed
 const NotFound = React.lazy(() => import('./components/pages/NotFound'));
@@ -61,6 +63,7 @@ function App() {
                             <Route path="/resorts" element={<Resorts />} />
                             <Route path="/hotel/:id" element={<HotelDetails />} />
                             <Route path="/resort/:id" element={<HotelDetails />} />
+                            <Route path="/room/:id" element={<RoomDetails />} />
 							<Route path="/property/:id" element={<PropertyDetails />} />
 							<Route path="/booking/:id" element={<Booking />} />
 							<Route path="/checkout/:id" element={<Checkout />} />
@@ -124,6 +127,11 @@ function App() {
 							<Route path="/admin/hotels" element={
 								<PrivateRoute requiredRole="admin">
 									<AdminHotels />
+								</PrivateRoute>
+							} />
+							<Route path="/admin/partners" element={
+								<PrivateRoute requiredRole="admin">
+									<AdminPartners />
 								</PrivateRoute>
 							} />
 							

@@ -12,7 +12,8 @@ import {
   Bell,
   Settings,
   DollarSign,
-  UserCheck
+  UserCheck,
+  Handshake
 } from 'lucide-react';
 import { api } from '../../utils/api';
 
@@ -209,6 +210,13 @@ const AdminDashboard = () => {
       icon: UserCheck,
       link: '/admin/accounts',
       color: 'bg-indigo-500'
+    },
+    {
+      title: 'إدارة الشركاء',
+      description: 'إضافة وإدارة شركاء الموقع',
+      icon: Handshake,
+      link: '/admin/partners',
+      color: 'bg-purple-500'
     }
   ];
 

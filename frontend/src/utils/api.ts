@@ -126,6 +126,16 @@ export const api = {
     }
   },
 
+  // جلب غرفة بالمعرف
+  getRoomById: async (id: string) => {
+    try {
+      const res = await axios.get(`${API_URL}/rooms/${id}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch room' };
+    }
+  },
+
   // جلب عقار واحد حسب الـ ID
   getPropertyById: async (id: string) => {
     try {
@@ -398,6 +408,69 @@ export async function getSettings() {
   const res = await axios.get(`${API_URL}/settings`);
   return res.data;
 }
+
+// Partners API functions
+export const partnersApi = {
+  // جلب جميع الشركاء النشطين
+  getPartners: async () => {
+    try {
+      const res = await axios.get(`${API_URL}/partners`);
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch partners' };
+    }
+  },
+
+  // جلب جميع الشركاء (للإدارة)
+  getAllPartners: async () => {
+    try {
+      const res = await axios.get(`${API_URL}/partners/admin`);
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch partners' };
+    }
+  },
+
+  // إنشاء شريك جديد
+  createPartner: async (partnerData: any) => {
+    try {
+      const res = await axios.post(`${API_URL}/partners`, partnerData);
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to create partner' };
+    }
+  },
+
+  // تحديث شريك
+  updatePartner: async (id: string, partnerData: any) => {
+    try {
+      const res = await axios.put(`${API_URL}/partners/${id}`, partnerData);
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to update partner' };
+    }
+  },
+
+  // حذف شريك
+  deletePartner: async (id: string) => {
+    try {
+      const res = await axios.delete(`${API_URL}/partners/${id}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to delete partner' };
+    }
+  },
+
+  // تحديث ترتيب الشركاء
+  updatePartnersOrder: async (partners: Array<{id: string, order: number}>) => {
+    try {
+      const res = await axios.put(`${API_URL}/partners/order/update`, { partners });
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to update partners order' };
+    }
+  }
+};
 
 // تحديث إعدادات الموقع
 export async function updateSettings(settings: any) {

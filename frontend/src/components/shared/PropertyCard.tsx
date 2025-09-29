@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Star, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 interface Property {
   id?: string;
@@ -9,7 +9,7 @@ interface Property {
   type: "hotel" | "chalet" | "resort";
   location: string;
   price?: number;
-  rating: number;
+  rating?: number;
   image?: string;
   images?: string[] | Array<{url: string, alt: string, isMain: boolean}>;
   features: string[];
@@ -59,12 +59,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         <div className="absolute top-4 right-4 bg-gold text-white px-3 py-1 rounded-full text-sm font-semibold">
           {property.type === "hotel" ? "فندق" : property.type === "resort" ? "منتجع" : "شاليه"}
         </div>
-        <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded-lg">
-          <div className="flex items-center space-x-1 space-x-reverse">
-            <Star className="h-4 w-4 text-gold fill-current" />
-            <span className="text-sm font-medium">{property.rating}</span>
-          </div>
-        </div>
+        {/* Rating removed as requested */}
       </div>
       <div className="p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -104,9 +99,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                   <span className="text-gray-600 mr-1">ريال / ليلة</span>
                 </>
               )
-            ) : (
-              <span className="text-lg text-gray-600">اتصل للاستفسار</span>
-            )}
+            ) : null}
           </div>
           <Link
             to={targetUrl}
