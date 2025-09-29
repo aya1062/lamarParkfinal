@@ -14,17 +14,17 @@
 }
 
 * {
-  font-family: 'Amiri', 'Vazirmatn', sans-serif !important;
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
 }
 
 html {
-  font-family: 'Amiri', 'Vazirmatn', sans-serif !important;
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
   scroll-behavior: smooth;
 }
 
 body {
   direction: rtl;
-  font-family: 'Amiri', 'Vazirmatn', sans-serif !important;
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
