@@ -77,7 +77,7 @@ app.get('/test-direct-payment', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-direct-payment.html'));
 });
 
-// URWAY routes and test pages removed
+// Legacy payment routes removed. Integrate new gateway separately.
 
 // Root API check
 app.get('/', (req, res) => {

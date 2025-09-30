@@ -148,51 +148,7 @@ const Booking = () => {
     }
     
     // Prepare booking data for backend
-    // إذا كان الدفع عبر URWAY
-    if (formData.paymentMethod === 'urway') {
-      try {
-        const res = await api.createUrwaySession({
-          amount: totalPrice,
-          customerEmail: formData.email,
-          customerName: formData.fullName,
-          customerMobile: formData.phone,
-          trackId: 'BOOKING_' + Date.now(),
-          currency: 'SAR',
-          udf1: `Booking for ${property?.name}`,
-          udf2: `${dates.checkIn} to ${dates.checkOut}`
-        });
-        
-        if (res.success && res.paymentUrl) {
-          // حفظ بيانات الحجز في localStorage للاسترداد بعد الدفع
-          const bookingData = {
-            guest: {
-              name: formData.fullName,
-              email: formData.email,
-              phone: formData.phone
-            },
-            property: id,
-            dates: {
-              checkIn: dates.checkIn,
-              checkOut: dates.checkOut,
-              nights: nights
-            },
-            guests: formData.guests,
-            amount: totalPrice,
-            status: 'pending',
-            paymentStatus: 'unpaid',
-            specialRequests: formData.specialRequests,
-            paymentMethod: formData.paymentMethod
-          };
-          localStorage.setItem('pendingBooking', JSON.stringify(bookingData));
-          window.location.href = res.paymentUrl;
-        } else {
-          setError(res.message || 'فشل في إنشاء جلسة الدفع');
-        }
-      } catch (err) {
-        setError('حدث خطأ أثناء إنشاء جلسة الدفع');
-      }
-      return;
-    }
+    // تعطيل أي بوابات دفع قديمة مؤقتاً
     
     // إذا كان الدفع عند الوصول
     const bookingData = {
@@ -212,7 +168,7 @@ const Booking = () => {
       status: 'pending',
       paymentStatus: 'unpaid',
       specialRequests: formData.specialRequests,
-      paymentMethod: formData.paymentMethod
+      paymentMethod: 'cash'
     };
     
     const res = await api.createBooking(bookingData);
@@ -289,43 +245,7 @@ const Booking = () => {
     <div className="min-h-screen bg-gray-50 pt-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* أزرار اختبار سريعة */}
-        <div className="mb-4 flex gap-2">
-          <button
-            onClick={() => {
-              const testUrway = async () => {
-                try {
-                  const res = await api.createUrwaySession({
-                    amount: 100,
-                    customerEmail: 'test@example.com',
-                    customerName: 'Test User',
-                    customerMobile: '+966501234567',
-                    trackId: 'QUICK_TEST_' + Date.now(),
-                    currency: 'SAR'
-                  });
-                  
-                  if (res.success && res.paymentUrl) {
-                    window.location.href = res.paymentUrl;
-                  } else {
-                    toast.error(res.message || 'فشل في إنشاء جلسة URWAY');
-                  }
-                } catch (err) {
-                  toast.error('خطأ في اختبار URWAY');
-                }
-              };
-              testUrway();
-            }}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            اختبار URWAY سريع (100 ريال)
-          </button>
-          
-          <button
-            onClick={() => window.open('https://api.lamarparks.com/test-direct-payment', '_blank')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            صفحة اختبار الدفع
-          </button>
-        </div>
+        {/* أزرار اختبار الدفع القديمة تم تعطيلها مؤقتاً */}
         
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">إتمام الحجز</h1>

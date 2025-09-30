@@ -13,12 +13,11 @@ lamarPark - server/
 │   │
 │   ├── 📁 config/                 # ملفات التكوين
 │   │   ├── 📄 db.js               # تكوين قاعدة البيانات
-│   │   └── 📄 urway-test.js       # تكوين بوابة الدفع
+│   │   
 │   │
 │   ├── 📁 controllers/            # وحدات التحكم
 │   │   ├── 📄 bookingController.js    # إدارة الحجوزات
-│   │   ├── 📄 checkoutController.js   # إدارة الدفع
-│   │   ├── 📄 paymentController.js    # معالجة المدفوعات
+│   │   
 │   │   ├── 📄 pricingController.js    # إدارة الأسعار
 │   │   ├── 📄 propertyController.js   # إدارة العقارات
 │   │   ├── 📄 settingsController.js   # إعدادات النظام
@@ -39,9 +38,7 @@ lamarPark - server/
 │   ├── 📁 routes/                 # مسارات API
 │   │   ├── 📄 authRoutes.js       # مسارات المصادقة
 │   │   ├── 📄 bookingRoutes.js    # مسارات الحجوزات
-│   │   ├── 📄 checkoutRoutes.js   # مسارات الدفع
 │   │   ├── 📄 contactRoutes.js    # مسارات التواصل
-│   │   ├── 📄 paymentRoutes.js    # مسارات المدفوعات
 │   │   ├── 📄 pricingRoutes.js    # مسارات الأسعار
 │   │   ├── 📄 propertyRoutes.js   # مسارات العقارات
 │   │   ├── 📄 settingsRoutes.js   # مسارات الإعدادات
@@ -53,7 +50,7 @@ lamarPark - server/
 │   │   └── 📄 setup.js            # إعداد المشروع
 │   │
 │   ├── 📁 utils/                  # أدوات مساعدة
-│   │   └── 📄 urwayHash.js        # تشفير بوابة الدفع
+│   │   
 │   │
 │   ├── 📁 docs/                   # الوثائق
 │   │   ├── 📄 CHANGELOG.md        # سجل التغييرات
@@ -65,23 +62,11 @@ lamarPark - server/
 │   │   ├── 📄 SETUP_GUIDE.md       # دليل الإعداد
 │   │   ├── 📄 START_COMMANDS.md    # أوامر التشغيل
 │   │   ├── 📄 TESTING_INSTRUCTIONS.md      # تعليمات الاختبار
-│   │   ├── 📄 URWAY_ENVIRONMENT_FIX.md     # إصلاح بيئة بوابة الدفع
-│   │   ├── 📄 URWAY_ERROR_601_SOLUTION.md  # حل خطأ 601
-│   │   ├── 📄 URWAY_INTEGRATION.md         # دمج بوابة الدفع
-│   │   ├── 📄 URWAY_QUICK_FIX_601.md       # إصلاح سريع لخطأ 601
-│   │   ├── 📄 URWAY_SIMPLE_SETUP.md        # إعداد بسيط لبوابة الدفع
-│   │   ├── 📄 URWAY_SOLUTION_GUIDE.md      # دليل حلول بوابة الدفع
-│   │   └── 📄 URWAY_TROUBLESHOOTING.md     # استكشاف أخطاء بوابة الدفع
+│   │   
 │   │
 │   └── 📁 tests/                  # ملفات الاختبار
 │       ├── 📄 simple-test.html    # اختبار بسيط
-│       ├── 📄 test-direct-payment.html     # اختبار الدفع المباشر
-│       ├── 📄 test-payment.html            # اختبار الدفع
-│       ├── 📄 test-urway-config-check.html # فحص تكوين بوابة الدفع
-│       ├── 📄 test-urway-config.html      # اختبار تكوين بوابة الدفع
-│       ├── 📄 test-urway-debug.html       # تصحيح بوابة الدفع
-│       ├── 📄 test-urway-direct.html      # اختبار بوابة الدفع المباشر
-│       └── 📄 test-urway-settings.html    # اختبار إعدادات بوابة الدفع
+│       
 │
 ├── 📁 frontend/                   # الواجهة الأمامية (React + TypeScript)
 │   ├── 📄 package.json            # تبعيات الواجهة
@@ -207,7 +192,7 @@ npm run dev
 - `/hotels` - الفنادق
 - `/property/:id` - تفاصيل العقار
 - `/booking/:id` - صفحة الحجز
-- `/checkout/:id` - صفحة الدفع
+- (تم إيقاف صفحة الدفع مؤقتاً)
 - `/policies` - سياسات الحجز والإلغاء
 - `/about` - من نحن
 - `/contact` - التواصل
@@ -220,7 +205,7 @@ npm run dev
 - `/api/auth/*` - مسارات المصادقة
 - `/api/properties/*` - مسارات العقارات
 - `/api/bookings/*` - مسارات الحجوزات
-- `/api/payments/*` - مسارات المدفوعات
+ 
 - `/api/users/*` - مسارات المستخدمين
 
 ## 🛠️ التقنيات المستخدمة
@@ -229,7 +214,7 @@ npm run dev
 - Node.js + Express
 - MongoDB + Mongoose
 - JWT للمصادقة
-- بوابة الدفع Urway
+ 
 
 ### الواجهة الأمامية
 - React 18 + TypeScript
@@ -241,7 +226,7 @@ npm run dev
 ## 📱 الميزات الرئيسية
 
 - نظام حجز العقارات (شاليهات وفنادق)
-- نظام دفع إلكتروني
+ 
 - لوحة إدارة للمشرفين
 - لوحة تحكم للمستخدمين
 - نظام أسعار ديناميكي
