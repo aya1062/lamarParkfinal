@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.lamarparks.com/api'; 
-// const API_URL = 'http://localhost:5000/api';
+// const API_URL = 'https://api.lamarparks.com/api'; 
+const API_URL = 'http://localhost:5000/api';
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(
@@ -247,6 +247,16 @@ export const api = {
   // getAllPayments: disabled
 
   // getUserPayments: disabled
+
+  // إنشاء دفعة عبر ARB وإرجاع رابط التحويل
+  initiatePayment: async (payload: any) => {
+    try {
+      const res = await axios.post(`${API_URL}/payments/initiate`, payload);
+      return { success: true, ...res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to initiate payment' };
+    }
+  },
 
   // جلب جميع المستخدمين
   getAllUsers: async () => {

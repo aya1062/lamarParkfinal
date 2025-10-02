@@ -24,7 +24,7 @@ const bookingSchema = new mongoose.Schema({
   amount: { type: Number, required: true, min: 0 },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   paymentStatus: { type: String, enum: ['unpaid', 'paid'], default: 'unpaid' },
-  paymentMethod: { type: String, enum: ['cash', 'cash_on_arrival'], default: 'cash' },
+  paymentMethod: { type: String, enum: ['cash', 'cash_on_arrival', 'card'], default: 'cash' },
   specialRequests: { type: String },
   bookingDate: { type: Date, default: Date.now },
   bookingNumber: { type: String, unique: true }, // رقم الحجز الفريد

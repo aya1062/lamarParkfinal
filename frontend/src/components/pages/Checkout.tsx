@@ -43,7 +43,7 @@ const Checkout = () => {
   const [priceCalculation, setPriceCalculation] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'cash_on_arrival'>('cash_on_arrival');
+  const [paymentMethod, setPaymentMethod] = useState<'cash_on_arrival' | 'card'>('cash_on_arrival');
 
   // التواريخ من URL
   const checkIn = searchParams.get('checkIn');
@@ -106,7 +106,7 @@ const Checkout = () => {
   }, [id, checkIn, checkOut]);
 
   // عند تغيير طريقة الدفع، امسح الأخطاء القديمة
-  const handlePaymentMethodChange = (method: 'cash_on_arrival') => {
+  const handlePaymentMethodChange = (method: 'cash_on_arrival' | 'card') => {
     setPaymentMethod(method);
     setError(null);
   };
@@ -144,6 +144,35 @@ const Checkout = () => {
           navigate('/booking/success', { state: { booking: res.booking } });
         } else {
           setError(res.message || 'فشل في إنشاء الحجز');
+        }
+      } else if (paymentMethod === 'card') {
+        // Initiate ARB payment: backend creates pending booking and returns redirect URL
+        const res = await api.initiatePayment({
+          ...bookingData,
+          paymentMethod: 'card'
+        });
+        if (res.success && res.redirectUrl) {
+          try {
+            // Primary: GET redirect with paymentid
+            window.location.href = res.redirectUrl;
+            return;
+          } catch (_) {}
+        }
+        // Fallback: build a POST form if targetUrl/paymentId returned
+        if (res.success && res.targetUrl && res.paymentId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = res.targetUrl;
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'paymentid';
+          input.value = res.paymentId;
+          form.appendChild(input);
+          document.body.appendChild(form);
+          form.submit();
+          return;
+        } else {
+          setError(res.message || 'فشل في بدء عملية الدفع');
         }
       }
     } catch (err) {
@@ -220,11 +249,22 @@ const Checkout = () => {
                         type="radio"
                         name="paymentMethod"
                         value="cash_on_arrival"
-                        checked
+                        checked={paymentMethod === 'cash_on_arrival'}
                         onChange={() => handlePaymentMethodChange('cash_on_arrival')}
                         className="form-radio text-gold"
                       />
                       <span className="ml-2">الدفع عند الوصول</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="card"
+                        checked={paymentMethod === 'card'}
+                        onChange={() => handlePaymentMethodChange('card')}
+                        className="form-radio text-gold"
+                      />
+                      <span className="ml-2">الدفع الإلكتروني (فيزا/ماستر)</span>
                     </label>
                   </div>
                 </div>
@@ -294,7 +334,7 @@ const Checkout = () => {
                     <Shield className="h-5 w-5 mt-1 ml-3 text-blue-600" />
                     <div className="text-sm text-blue-800">
                       <p className="font-semibold mb-1">أمان الدفع</p>
-                      <p>سيتم توجيهك إلى صفحة دفع آمنة من Stripe. لن يتم تخزين بيانات بطاقتك الائتمانية على خوادمنا.</p>
+                      <p>سيتم توجيهك إلى صفحة دفع آمنة من ARB. لن يتم تخزين بيانات بطاقتك الائتمانية على خوادمنا.</p>
                     </div>
                   </div>
                 </div>
