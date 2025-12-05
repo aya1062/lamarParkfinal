@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+
+# Node modules and lock files
+backend/node_modules/
+frontend/node_modules/
+backend/package-lock.json
+frontend/package-lock.json
+
+# Build outputs
+backend/dist/
+frontend/dist/
+
+# Logs and coverage
+backend/logs/
+frontend/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+
+# Editor / OS folders
+.vscode/
+.idea/
+*.swp

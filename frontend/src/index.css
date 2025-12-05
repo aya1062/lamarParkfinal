@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+* {
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
+}
+
+html {
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
+  scroll-behavior: smooth;
+}
+
+body {
+  direction: rtl;
+  font-family: 'Tajawal', 'Amiri', 'Vazirmatn', sans-serif !important;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* إصلاح مشكلة التمرير في RTL */
+html, body {
+  scroll-padding-top: 0;
+  scroll-snap-type: y mandatory;
+}
+
+/* التأكد من أن الصفحة تبدأ من الأعلى */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* إصلاح مشكلة RTL مع التمرير */
+* {
+  scroll-behavior: smooth;
+}
+
+/* إجبار الصفحة على البدء من الأعلى */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+}
+
+/* إصلاح مشكلة التمرير في المتصفحات المختلفة */
+@supports (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #DfB86c 0%, #e8cfa0 100%);
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@layer components {
+  .btn-gold {
+    @apply bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
+  }
+  
+  .card-luxury {
+    @apply bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1;
+  }
+  
+  .input-rtl {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#DfB86c] focus:ring-2 focus:ring-[#DfB86c]/30 transition-all duration-200 text-right;
+  }
+}
