@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { MapPin, Star, BedDouble, ChevronRight, ChevronLeft } from 'lucide-react';
+import { MapPin, BedDouble, ChevronRight, ChevronLeft } from 'lucide-react';
 import { api } from '../../utils/api';
 
 interface Room {
@@ -267,12 +267,6 @@ const HotelDetails: React.FC = () => {
                                     <span>{hotel.location}</span>
                                 </div>
                             </div>
-                            <div className="hidden md:flex items-center bg-white/10 backdrop-blur px-4 py-2 rounded-lg text-white">
-                                <Star className="h-5 w-5 text-gold fill-current ml-2" />
-                                <span className="font-semibold">{hotel.rating || 0}</span>
-                                <span className="mx-2">•</span>
-                                <span>{hotel.reviewCount || 0} تقييم</span>
-                    </div>
                     </div>
                 </div>
 
@@ -300,39 +294,6 @@ const HotelDetails: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            {(hotel?.contact?.whatsapp || hotel?.contact?.phone) && (
-                                <a
-                                    href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/15 transition"
-                                >
-                                    <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[#25D366] text-white">
-                                        <WhatsAppIcon className="h-4 w-4" />
-                                    </span>
-                                    <div>
-                                        <div className="text-xs text-gray-500">واتساب</div>
-                                        <div className="font-semibold text-gray-900">{hotel.contact.whatsapp || hotel.contact.phone}</div>
-                                    </div>
-                                </a>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gold/10">
-                                <Star className="h-5 w-5 text-gold fill-current" />
-                                <div className="font-bold text-gray-900 text-lg">{hotel.rating || 0}</div>
-                                <span className="text-sm text-gray-500">تقييم</span>
-                            </div>
-                            {hotel?.contact?.whatsapp && (
-                                <a
-                                    href={`https://wa.me/${hotel.contact.whatsapp.replace(/[^0-9]/g, '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition-colors"
-                                >
-                                    <span className="text-sm">واتساب</span>
-                                </a>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -347,16 +308,16 @@ const HotelDetails: React.FC = () => {
                                 <span className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-gold/10 text-gold">☎</span>
                             </div>
                             <div className="space-y-3">
-                                {hotel.contact.phone && (
+                                {(hotel.contact.whatsapp || hotel.contact.phone) && (
                                     <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3 first:border-none first:pt-0">
                                         <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
                                         <a
-                                            href={`https://wa.me/${hotel.contact.phone.replace(/[^0-9]/g, '')}`}
+                                            href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-lg font-medium text-gold hover:underline"
                                         >
-                                            {hotel.contact.phone}
+                                            {hotel.contact.whatsapp || hotel.contact.phone}
                                         </a>
                                     </div>
                                 )}
@@ -376,19 +337,6 @@ const HotelDetails: React.FC = () => {
                                             className="text-lg font-medium text-gold hover:underline"
                                         >
                                             عرض على الخريطة
-                                        </a>
-                                    </div>
-                                )}
-                                {hotel.contact.whatsapp && (
-                                    <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3">
-                                        <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
-                                        <a
-                                            href={`https://wa.me/${hotel.contact.whatsapp.replace(/[^0-9]/g, '')}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-lg font-medium text-gold hover:underline"
-                                        >
-                                            {hotel.contact.whatsapp}
                                         </a>
                                     </div>
                                 )}

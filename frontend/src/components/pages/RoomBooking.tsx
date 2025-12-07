@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Users, Bed, DollarSign, Star, MapPin, Phone, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Users, Bed, DollarSign, MapPin, Phone, Mail, CheckCircle, XCircle } from 'lucide-react';
 
 interface Hotel {
   _id: string;
@@ -335,11 +335,6 @@ const RoomBooking: React.FC = () => {
                   <div className="flex items-center text-gray-600 text-sm mb-2">
                     <MapPin className="w-4 h-4 mr-1" />
                     <span>{hotel.location}</span>
-                  </div>
-                  <div className="flex items-center text-yellow-500 mb-2">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="text-sm font-medium mr-1">{hotel.rating}</span>
-                    <span className="text-xs text-gray-500">({hotel.reviewCount})</span>
                   </div>
                   <p className="text-gray-600 text-sm line-clamp-2">
                     {hotel.description}

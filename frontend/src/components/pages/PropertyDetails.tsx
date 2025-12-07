@@ -1,6 +1,6 @@
 import { useState , useEffect} from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Star, MapPin,   Camera,  Shield, Award, Phone, Play, X } from 'lucide-react';
+import { MapPin,   Camera,  Shield, Award, Phone, Play, X } from 'lucide-react';
 import { api } from '../../utils/api';
 import toast from 'react-hot-toast';
 
@@ -369,13 +369,6 @@ const PropertyDetails = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h1 className="text-3xl font-bold text-gray-900">{propertyData.name}</h1>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-gold fill-current" />
-                      <span className="font-semibold mr-1">{propertyData.rating || 0}</span>
-                    </div>
-                    <span className="text-gray-600">({propertyData.reviewCount || 0} تقييم)</span>
-                  </div>
                 </div>
                 
                 <div className="flex items-center text-gray-600 mb-4">
