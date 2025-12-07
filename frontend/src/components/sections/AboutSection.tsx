@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Award, Clock, HeartHandshake, Crown, Sparkles } from 'lucide-react';
+import { Shield, Award, Clock, HeartHandshake, Sparkles } from 'lucide-react';
 
 const AboutSection = () => {
   const features = [
@@ -30,7 +30,14 @@ const AboutSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-4">
-            <Crown className="h-12 w-12 text-gold" />
+            <img 
+              src="/lamar/new logo.png" 
+              alt="لامار بارك" 
+              className="h-16 w-auto object-contain"
+              width={120}
+              height={80}
+              decoding="async"
+            />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
             لماذا تختار لامار بارك؟

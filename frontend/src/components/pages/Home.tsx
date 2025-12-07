@@ -3,7 +3,7 @@ import Hero from '../sections/Hero';
 import FeaturedProperties from '../sections/FeaturedProperties';
 import HotelProperties from '../sections/HotelProperties';
 import AboutSection from '../sections/AboutSection';
-import Testimonials from '../sections/Testimonials';
+// import Testimonials from '../sections/Testimonials';
 import PartnersSection from '../sections/PartnersSection';
 
 
@@ -15,7 +15,7 @@ const Home = () => {
       <PartnersSection />
       <HotelProperties />
       <AboutSection />
-      <Testimonials />
+      {/* <Testimonials /> */}
     </div>
   );
 };

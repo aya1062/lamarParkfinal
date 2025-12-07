@@ -6,6 +6,7 @@ type FloatingContactProps = {
 	showPhone?: boolean;
 	whatsappNumber?: string;
 	phoneNumber?: string;
+	propertyName?: string; // اسم العقار/الفندق للرسالة
 };
 
 /**
@@ -15,17 +16,22 @@ const FloatingContact: React.FC<FloatingContactProps> = ({
 	showWhatsApp = true,
 	showPhone = true,
 	whatsappNumber = '+966558466380',
-	phoneNumber = '+966558466380'
+	phoneNumber = '+966558466380',
+	propertyName
 }) => {
 	if (!showWhatsApp && !showPhone) {
 		return null;
 	}
 
+	const whatsappMessage = propertyName 
+		? `مرحباً، أرغب في الاستفسار عن عقار: "${propertyName}"`
+		: 'مرحباً، أرغب في الاستفسار عن عقار';
+
 	return (
 		<div className="fixed bottom-6 left-6 flex flex-col gap-3 z-40">
 			{showWhatsApp && (
 				<a
-					href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
+					href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`}
 					target="_blank"
 					rel="noreferrer"
 					className="flex items-center gap-2 rounded-full bg-green-500 text-white shadow-lg px-5 py-3 hover:bg-green-600 transition"

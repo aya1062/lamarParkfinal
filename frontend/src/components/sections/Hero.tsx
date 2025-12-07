@@ -1,18 +1,41 @@
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  // استخراج ID الفيديو من الرابط
+  const videoId = 'xtB-f6vcL-E';
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
+
   return (
     <div 
-			className="relative h-screen bg-cover bg-center bg-no-repeat overflow-hidden"
-      style={{
-				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`,
-      }}
+			className="relative h-screen overflow-hidden"
     >
-			{/* Decorative brand glows */}
-			<div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-[#DfB86c] opacity-10 blur-3xl"></div>
-			<div className="pointer-events-none absolute -bottom-24 -left-24 h-[28rem] w-[28rem] rounded-full bg-[#c9a55a] opacity-10 blur-3xl"></div>
+      {/* YouTube Video Background */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <iframe
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto"
+          src={embedUrl}
+          title="Hero Background Video"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          style={{
+            pointerEvents: 'none',
+            border: 'none',
+            width: '100vw',
+            height: '56.25vw',
+            minHeight: '100vh',
+            minWidth: '177.78vh'
+          }}
+        />
+      </div>
 
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/45"></div>
+
+			{/* Decorative brand glows */}
+			<div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-[#DfB86c] opacity-10 blur-3xl z-10"></div>
+			<div className="pointer-events-none absolute -bottom-24 -left-24 h-[28rem] w-[28rem] rounded-full bg-[#c9a55a] opacity-10 blur-3xl z-10"></div>
+
+      <div className="absolute inset-0 flex items-center justify-center z-10">
         <div className="text-center text-white max-w-4xl px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             مرحباً بك في 

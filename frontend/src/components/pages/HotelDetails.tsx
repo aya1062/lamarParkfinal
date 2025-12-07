@@ -312,7 +312,7 @@ const HotelDetails: React.FC = () => {
                                     <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3 first:border-none first:pt-0">
                                         <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
                                         <a
-                                            href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}`}
+                                            href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن عقار: "${hotel.name || 'فندق'}"`)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-lg font-medium text-gold hover:underline"

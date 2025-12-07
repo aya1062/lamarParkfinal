@@ -339,7 +339,7 @@ const PropertyDetails = () => {
                 <button
                   onClick={() => {
                     const phoneNumber = '+966558248265'; // رقم الهاتف المطلوب
-                    const message = `مرحباً، أرغب في الاستفسار عن عقار: ${propertyData.name || 'عقار'}`;
+                    const message = `مرحباً، أرغب في الاستفسار عن عقار: "${propertyData.name || 'عقار'}"`;
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
                   }}
