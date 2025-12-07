@@ -11,6 +11,7 @@ interface Room {
 	images?: string[];
 	capacity?: number;
     city?: string;
+	isProperty?: boolean; // للتمييز بين الغرف من Rooms API والغرف من Properties API
 }
 
 // Inline WhatsApp icon to match brand identity
@@ -88,7 +89,8 @@ const HotelDetails: React.FC = () => {
                                 (p?.roomSettings?.specifications?.maxOccupancy ??
                                 ((p?.roomSettings?.specifications?.maxAdults ?? 0) + (p?.roomSettings?.specifications?.maxChildren ?? 0))) ??
                                 p?.capacity ?? undefined,
-                            city: h?.address?.city || undefined
+                            city: h?.address?.city || undefined,
+                            isProperty: true // هذه غرف من Properties API
                         }));
                         setRooms(propsRooms);
                     }
@@ -432,49 +434,45 @@ const HotelDetails: React.FC = () => {
                             <div className="p-6 bg-white rounded-xl shadow text-center text-gray-600">{hotel?.type === 'resort' ? 'لا توجد شاليهات متاحة حالياً' : 'لا توجد غرف متاحة حالياً'}</div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredRooms.map((room) => (
-                                    <div key={room._id} className="bg-white rounded-xl shadow overflow-hidden group">
-                                    <div className="relative h-48">
-                                        <img
-                                            src={getFirstImageUrl((room as any).images, 'https://placehold.co/600x400?text=Room')}
-                                            alt={room.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition"
-                                            width={600}
-                                            height={192}
-                                            loading="lazy"
-                                            decoding="async"
-                                        />
-                                        <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center">
-                                            <BedDouble className="h-3.5 w-3.5 ml-1" />
-                                            <span>سعة {room.capacity || 2}</span>
-                                        </div>
-                                    </div>
-                                        <div className="p-4">
-                                            <h3 className="font-bold text-gray-900 mb-1">{room.name}</h3>
-                                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{room.description || (hotel?.type === 'resort' ? 'شاليه مميز مزود بكل وسائل الراحة' : 'غرفة مميزة مزودة بكل وسائل الراحة')}</p>
-                                            <div className="flex items-center justify-between">
-                                                <div className="text-gray-900 font-bold text-lg">
-                                                    {room.price?.toLocaleString('ar-SA')} <span className="text-gray-600 text-sm">ريال/ليلة</span>
+                                {filteredRooms.map((room) => {
+                                    // جميع الغرف والشاليهات تذهب إلى صفحة PropertyDetails
+                                    const detailUrl = `/property/${room._id}`;
+                                    return (
+                                        <Link 
+                                            key={room._id} 
+                                            to={detailUrl}
+                                            className="bg-white rounded-xl shadow overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer block"
+                                        >
+                                            <div className="relative h-48">
+                                                <img
+                                                    src={getFirstImageUrl((room as any).images, 'https://placehold.co/600x400?text=Room')}
+                                                    alt={room.name}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition"
+                                                    width={600}
+                                                    height={192}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                />
+                                                <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center">
+                                                    <BedDouble className="h-3.5 w-3.5 ml-1" />
+                                                    <span>سعة {room.capacity || 2}</span>
                                                 </div>
-                                                {hotel?.type === 'resort' ? (
-                                                    <Link
-                                                        to={`/property/${room._id}`}
-                                                        className="btn-gold px-4 py-2"
-                                                    >
-                                                        عرض التفاصيل
-                                                    </Link>
-                                                ) : (
-                                                    <Link
-                                                        to={`/room/${room._id}`}
-                                                        className="btn-gold px-4 py-2"
-                                                    >
-                                                        عرض التفاصيل
-                                                    </Link>
-                                                )}
                                             </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                            <div className="p-4">
+                                                <h3 className="font-bold text-gray-900 mb-1">{room.name}</h3>
+                                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{room.description || (hotel?.type === 'resort' ? 'شاليه مميز مزود بكل وسائل الراحة' : 'غرفة مميزة مزودة بكل وسائل الراحة')}</p>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-gray-900 font-bold text-lg">
+                                                        {room.price?.toLocaleString('ar-SA')} <span className="text-gray-600 text-sm">ريال/ليلة</span>
+                                                    </div>
+                                                    <span className="btn-gold px-4 py-2">
+                                                        عرض التفاصيل
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

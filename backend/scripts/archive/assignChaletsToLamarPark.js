@@ -8,7 +8,7 @@
     node scripts/assignChaletsToLamarPark.js --apply --force      # allow outside development
 
   Notes:
-  - Matches hotel/resort by name /(لمار\s*بارك|Lamar\s*Park)/i
+  - Matches hotel/resort by name /(لامار\s*بارك|Lamar\s*Park)/i
   - Only updates properties with type 'chalet' not already linked to that hotel
 */
 
@@ -39,9 +39,9 @@ async function main() {
     await mongoose.connect(mongoUri, { autoIndex: false });
     console.log(`Connected to MongoDB: ${mongoUri}`);
 
-    const lamarPark = await Hotel.findOne({ name: { $regex: /(لمار\s*بارك|Lamar\s*Park)/i } });
+    const lamarPark = await Hotel.findOne({ name: { $regex: /(لامار\s*بارك|Lamar\s*Park)/i } });
     if (!lamarPark) {
-      console.error('لم يتم العثور على فندق/منتجع باسم "لمار بارك" أو "Lamar Park". أوقفت العملية.');
+      console.error('لم يتم العثور على فندق/منتجع باسم "لامار بارك" أو "Lamar Park". أوقفت العملية.');
       const suggestions = await Hotel.find({}, { name: 1, type: 1 }).limit(10);
       console.log('أقرب نتائج موجودة:', suggestions);
       process.exit(1);

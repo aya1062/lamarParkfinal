@@ -16,7 +16,7 @@ const Hero = () => {
         <div className="text-center text-white max-w-4xl px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             مرحباً بك في 
-            <span className="text-gold block mt-2">لمار بارك</span>
+            <span className="text-gold block mt-2">لامار بارك</span>
           </h1>
           <p className="text-xl md:text-2xl mb-12 opacity-90">
             اكتشف أفضل الفنادق والشاليهات الفاخرة في المملكة العربية السعودية

@@ -21,6 +21,7 @@ const PropertyDetails = () => {
     if (!id) return;
     console.log('Fetching property with ID:', id);
     setLoading(true);
+    // محاولة جلب العقار من Properties API أولاً
     api.getPropertyById(id).then(res => {
       console.log('API response:', res);
       if (res.success && res.data) {
@@ -28,14 +29,64 @@ const PropertyDetails = () => {
         console.log('Property name:', res.data.name);
         console.log('Property price:', res.data.price);
         setProperty(res.data);
+        setLoading(false);
       } else {
-        console.error('Failed to fetch property:', res.message);
-        console.error('Full response:', res);
+        // إذا فشل، جرب جلبها من Rooms API (fallback للغرف)
+        console.log('Property not found, trying Room API...');
+        api.getRoomById(id).then(roomRes => {
+          if (roomRes.success && roomRes.data) {
+            const room = roomRes.data?.room || roomRes.data;
+            // تحويل بيانات الغرفة إلى تنسيق متوافق مع PropertyDetails
+            const propertyData = {
+              ...room,
+              type: 'room',
+              price: room.pricing?.basePrice || room.price || 0,
+              images: Array.isArray(room.images) ? room.images : (room.images ? [room.images] : []),
+              description: room.description || '',
+              capacity: room.specifications?.maxOccupancy || room.capacity || 2,
+              // إضافة roomSettings إذا لم تكن موجودة
+              roomSettings: room.roomSettings || {
+                specifications: room.specifications || {},
+                pricing: room.pricing || { basePrice: room.price || 0 },
+                availability: room.availability || {}
+              }
+            };
+            console.log('Setting room as property:', propertyData);
+            setProperty(propertyData);
+          } else {
+            console.error('Failed to fetch room:', roomRes.message);
+          }
+          setLoading(false);
+        }).catch(roomError => {
+          console.error('Error fetching room:', roomError);
+          setLoading(false);
+        });
       }
-      setLoading(false);
     }).catch(error => {
       console.error('Error fetching property:', error);
-      setLoading(false);
+      // محاولة fallback إلى Rooms API
+      api.getRoomById(id).then(roomRes => {
+        if (roomRes.success && roomRes.data) {
+          const room = roomRes.data?.room || roomRes.data;
+          const propertyData = {
+            ...room,
+            type: 'room',
+            price: room.pricing?.basePrice || room.price || 0,
+            images: Array.isArray(room.images) ? room.images : (room.images ? [room.images] : []),
+            description: room.description || '',
+            capacity: room.specifications?.maxOccupancy || room.capacity || 2,
+            roomSettings: room.roomSettings || {
+              specifications: room.specifications || {},
+              pricing: room.pricing || { basePrice: room.price || 0 },
+              availability: room.availability || {}
+            }
+          };
+          setProperty(propertyData);
+        }
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
+      });
     });
   }, [id]);
 
@@ -188,6 +239,16 @@ const PropertyDetails = () => {
     }
     return arr;
   };
+  // Get base price - support both regular properties and room properties
+  const getBasePrice = () => {
+    if (property?.roomSettings?.pricing?.basePrice) {
+      return property.roomSettings.pricing.basePrice;
+    }
+    return property?.price || 0;
+  };
+  
+  const basePrice = getBasePrice();
+  
   const nightsArr = checkIn && checkOut ? getDatesInRange(checkIn, checkOut) : [];
   const totalPrice = nightsArr.length > 0 ? nightsArr.reduce((sum, date) => {
     const day = pricing[date];
@@ -195,10 +256,10 @@ const PropertyDetails = () => {
       return sum + (day.discountPrice || 0);
     } else if (day && typeof day.price === 'number') {
       return sum + (day.price || 0);
-    } else if (property.discountPrice && property.discountPrice < property.price) {
+    } else if (property.discountPrice && property.discountPrice < basePrice) {
       return sum + (property.discountPrice || 0);
     } else {
-      return sum + (property.price || 0);
+      return sum + basePrice;
     }
   }, 0) : 0;
 
@@ -419,13 +480,13 @@ const PropertyDetails = () => {
                       <span className="line-through text-gray-400 mr-2">{(todayPricing.price || 0).toLocaleString('ar-SA')}</span>
                       <span className="text-gold font-bold">{(todayPricing.discountPrice || 0).toLocaleString('ar-SA')} ريال</span>
                     </>
-                  ) : property.discountPrice && property.discountPrice < property.price ? (
+                  ) : property.discountPrice && property.discountPrice < basePrice ? (
                     <>
-                      <span className="line-through text-gray-400 mr-2">{(property.price || 0).toLocaleString('ar-SA')}</span>
+                      <span className="line-through text-gray-400 mr-2">{(basePrice || 0).toLocaleString('ar-SA')}</span>
                       <span className="text-gold font-bold">{(property.discountPrice || 0).toLocaleString('ar-SA')} ريال</span>
                     </>
                   ) : (
-                    <span>{((todayPricing?.price || property.price || 0)).toLocaleString('ar-SA')} ريال</span>
+                    <span>{((todayPricing?.price || basePrice || 0)).toLocaleString('ar-SA')} ريال</span>
                   )}
                 </div>
                 <div className="text-gray-600">لليلة الواحدة</div>
@@ -505,7 +566,7 @@ const PropertyDetails = () => {
                         return (
                           <div key={date} className="flex justify-between text-gray-600 text-sm">
                             <span>{date}</span>
-                            <span>{(property.price || 0).toLocaleString('ar-SA')} ريال</span>
+                            <span>{(basePrice || 0).toLocaleString('ar-SA')} ريال</span>
                           </div>
                         );
                       }

@@ -34,7 +34,7 @@ const HotelProperties = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            فنادق لمار المميزة
+            فنادق لامار المميزة
           </h2>
           {/* <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4">
             <span className="text-xl font-bold">فندق أبل حي اليرموك</span>

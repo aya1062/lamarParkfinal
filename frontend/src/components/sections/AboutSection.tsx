@@ -33,7 +33,7 @@ const AboutSection = () => {
             <Crown className="h-12 w-12 text-gold" />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            لماذا تختار لمار بارك؟
+            لماذا تختار لامار بارك؟
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             نحن نقدم لك تجربة حجز مميزة مع مجموعة واسعة من أفخم الفنادق والشاليهات في المملكة العربية السعودية. 
