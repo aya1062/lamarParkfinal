@@ -160,6 +160,23 @@ const AdminDashboard = () => {
   const [recentLoading, setRecentLoading] = useState(true);
   const [recentError, setRecentError] = useState<string | null>(null);
 
+  // دالة لتنسيق التاريخ بشكل مقروء (ميلادي)
+  const formatDate = (date: string | Date | undefined) => {
+    if (!date) return '--';
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) return '--';
+      return dateObj.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        calendar: 'gregory' // استخدام التقويم الميلادي
+      });
+    } catch {
+      return '--';
+    }
+  };
+
   useEffect(() => {
     const fetchRecent = async () => {
       setRecentLoading(true);
@@ -310,7 +327,7 @@ const AdminDashboard = () => {
                         <span className="text-sm text-gray-500">#{booking.id}</span>
                       </div>
                       <p className="text-sm text-gray-600 mb-1">{booking.property}</p>
-                      <p className="text-xs text-gray-500">تاريخ الوصول: {booking.checkIn}</p>
+                      <p className="text-xs text-gray-500">تاريخ الوصول: {formatDate(booking.checkIn)}</p>
                     </div>
                     <div className="text-left ml-4">
                       <p className="font-semibold text-gray-900">{booking.amount?.toLocaleString('ar-EG')} ريال</p>

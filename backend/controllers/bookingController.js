@@ -46,8 +46,75 @@ exports.checkAvailability = checkAvailability;
 
 exports.getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate('property').populate('user');
-    res.json(bookings);
+    const Booking = require('../models/Booking');
+    const RoomBooking = require('../models/RoomBooking');
+    
+    // جلب حجوزات العقارات (Booking)
+    const propertyBookings = await Booking.find().populate('property').populate('user');
+    
+    // جلب حجوزات الغرف (RoomBooking)
+    const roomBookings = await RoomBooking.find()
+      .populate('hotel', 'name type location')
+      .populate('room', 'name type')
+      .populate('user', 'name email');
+    
+    // تحويل RoomBooking إلى نفس شكل Booking للتوافق
+    const formattedRoomBookings = roomBookings.map(rb => ({
+      _id: rb._id,
+      bookingNumber: rb.bookingNumber,
+      guest: rb.guest,
+      user: rb.user,
+      property: rb.room ? {
+        _id: rb.room._id,
+        name: rb.room.name || `${rb.hotel?.name || ''} - ${rb.room.name || ''}`,
+        type: rb.room.type,
+        location: rb.hotel?.location || ''
+      } : null,
+      dates: {
+        checkIn: rb.bookingDetails?.checkIn,
+        checkOut: rb.bookingDetails?.checkOut,
+        nights: rb.bookingDetails?.nights
+      },
+      guests: (rb.bookingDetails?.adults || 0) + (rb.bookingDetails?.children || 0),
+      amount: rb.pricing?.totalAmount || 0,
+      status: rb.status,
+      paymentStatus: rb.paymentStatus,
+      paymentMethod: rb.paymentMethod,
+      bookingDate: rb.bookingDate,
+      createdAt: rb.createdAt,
+      updatedAt: rb.updatedAt,
+      isRoomBooking: true // علامة للتمييز
+    }));
+    
+    // دمج الحجوزات وترتيبها حسب تاريخ الإنشاء (الأحدث أولاً)
+    const allBookings = [...propertyBookings, ...formattedRoomBookings].sort((a, b) => {
+      // استخدام createdAt أولاً، ثم bookingDate، ثم _id كحل أخير
+      let dateA, dateB;
+      
+      if (a.createdAt) {
+        dateA = new Date(a.createdAt);
+      } else if (a.bookingDate) {
+        dateA = new Date(a.bookingDate);
+      } else if (a._id && a._id.getTimestamp) {
+        dateA = a._id.getTimestamp();
+      } else {
+        dateA = new Date(0);
+      }
+      
+      if (b.createdAt) {
+        dateB = new Date(b.createdAt);
+      } else if (b.bookingDate) {
+        dateB = new Date(b.bookingDate);
+      } else if (b._id && b._id.getTimestamp) {
+        dateB = b._id.getTimestamp();
+      } else {
+        dateB = new Date(0);
+      }
+      
+      return dateB.getTime() - dateA.getTime(); // الأحدث أولاً
+    });
+    
+    res.json(allBookings);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -184,18 +251,71 @@ exports.getYearlyRevenueStats = async (req, res) => {
 // جلب أحدث 5 حجوزات
 exports.getRecentBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find()
-      .sort({ 'dates.checkIn': -1 })
-      .limit(5)
+    const Booking = require('../models/Booking');
+    const RoomBooking = require('../models/RoomBooking');
+    
+    // جلب حجوزات العقارات (Booking) - مرتبة حسب تاريخ الإنشاء
+    const propertyBookings = await Booking.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
       .populate('property')
       .populate('user');
+    
+    // جلب حجوزات الغرف (RoomBooking) - مرتبة حسب تاريخ الإنشاء
+    const roomBookings = await RoomBooking.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate('hotel', 'name type location')
+      .populate('room', 'name type')
+      .populate('user', 'name email');
+    
+    // تحويل RoomBooking إلى نفس شكل Booking للتوافق
+    const formattedRoomBookings = roomBookings.map(rb => ({
+      _id: rb._id,
+      guest: rb.guest?.name || (rb.user ? rb.user.name : '---'),
+      property: rb.room ? `${rb.hotel?.name || ''} - ${rb.room.name || ''}`.trim() : '---',
+      dates: {
+        checkIn: rb.bookingDetails?.checkIn
+      },
+      amount: rb.pricing?.totalAmount || 0,
+      status: rb.status === 'confirmed' ? 'مؤكد' : rb.status === 'pending' ? 'قيد المراجعة' : 'ملغي',
+      createdAt: rb.createdAt,
+      bookingDate: rb.bookingDate
+    }));
+    
+    // دمج الحجوزات وترتيبها حسب تاريخ الإنشاء (الأحدث أولاً)
+    const allBookings = [...propertyBookings, ...formattedRoomBookings].sort((a, b) => {
+      let dateA, dateB;
+      
+      if (a.createdAt) {
+        dateA = new Date(a.createdAt);
+      } else if (a.bookingDate) {
+        dateA = new Date(a.bookingDate);
+      } else if (a._id && a._id.getTimestamp) {
+        dateA = a._id.getTimestamp();
+      } else {
+        dateA = new Date(0);
+      }
+      
+      if (b.createdAt) {
+        dateB = new Date(b.createdAt);
+      } else if (b.bookingDate) {
+        dateB = new Date(b.bookingDate);
+      } else if (b._id && b._id.getTimestamp) {
+        dateB = b._id.getTimestamp();
+      } else {
+        dateB = new Date(0);
+      }
+      
+      return dateB.getTime() - dateA.getTime(); // الأحدث أولاً
+    }).slice(0, 5); // أخذ أول 5 حجوزات فقط
 
     // تجهيز البيانات للعرض
-    const result = bookings.map(b => ({
+    const result = allBookings.map(b => ({
       id: b._id,
       guest: b.guest?.name || (b.user ? b.user.name : '---'),
-      property: b.property?.name || '---',
-      checkIn: b.dates.checkIn?.toISOString().split('T')[0] || '',
+      property: b.property?.name || b.property || '---',
+      checkIn: b.dates?.checkIn ? new Date(b.dates.checkIn).toISOString().split('T')[0] : '',
       amount: b.amount,
       status: b.status === 'confirmed' ? 'مؤكد' : b.status === 'pending' ? 'قيد المراجعة' : 'ملغي'
     }));

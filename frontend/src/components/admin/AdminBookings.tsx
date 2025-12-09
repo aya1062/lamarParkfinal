@@ -70,6 +70,23 @@ const AdminBookings = () => {
     }
   };
 
+  // دالة لتنسيق التاريخ بشكل مقروء (ميلادي)
+  const formatDate = (date: string | Date | undefined) => {
+    if (!date) return '--';
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) return '--';
+      return dateObj.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        calendar: 'gregory' // استخدام التقويم الميلادي
+      });
+    } catch {
+      return '--';
+    }
+  };
+
   const filteredBookings = useMemo(() => {
     const term = searchTerm.toLowerCase();
     const startOfToday = new Date();
@@ -256,14 +273,17 @@ const AdminBookings = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center text-sm text-gray-900">
-                          <Calendar className="h-4 w-4 ml-1" />{booking.checkIn || booking.dates?.checkIn || '--'}
+                          <Calendar className="h-4 w-4 ml-1" />
+                          <span>{formatDate(booking.checkIn || booking.dates?.checkIn)}</span>
                         </div>
                         <div className="text-xs text-gray-500">
                           {booking.dates?.nights ? `${booking.dates.nights} ليلة` : ''}
                           {booking.guests ? `، ${booking.guests} أشخاص` : ''}
                         </div>
                       </td>
-                      <td className="py-3 px-4">{booking.checkOut || booking.dates?.checkOut || '--'}</td>
+                      <td className="py-3 px-4">
+                        <span className="text-sm text-gray-900">{formatDate(booking.checkOut || booking.dates?.checkOut)}</span>
+                      </td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}>{getStatusText(booking.status)}</span>
                       </td>
@@ -390,8 +410,8 @@ const AdminBookings = () => {
               <div><span className="font-bold">رقم الحجز:</span> {previewBooking._id}</div>
               <div><span className="font-bold">العميل:</span> {previewBooking.guest?.name || previewBooking.user?.name || '--'} ({previewBooking.guest?.phone || previewBooking.user?.phone || '--'})</div>
               <div><span className="font-bold">العقار:</span> {previewBooking.property?.name || '--'} - {previewBooking.property?.location || '--'}</div>
-              <div><span className="font-bold">تاريخ الدخول:</span> {previewBooking.checkIn || previewBooking.dates?.checkIn || '--'}</div>
-              <div><span className="font-bold">تاريخ الخروج:</span> {previewBooking.checkOut || previewBooking.dates?.checkOut || '--'}</div>
+              <div><span className="font-bold">تاريخ الدخول:</span> {formatDate(previewBooking.checkIn || previewBooking.dates?.checkIn)}</div>
+              <div><span className="font-bold">تاريخ الخروج:</span> {formatDate(previewBooking.checkOut || previewBooking.dates?.checkOut)}</div>
               <div><span className="font-bold">عدد الليالي:</span> {previewBooking.dates?.nights || '--'}</div>
               <div><span className="font-bold">عدد الأشخاص:</span> {previewBooking.guests || '--'}</div>
               <div><span className="font-bold">المبلغ:</span> {previewBooking.amount ? previewBooking.amount.toLocaleString('ar-EG') + ' ريال' : '--'}</div>

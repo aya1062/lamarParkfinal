@@ -506,14 +506,14 @@ const Checkout = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">تاريخ الوصول</span>
                     <span className="font-semibold">
-                      {new Date(checkIn || '').toLocaleDateString('ar-SA')}
+                      {new Date(checkIn || '').toLocaleDateString()}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">تاريخ المغادرة</span>
                     <span className="font-semibold">
-                      {new Date(checkOut || '').toLocaleDateString('ar-SA')}
+                      {new Date(checkOut || '').toLocaleDateString()}
                     </span>
                   </div>
 

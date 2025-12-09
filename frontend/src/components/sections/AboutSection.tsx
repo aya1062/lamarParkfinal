@@ -1,4 +1,3 @@
-import React from 'react';
 import { Shield, Award, Clock, HeartHandshake, Sparkles } from 'lucide-react';
 
 const AboutSection = () => {
@@ -31,11 +30,11 @@ const AboutSection = () => {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="/lamar/new logo.png" 
+              src="lamar\WhatsApp Image 2025-12-07 at 22.22.26_2eb331b3.jpg" 
               alt="لامار بارك" 
-              className="h-16 w-auto object-contain"
-              width={120}
-              height={80}
+              className="h-28 w-auto object-contain"
+              width={420}
+              height={300}
               decoding="async"
             />
           </div>

@@ -391,7 +391,7 @@ const AdminAccountManagement = () => {
                         {getStatusText(account.status)}
                       </span>
                     </td>
-                    <td className="py-3 px-4">{account.joinDate ? new Date(account.joinDate).toLocaleDateString('ar-EG') : '--'}</td>
+                    <td className="py-3 px-4">{account.joinDate ? new Date(account.joinDate).toLocaleDateString('ar-EG', { calendar: 'gregory' }) : '--'}</td>
                     <td className="py-3 px-4 space-x-2 space-x-reverse flex">
                       <button
                         onClick={() => handleEditAccount(account)}
@@ -445,11 +445,11 @@ const AdminAccountManagement = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">تاريخ الانضمام:</span>
-                      <span className="text-sm">{account.joinDate ? new Date(account.joinDate).toLocaleDateString('ar-EG') : '--'}</span>
+                      <span className="text-sm">{account.joinDate ? new Date(account.joinDate).toLocaleDateString('ar-EG', { calendar: 'gregory' }) : '--'}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">آخر دخول:</span>
-                      <span className="text-sm">{account.lastLogin ? new Date(account.lastLogin).toLocaleDateString('ar-EG') : '--'}</span>
+                      <span className="text-sm">{account.lastLogin ? new Date(account.lastLogin).toLocaleDateString('ar-EG', { calendar: 'gregory' }) : '--'}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between space-x-2 space-x-reverse pt-4 border-t border-gray-200">

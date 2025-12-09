@@ -32,8 +32,18 @@ const allowedOrigins = [
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
+// CORS configuration for payment routes (ARB callbacks may not have origin)
+app.use('/api/payment', cors({
+  origin: true, // Allow all origins for payment callbacks
+  credentials: false,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Content-Length']
+}));
+
+// CORS configuration for all other routes
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow requests without origin (like ARB callbacks, mobile apps, etc.)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     const isLocalNetwork = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[0-1])\.)\d+\.\d+:(3000|5173)$/.test(origin);

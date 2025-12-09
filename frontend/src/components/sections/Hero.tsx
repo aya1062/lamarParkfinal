@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
-  // استخراج ID الفيديو من الرابط
-  const videoId = 'xtB-f6vcL-E';
+  // استخراج ID الفيديو من الرابط (YouTube Shorts)
+  const videoId = 'LzIFAQWieOw';
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
 
   return (
     <div 
-			className="relative h-screen overflow-hidden"
+			className="relative overflow-hidden h-[calc(100vh-3.5rem)]"
     >
       {/* YouTube Video Background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -22,7 +22,7 @@ const Hero = () => {
             border: 'none',
             width: '100vw',
             height: '56.25vw',
-            minHeight: '100vh',
+            minHeight: '100%',
             minWidth: '177.78vh'
           }}
         />

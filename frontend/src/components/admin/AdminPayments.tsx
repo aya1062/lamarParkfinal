@@ -270,7 +270,7 @@ const AdminPayments = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(payment.paymentDate).toLocaleDateString('ar-SA')}
+                      {new Date(payment.paymentDate).toLocaleDateString('ar-SA', { calendar: 'gregory' })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
@@ -353,7 +353,7 @@ const AdminPayments = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">تاريخ الدفع</label>
                   <p className="text-sm text-gray-900">
-                    {new Date(selectedPayment.paymentDate).toLocaleDateString('ar-SA')}
+                    {new Date(selectedPayment.paymentDate).toLocaleDateString('ar-SA', { calendar: 'gregory' })}
                   </p>
                 </div>
                 <div>
@@ -397,13 +397,13 @@ const AdminPayments = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700">تاريخ الوصول</label>
                       <p className="text-sm text-gray-900">
-                        {new Date(selectedPayment.booking.dates?.checkIn).toLocaleDateString('ar-SA')}
+                        {new Date(selectedPayment.booking.dates?.checkIn).toLocaleDateString('ar-SA', { calendar: 'gregory' })}
                       </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">تاريخ المغادرة</label>
                       <p className="text-sm text-gray-900">
-                        {new Date(selectedPayment.booking.dates?.checkOut).toLocaleDateString('ar-SA')}
+                        {new Date(selectedPayment.booking.dates?.checkOut).toLocaleDateString('ar-SA', { calendar: 'gregory' })}
                       </p>
                     </div>
                   </div>

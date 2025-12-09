@@ -298,7 +298,8 @@ exports.handlePaymentResponse = async (req, res) => {
       // Update booking status if bookingId is provided
       if (bookingId) {
         try {
-          await Booking.findByIdAndUpdate(bookingId, {
+          // Try to update Booking model first
+          const bookingUpdate = await Booking.findByIdAndUpdate(bookingId, {
             status: 'confirmed',
             paymentStatus: 'paid',
             paymentDetails: {
@@ -310,7 +311,30 @@ exports.handlePaymentResponse = async (req, res) => {
               paidAt: new Date()
             }
           });
-          console.log('✅ Booking updated:', bookingId);
+          
+          // If Booking not found, try RoomBooking model
+          if (!bookingUpdate) {
+            const RoomBooking = require('../models/RoomBooking');
+            await RoomBooking.findByIdAndUpdate(bookingId, {
+              status: 'confirmed',
+              paymentStatus: 'paid',
+              payment: {
+                transactionId: transId,
+                amount: parseFloat(amount),
+                status: 'paid',
+                paymentDate: new Date(),
+                paymentMethod: 'arb',
+                gatewayResponse: {
+                  paymentId,
+                  referenceNumber: ref,
+                  authRespCode: authRespCode
+                }
+              }
+            });
+            console.log('✅ RoomBooking updated:', bookingId);
+          } else {
+            console.log('✅ Booking updated:', bookingId);
+          }
         } catch (dbError) {
           console.error('Failed to update booking:', dbError);
         }

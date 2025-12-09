@@ -17,6 +17,9 @@ const PropertyDetails = () => {
   const [todayPricing, setTodayPricing] = useState<any>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
 
+  // منع اختيار تواريخ سابقة في الحجز
+  const today = new Date().toISOString().split('T')[0];
+
   useEffect(() => {
     if (!id) return;
     console.log('Fetching property with ID:', id);
@@ -55,8 +58,8 @@ const PropertyDetails = () => {
             setProperty(propertyData);
           } else {
             console.error('Failed to fetch room:', roomRes.message);
-          }
-          setLoading(false);
+      }
+      setLoading(false);
         }).catch(roomError => {
           console.error('Error fetching room:', roomError);
           setLoading(false);
@@ -85,7 +88,7 @@ const PropertyDetails = () => {
         }
         setLoading(false);
       }).catch(() => {
-        setLoading(false);
+      setLoading(false);
       });
     });
   }, [id]);
@@ -292,7 +295,7 @@ const PropertyDetails = () => {
                   <img
                     src={propertyData.images[selectedImage] || propertyData.images[0]}
                     alt={propertyData.name || 'عقار'}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-64 md:h-96 object-cover"
                     onError={(e) => {
                       e.currentTarget.src = "https://via.placeholder.com/400x300?text=No+Image";
                     }}
@@ -301,7 +304,7 @@ const PropertyDetails = () => {
                   <img
                     src={"https://via.placeholder.com/400x300?text=No+Image"}
                     alt={propertyData.name || 'عقار'}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-64 md:h-96 object-cover"
                   />
                 )}
                 <div className="absolute top-4 right-4">
@@ -312,30 +315,34 @@ const PropertyDetails = () => {
                 </div>
               </div>
               <div className="p-4">
-                <div className="grid grid-cols-4 gap-4">
-                  {Array.isArray(propertyData.images) && propertyData.images.length > 1 && propertyData.images.map((image: string, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedImage(index)}
-                      className={`rounded-lg overflow-hidden ${selectedImage === index ? 'ring-2 ring-gold' : ''}`}
-                    >
-                      <img
-                        src={image}
-                        alt={`صورة ${index + 1}`}
-                        className="w-full h-20 object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = "https://via.placeholder.com/100x80?text=Error";
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
+                {Array.isArray(propertyData.images) && propertyData.images.length > 1 && (
+                  <div className="overflow-x-auto scrollbar-hide">
+                    <div className="flex gap-3" style={{ width: 'max-content' }}>
+                      {propertyData.images.map((image: string, index: number) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImage(index)}
+                          className={`flex-shrink-0 rounded-lg overflow-hidden transition-all ${selectedImage === index ? 'ring-2 ring-gold' : 'opacity-70 hover:opacity-100'}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`صورة ${index + 1}`}
+                            className="w-28 h-20 object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://via.placeholder.com/100x80?text=Error";
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-center space-x-4 space-x-reverse">
+            <div className="bg-white rounded-xl shadow-lg p-4">
+              <div className="flex items-center justify-center space-x-3 space-x-reverse">
                 <button
                   onClick={() => {
                     const phoneNumber = '+966558248265'; // رقم الهاتف المطلوب
@@ -343,22 +350,22 @@ const PropertyDetails = () => {
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
                   }}
-                  className="flex items-center bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-300"
+                  className="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 text-sm"
                 >
-                  <Phone className="h-5 w-5 ml-2" />
+                  <Phone className="h-4 w-4 ml-1.5" />
                   <span>تواصل معنا عبر الواتساب</span>
                 </button>
                 
                 <button
                   onClick={() => setShowVideoModal(true)}
                   disabled={!propertyData.videoUrl}
-                  className={`flex items-center px-6 py-3 rounded-lg transition-colors duration-300 ${
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-300 text-sm ${
                     propertyData.videoUrl 
                       ? 'bg-red-500 text-white hover:bg-red-600' 
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  <Play className="h-5 w-5 ml-2" />
+                  <Play className="h-4 w-4 ml-1.5" />
                   <span>شاهد الفيديو</span>
                 </button>
               </div>
@@ -382,7 +389,7 @@ const PropertyDetails = () => {
               </div>
 
               {/* Features */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <div className="font-semibold text-gray-900">
                     {propertyData.features?.rooms || 'غير محدد'}
@@ -401,14 +408,14 @@ const PropertyDetails = () => {
                   </div>
                   <div className="text-sm text-gray-600">المرافق</div>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                {/* <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <div className="font-semibold text-gray-900 text-green-600">
                     <Shield className="h-5 w-5 mx-auto mb-1" />
                   </div>
                   <div className="text-sm text-gray-600">
                     {propertyData.features?.cancellation || 'إلغاء مجاني'}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Amenities */}
@@ -488,24 +495,28 @@ const PropertyDetails = () => {
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    تاريخ الوصول
+                    اختر تاريخ الوصول 
                   </label>
                   <input 
                     type="date"
+                    lang="en-GB"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
+                    min={today}
                     className="input-rtl"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    تاريخ المغادرة
+                    اختر تاريخ المغادرة
                   </label>
                   <input 
                     type="date"
+                    lang="en-GB"
                     value={checkOut}
                     onChange={(e) => setCheckOut(e.target.value)}
+                    min={checkIn || today}
                     className="input-rtl"
                   />
                 </div>

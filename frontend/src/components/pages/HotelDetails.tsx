@@ -266,108 +266,114 @@ const HotelDetails: React.FC = () => {
                                     <MapPin className="h-5 w-5 ml-2 text-gold" />
                                     <span>{hotel.location}</span>
                                 </div>
-                            </div>
+                    </div>
                     </div>
                 </div>
 
-                {/* Contact Information Banner */}
-                <div className="bg-white rounded-2xl border border-gold/30 shadow-sm p-5 md:p-6 mb-8">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-                        <div className="flex items-center flex-wrap gap-4 md:gap-6">
-                            <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-gold/10">
-                                <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gold text-white">
-                                    <MapPin className="h-4 w-4" />
-                                </span>
-                                <div>
-                                    <div className="text-xs text-gray-500">الموقع</div>
-                                    {hotel?.contact?.mapsUrl ? (
-                                        <a
-                                            href={hotel.contact.mapsUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="font-semibold text-gold hover:underline"
-                                        >
-                                            {hotel.location}
-                                        </a>
-                                    ) : (
-                                        <div className="font-semibold text-gray-900">{hotel.location}</div>
-                                    )}
-                                </div>
-                            </div>
+                {/* Location + Policies */}
+                <div className="bg-white rounded-2xl border border-gold/30 shadow-sm p-5 md:p-6 mb-6">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                    {/* Location */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-gold/10">
+                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gold text-white">
+                          <MapPin className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <div className="text-xs text-gray-500 mb-1">الموقع</div>
+                          {hotel?.contact?.mapsUrl ? (
+                            <a
+                              href={hotel.contact.mapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold text-gold hover:underline text-base"
+                            >
+                              {hotel.location}
+                            </a>
+                          ) : (
+                            <div className="font-semibold text-gray-900 text-base">{hotel.location}</div>
+                          )}
                         </div>
+                      </div>
                     </div>
+
+                    {/* Policies */}
+                    {hotel?.policies && (
+                      <div className="flex-1 md:pt-0 pt-4 md:pl-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="h-7 w-7 inline-flex items-center justify-center rounded-full bg-gold/10 text-gold text-lg">⚑</span>
+                          <h3 className="text-lg font-semibold text-gray-800">السياسات</h3>
+                        </div>
+                        <div className="space-y-2.5 text-gray-700">
+                          {hotel.policies.checkIn && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-600">تسجيل الوصول:</span>
+                              <span className="font-medium text-gray-900">{hotel.policies.checkIn}</span>
+                            </div>
+                          )}
+                          {hotel.policies.checkOut && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-600">تسجيل المغادرة:</span>
+                              <span className="font-medium text-gray-900">{hotel.policies.checkOut}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
+                {/* Contact Info (moved up) */}
+                {hotel?.contact && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-gray-800">معلومات التواصل</h3>
+                      <span className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-gold/10 text-gold">☎</span>
+                    </div>
+                    <div className="space-y-4">
+                      {(hotel.contact.whatsapp || hotel.contact.phone) && (
+                        <a
+                          href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن عقار: "${hotel.name || 'فندق'}"`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-gold/60 transition"
+                        >
+                          <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
+                          <div className="flex flex-col">
+                            <span className="text-sm text-gray-500">واتساب / هاتف</span>
+                            <span className="text-lg font-medium text-gray-900">{hotel.contact.whatsapp || hotel.contact.phone}</span>
+                          </div>
+                        </a>
+                      )}
+                      {hotel.contact.email && (
+                        <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-100">
+                          <span className="text-gold text-xl">✉️</span>
+                          <div className="flex flex-col">
+                            <span className="text-sm text-gray-500">البريد الإلكتروني</span>
+                            <span className="text-lg font-medium text-gray-900 break-all">{hotel.contact.email}</span>
+                          </div>
+                        </div>
+                      )}
+                      {hotel.contact?.mapsUrl && (
+                        <a
+                          href={hotel.contact.mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-gold/60 transition"
+                        >
+                          <span className="text-gold text-xl">📍</span>
+                          <div className="flex flex-col">
+                            <span className="text-sm text-gray-500">الموقع على الخريطة</span>
+                            <span className="text-lg font-medium text-gold">عرض على الخريطة</span>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Contact & Policies */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Contact Information */}
-                    {hotel?.contact && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-semibold text-gray-800">معلومات التواصل</h3>
-                                <span className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-gold/10 text-gold">☎</span>
-                            </div>
-                            <div className="space-y-3">
-                                {(hotel.contact.whatsapp || hotel.contact.phone) && (
-                                    <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3 first:border-none first:pt-0">
-                                        <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
-                                        <a
-                                            href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن عقار: "${hotel.name || 'فندق'}"`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-lg font-medium text-gold hover:underline"
-                                        >
-                                            {hotel.contact.whatsapp || hotel.contact.phone}
-                                        </a>
-                                    </div>
-                                )}
-                                {hotel.contact.email && (
-                                    <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3">
-                                        <span className="text-gold text-xl">✉️</span>
-                                        <span className="text-lg font-medium">{hotel.contact.email}</span>
-                                    </div>
-                                )}
-                                {hotel.contact?.mapsUrl && (
-                                    <div className="flex items-center gap-3 text-gray-700 border-t border-gray-100 pt-3">
-                                        <span className="text-gold text-xl">📍</span>
-                                        <a
-                                            href={hotel.contact.mapsUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-lg font-medium text-gold hover:underline"
-                                        >
-                                            عرض على الخريطة
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Hotel Policies */}
-                    {hotel?.policies && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-semibold text-gray-800">السياسات</h3>
-                                <span className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-gold/10 text-gold">⚑</span>
-                            </div>
-                            <div className="space-y-3 text-gray-700">
-                                {hotel.policies.checkIn && (
-                                    <div className="flex justify-between border-t border-gray-100 pt-3 first:border-none first:pt-0">
-                                        <span>تسجيل الوصول:</span>
-                                        <span className="font-medium">{hotel.policies.checkIn}</span>
-                                    </div>
-                                )}
-                                {hotel.policies.checkOut && (
-                                    <div className="flex justify-between border-t border-gray-100 pt-3">
-                                        <span>تسجيل المغادرة:</span>
-                                        <span className="font-medium">{hotel.policies.checkOut}</span>
-                                    </div>
-                                )}
-                            </div>
-                            </div>
-                        )}
-                    </div>
+                {/* (Policies are shown above next to location) */}
                 </div>
 
                 {/* Rooms/Chalets with sidebar layout 1:3 */}

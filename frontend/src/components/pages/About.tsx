@@ -1,5 +1,5 @@
-import React from 'react';
-import { Crown, Award, Shield, Users, MapPin, Clock, Heart, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Crown, Award, Shield, Users, MapPin, Heart, Star } from 'lucide-react';
 
 const About = () => {
   const stats = [
@@ -29,27 +29,6 @@ const About = () => {
       icon: Star,
       title: 'التميز والإبداع',
       description: 'نسعى دائماً لتقديم تجارب استثنائية تفوق توقعات عملائنا الكرام'
-    }
-  ];
-
-  const team = [
-    {
-      name: 'أحمد المحمد',
-      position: 'المدير التنفيذي',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      description: 'خبرة 15 عاماً في صناعة الضيافة والسياحة'
-    },
-    {
-      name: 'فاطمة العلي',
-      position: 'مديرة العمليات',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      description: 'متخصصة في إدارة العقارات الفاخرة'
-    },
-    {
-      name: 'محمد الخالد',
-      position: 'مدير التسويق',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      description: 'خبير في التسويق الرقمي والعلاقات العامة'
     }
   ];
 
@@ -150,7 +129,7 @@ const About = () => {
       </div>
 
       {/* Team Section */}
-      <div className="py-16 bg-gray-50">
+      {/* <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">فريق العمل</h2>
@@ -176,7 +155,7 @@ const About = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* CTA Section */}
       <div className="py-16 bg-gradient-to-r from-gold to-gold-light">
@@ -185,9 +164,12 @@ const About = () => {
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             ابدأ رحلتك معنا واكتشف عالماً من الفخامة والراحة في أجمل الوجهات السعودية
           </p>
-          <button className="bg-white text-gold px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors duration-300">
+          <Link
+            to="/hotels"
+            className="inline-flex items-center justify-center bg-white text-gold px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors duration-300"
+          >
             ابدأ الحجز الآن
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -362,9 +362,10 @@ const RoomBooking: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">تواريخ الحجز</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ الوصول</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ الوصول (ميلادي)</label>
                   <input
                     type="date"
+                    lang="en-GB"
                     value={bookingForm.bookingDetails.checkIn}
                     onChange={(e) => setBookingForm({
                       ...bookingForm,
@@ -375,9 +376,10 @@ const RoomBooking: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ المغادرة</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">تاريخ المغادرة (ميلادي)</label>
                   <input
                     type="date"
+                    lang="en-GB"
                     value={bookingForm.bookingDetails.checkOut}
                     onChange={(e) => setBookingForm({
                       ...bookingForm,

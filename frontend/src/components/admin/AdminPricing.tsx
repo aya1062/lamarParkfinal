@@ -446,9 +446,10 @@ const AdminPricing = () => {
             <h2 className="text-xl font-bold mb-6">إضافة سعر مخصص</h2>
             <form onSubmit={handleAddPrice} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">التاريخ (ميلادي)</label>
                 <input
                   type="date"
+                  lang="en-GB"
                   name="date"
                   value={newPrice.date}
                   onChange={e => setNewPrice({ ...newPrice, date: e.target.value })}

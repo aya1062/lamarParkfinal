@@ -13,6 +13,23 @@ const BookingSuccess = () => {
   const trackid = searchParams.get('trackid');
   const result = searchParams.get('result');
 
+  // دالة لتنسيق التاريخ بشكل مقروء (ميلادي)
+  const formatDate = (date: string | Date | undefined) => {
+    if (!date) return '--';
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(dateObj.getTime())) return '--';
+      return dateObj.toLocaleDateString('ar-SA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        calendar: 'gregory' // استخدام التقويم الميلادي
+      });
+    } catch {
+      return '--';
+    }
+  };
+
   // إذا لم يوجد booking لكن يوجد trackid، جلب الحجز من الباك-إند
   useEffect(() => {
     if (!booking && trackid) {
@@ -68,10 +85,10 @@ const BookingSuccess = () => {
             العقار: <span className="font-semibold">{booking.property?.name || booking.property}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
-            تاريخ الوصول: <span className="font-semibold">{new Date(booking.dates?.checkIn).toLocaleDateString('ar-SA')}</span>
+            تاريخ الوصول: <span className="font-semibold">{formatDate(booking.dates?.checkIn)}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
-            تاريخ المغادرة: <span className="font-semibold">{new Date(booking.dates?.checkOut).toLocaleDateString('ar-SA')}</span>
+            تاريخ المغادرة: <span className="font-semibold">{formatDate(booking.dates?.checkOut)}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
             عدد الأشخاص: <span className="font-semibold">{booking.guests}</span>
@@ -107,10 +124,10 @@ const BookingSuccess = () => {
             العقار: <span className="font-semibold">{booking.property?.name || booking.property}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
-            تاريخ الوصول: <span className="font-semibold">{new Date(booking.dates?.checkIn).toLocaleDateString('ar-SA')}</span>
+            تاريخ الوصول: <span className="font-semibold">{formatDate(booking.dates?.checkIn)}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
-            تاريخ المغادرة: <span className="font-semibold">{new Date(booking.dates?.checkOut).toLocaleDateString('ar-SA')}</span>
+            تاريخ المغادرة: <span className="font-semibold">{formatDate(booking.dates?.checkOut)}</span>
           </div>
           <div className="mb-4 text-gray-700 text-sm">
             عدد الأشخاص: <span className="font-semibold">{booking.guests}</span>

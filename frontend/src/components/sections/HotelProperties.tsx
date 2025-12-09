@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import  { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
@@ -29,6 +29,48 @@ const HotelProperties = () => {
     navigate('/hotels');
   };
 
+  // تقسيم الفنادق حسب المدينة
+  const { tabukHotels, riyadhHotels } = useMemo(() => {
+    const normalizeCity = (h: any) =>
+      String(h?.address?.city || h?.city || h?.location || '')
+        .toLowerCase()
+        .trim();
+
+    const inCity = (h: any, keywords: string[]) => {
+      const city = normalizeCity(h);
+      return keywords.some(k => city.includes(k));
+    };
+
+    const tabuk = hotels.filter(h => inCity(h, ['تبوك', 'tabuk']));
+    const riyadh = hotels.filter(h => inCity(h, ['الرياض', 'riyadh']));
+    return { tabukHotels: tabuk, riyadhHotels: riyadh };
+  }, [hotels]);
+
+  const renderCitySection = (title: string, items: any[]) => (
+    <div className="mb-12">
+      <div className="flex items-center justify-center mb-6">
+        <h3 className="text-2xl font-bold text-gray-900 text-center">{title}</h3>
+      </div>
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="max-w-5xl mx-auto flex gap-6 pb-4 snap-x snap-mandatory justify-center">
+          {items.length === 0 ? (
+            <div className="text-center text-gray-500 w-full px-4">لا توجد فنادق للعرض</div>
+          ) : (
+            items.map((hotel) => (
+              <div
+                key={hotel._id || hotel.id}
+                className="flex-shrink-0 w-80 h-full snap-start"
+                style={{ minWidth: '20rem', maxWidth: '21rem' }}
+              >
+                <PropertyCard property={hotel} />
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,18 +93,9 @@ const HotelProperties = () => {
         ) : error ? (
           <div className="text-center text-red-500">{error}</div>
         ) : (
-          <div className="overflow-x-auto">
-            <div className="flex justify-center gap-6 pb-4 min-w-max">
-              {hotels.length === 0 ? (
-                <div className="text-center text-gray-500 w-full">لا توجد فنادق للعرض</div>
-              ) : (
-                hotels.slice(0, 3).map((hotel) => (
-                  <div key={hotel._id || hotel.id} className="flex-shrink-0 w-80">
-                    <PropertyCard property={hotel} />
-                  </div>
-                ))
-              )}
-            </div>
+          <div className="space-y-10">
+            {renderCitySection('فنادق لامار المميزة بتبوك', tabukHotels)}
+            {renderCitySection('فنادق لامار المميزة بالرياض', riyadhHotels)}
           </div>
         )}
 

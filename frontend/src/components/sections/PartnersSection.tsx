@@ -76,19 +76,15 @@ const PartnersSection: React.FC = () => {
                   key={partner._id}
                   className="flex-shrink-0 w-64" // عرض مناسب للـ 4 كاردات
                 >
-                  <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
-                    <div className="p-8 flex items-center justify-center h-40">
-                      <div className="w-32 h-32 flex items-center justify-center">
-                        <img
-                          src={partner.logo}
-                          alt={partner.name}
-                          className="max-w-full max-h-full object-contain"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/128x128?text=' + encodeURIComponent(partner.name);
-                          }}
-                        />
-                      </div>
-                    </div>
+                  <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group h-36 flex items-center justify-center">
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
+                      className="w-full h-full object-contain p-6"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://via.placeholder.com/200x120?text=' + encodeURIComponent(partner.name);
+                      }}
+                    />
                   </div>
                 </div>
               ))}
