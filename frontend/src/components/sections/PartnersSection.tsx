@@ -74,7 +74,7 @@ const PartnersSection: React.FC = () => {
               {partners.map((partner) => (
                 <div
                   key={partner._id}
-                  className="flex-shrink-0 w-36 md:w-48" // أصغر على الموبايل
+                  className="flex-shrink-0 w-36 md:w-36" // أصغر على الموبايل
                 >
                   <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group h-20 md:h-36 flex items-center justify-center">
                     <img
