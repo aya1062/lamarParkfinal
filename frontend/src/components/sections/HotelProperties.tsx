@@ -59,7 +59,7 @@ const HotelProperties = () => {
             items.map((hotel) => (
               <div
                 key={hotel._id || hotel.id}
-                className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-[380px] md:h-[420px] snap-start"
+                className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-[340px] md:h-[380px] snap-start"
                 style={{ minWidth: '16rem', maxWidth: '20rem' }}
               >
                 <PropertyCard property={hotel} />

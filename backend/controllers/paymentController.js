@@ -333,7 +333,7 @@ exports.handlePaymentResponse = async (req, res) => {
             });
             console.log('✅ RoomBooking updated:', bookingId);
           } else {
-            console.log('✅ Booking updated:', bookingId);
+          console.log('✅ Booking updated:', bookingId);
           }
         } catch (dbError) {
           console.error('Failed to update booking:', dbError);

@@ -81,7 +81,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   return (
     <div className="card-luxury overflow-hidden h-full flex flex-col">
       {/* تقليل ارتفاع الصورة لجعل الكارد أكثر استقامة */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
+      <div className="relative w-full aspect-[16/10] overflow-hidden">
         <img
           src={currentImage}
           alt={property.name || "صورة العقار"}

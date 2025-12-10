@@ -30,7 +30,7 @@ const AboutSection = () => {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="lamar\WhatsApp Image 2025-12-07 at 22.22.26_2eb331b3.jpg" 
+              src="lamar\logo بدون خلفية.png" 
               alt="لامار بارك" 
               className="h-36 w-auto object-contain"
               width={420}
