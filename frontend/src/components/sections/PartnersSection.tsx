@@ -70,17 +70,17 @@ const PartnersSection: React.FC = () => {
         <div className="relative">
           {/* Horizontal Scroll Container */}
           <div className="overflow-x-auto scrollbar-hide scroll-smooth">
-            <div className="flex space-x-6 space-x-reverse pb-4" style={{ width: 'max-content' }}>
+            <div className="flex space-x-4 md:space-x-6 space-x-reverse pb-4" style={{ width: 'max-content' }}>
               {partners.map((partner) => (
                 <div
                   key={partner._id}
-                  className="flex-shrink-0 w-64" // عرض مناسب للـ 4 كاردات
+                  className="flex-shrink-0 w-36 md:w-48" // أصغر على الموبايل
                 >
-                  <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group h-36 flex items-center justify-center">
+                  <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group h-20 md:h-36 flex items-center justify-center">
                     <img
                       src={partner.logo}
                       alt={partner.name}
-                      className="w-full h-full object-contain p-6"
+                      className="w-full h-full object-contain p-4 md:p-6"
                       onError={(e) => {
                         e.currentTarget.src = 'https://via.placeholder.com/200x120?text=' + encodeURIComponent(partner.name);
                       }}
