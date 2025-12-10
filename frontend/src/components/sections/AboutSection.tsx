@@ -47,19 +47,19 @@ const AboutSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-12 md:mb-16">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="bg-white p-8 rounded-xl shadow-lg text-center group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+              className="bg-white p-3 md:p-8 rounded-xl shadow-lg text-center group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gold bg-opacity-10 rounded-full mb-6 group-hover:bg-gold group-hover:bg-opacity-20 transition-colors duration-300">
-                <feature.icon className="h-8 w-8 text-gold" />
+              <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gold bg-opacity-10 rounded-full mb-0 md:mb-6 group-hover:bg-gold group-hover:bg-opacity-20 transition-colors duration-300">
+                <feature.icon className="h-6 w-6 md:h-8 md:w-8 text-gold" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                 {feature.description}
               </p>
             </div>

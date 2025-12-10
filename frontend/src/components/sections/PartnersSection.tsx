@@ -70,7 +70,7 @@ const PartnersSection: React.FC = () => {
         <div className="relative">
           {/* Horizontal Scroll Container */}
           <div className="overflow-x-auto scrollbar-hide scroll-smooth">
-            <div className="flex space-x-4 md:space-x-6 space-x-reverse pb-4" style={{ width: 'max-content' }}>
+            <div className="flex space-x-4 md:space-x space-x-reverse pb-4" style={{ width: 'max-content' }}>
               {partners.map((partner) => (
                 <div
                   key={partner._id}
