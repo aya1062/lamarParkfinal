@@ -39,17 +39,21 @@ const Hero = () => {
         <div className="text-center text-white max-w-4xl px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             مرحباً بك في 
-            <span className="text-gold block mt-2">لامار بارك</span>
+            <img
+              src="/lamar/logo بدون خلفية.png"
+              alt="لامار بارك"
+              className="mx-auto mt-8 h-36 md:h-36 w-auto drop-shadow-lg"
+            />
           </h1>
           <p className="text-xl md:text-2xl mb-12 opacity-90">
             اكتشف أفضل الفنادق والشاليهات الفاخرة في المملكة العربية السعودية
           </p>
 
 					{/* CTA Buttons */}
-					<div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
 						<Link
 							to="/hotels"
-						className="group relative inline-flex items-center justify-center rounded-xl px-10 py-5 font-semibold text-xl bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white shadow-xl transition transform hover:translate-y-[-1px] hover:brightness-110 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
+						className="group relative inline-flex items-center justify-center rounded-xl px-6 py-2 min-w-[150px] font-semibold text-lg bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white shadow-xl transition transform hover:translate-y-[-1px] hover:brightness-110 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
 						>
 							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition bg-white"></span>
 							<span className="relative z-10">حجز فندق</span>
@@ -58,7 +62,7 @@ const Hero = () => {
 
 						<Link
 							to="/resorts"
-						className="group relative inline-flex items-center justify-center rounded-xl px-10 py-5 font-semibold text-xl bg-white text-black shadow-xl border border-white/80 transition transform hover:translate-y-[-1px] hover:bg-[#DfB86c]/5 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
+						className="group relative inline-flex items-center justify-center rounded-xl px-8 py-2 min-w-[150px] font-semibold text-lg bg-white text-black shadow-xl border border-white/80 transition transform hover:translate-y-[-1px] hover:bg-[#DfB86c]/5 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
 						>
 							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-5 transition bg-black"></span>
 							<span className="relative z-10">حجز شالية</span>
