@@ -32,7 +32,7 @@ const AboutSection = () => {
             <img 
               src="lamar\WhatsApp Image 2025-12-07 at 22.22.26_2eb331b3.jpg" 
               alt="لامار بارك" 
-              className="h-28 w-auto object-contain"
+              className="h-36 w-auto object-contain"
               width={420}
               height={300}
               decoding="async"

@@ -51,16 +51,16 @@ const HotelProperties = () => {
       <div className="flex items-center justify-center mb-6">
         <h3 className="text-2xl font-bold text-gray-900 text-center">{title}</h3>
       </div>
-      <div className="overflow-x-auto scrollbar-hide">
-        <div className="max-w-5xl mx-auto flex gap-6 pb-4 snap-x snap-mandatory justify-center">
+      <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0">
+        <div className="flex gap-4 md:gap-6 pb-4 snap-x snap-mandatory justify-start md:justify-center w-max md:w-full mx-auto">
           {items.length === 0 ? (
             <div className="text-center text-gray-500 w-full px-4">لا توجد فنادق للعرض</div>
           ) : (
             items.map((hotel) => (
               <div
                 key={hotel._id || hotel.id}
-                className="flex-shrink-0 w-80 h-full snap-start"
-                style={{ minWidth: '20rem', maxWidth: '21rem' }}
+                className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-[380px] md:h-[420px] snap-start"
+                style={{ minWidth: '16rem', maxWidth: '20rem' }}
               >
                 <PropertyCard property={hotel} />
               </div>
