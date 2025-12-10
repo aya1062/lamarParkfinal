@@ -51,7 +51,7 @@ const AboutSection = () => {
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="bg-white p-3 md:p-8 rounded-xl shadow-lg text-center group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+              className="bg-white p-3 md:p-8 rounded-xl shadow-lg text-center group hover:shadow-2xl transition-all duration-300 transform "
             >
               <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gold bg-opacity-10 rounded-full mb-0 md:mb-6 group-hover:bg-gold group-hover:bg-opacity-20 transition-colors duration-300">
                 <feature.icon className="h-6 w-6 md:h-8 md:w-8 text-gold" />
