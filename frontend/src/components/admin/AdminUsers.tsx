@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Filter, User, Mail, Phone, Plus, Edit, Trash2, Shield, Crown, EyeOff, Eye } from 'lucide-react';
 import axios from 'axios';
-
-const API_URL = 'https://api.lamarparks.com/api';
+import { API_URL } from '../../utils/api';
 
 const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');

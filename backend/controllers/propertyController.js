@@ -26,15 +26,29 @@ try {
 
     const storage = new CloudinaryStorage({
       cloudinary: cloudinary,
-      params: {
-        folder: 'lamar/properties',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      params: async (req, file) => {
+        return {
+          folder: 'lamar/properties',
+          allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+          resource_type: 'image',
+          transformation: [
+            { width: 1920, height: 1080, crop: 'limit', quality: 'auto:good' },
+            { fetch_format: 'auto' }
+          ],
+          // عدم إنشاء thumbnails أثناء الرفع لتسريع العملية
+          // يمكن إنشاؤها لاحقاً عند الحاجة
+          overwrite: false,
+          invalidate: true,
+          // تحسينات للأداء
+          use_filename: true,
+          unique_filename: true
+        };
       },
     });
     
     upload = multer({ 
       storage: storage,
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+      limits: { fileSize: 30 * 1024 * 1024 }, // 30MB limit
       fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (allowedTypes.includes(file.mimetype)) {
@@ -214,30 +228,37 @@ exports.updateProperty = async (req, res) => {
       updateData.hotel = hotelId;
     }
     
-    // الصور الجديدة
-    if (req.files && req.files.length > 0) {
-      updateData.images = req.files.map(file => file.path);
-    } else if (req.body.images) {
-      updateData.images = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
-    }
+    // معالجة الصور: دمج الصور الجديدة مع الموجودة
+    let finalImages = existing.images ? [...existing.images] : [];
     
-    // حذف صور
+    // حذف الصور المحددة للحذف أولاً
     if (req.body.imagesToRemove) {
       try {
         const imagesToRemove = JSON.parse(req.body.imagesToRemove);
         if (Array.isArray(imagesToRemove) && imagesToRemove.length > 0) {
-          const existingDoc = await Property.findById(req.params.id);
-          if (existingDoc && existingDoc.images) {
-            updateData.images = [
-              ...(updateData.images || []),
-              ...existingDoc.images.filter(img => !imagesToRemove.includes(img))
-            ].filter((v, i, a) => a.indexOf(v) === i);
-          }
+          finalImages = finalImages.filter(img => !imagesToRemove.includes(img));
         }
       } catch (err) {
         return res.status(400).json({ success: false, message: 'Invalid imagesToRemove format' });
       }
     }
+    
+    // إضافة الصور الجديدة المرفوعة
+    if (req.files && req.files.length > 0) {
+      const newImagePaths = req.files.map(file => file.path);
+      finalImages = [...finalImages, ...newImagePaths];
+    }
+    
+    // إذا تم إرسال صور من req.body فقط (بدون ملفات جديدة)، استخدمها
+    if ((!req.files || req.files.length === 0) && req.body.images) {
+      const bodyImages = Array.isArray(req.body.images) ? req.body.images : [req.body.images];
+      if (bodyImages.length > 0 && bodyImages[0] !== '') {
+        finalImages = bodyImages;
+      }
+    }
+    
+    // إزالة التكرارات والقيم الفارغة
+    updateData.images = [...new Set(finalImages.filter(img => img && img.trim() !== ''))];
     
     // Parse amenities
     if (req.body.amenities) {

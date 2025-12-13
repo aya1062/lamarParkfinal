@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, Eye, Search, Filter, MapPin, Star, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-const API_URL = 'https://api.lamarparks.com/api';
+import { API_URL } from '../../utils/api';
 
 const AdminProperties = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -57,6 +56,8 @@ const AdminProperties = () => {
   const [editImagesToRemove, setEditImagesToRemove] = useState<string[]>([]);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -120,7 +121,7 @@ const AdminProperties = () => {
         }
       });
 
-      const createRes = await axios.post(`${API_URL}/properties`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const createRes = await axios.post(`${API_URL}/properties`, formData);
       if (!createRes.data?.success) {
         alert('فشل إنشاء النسخة');
         return;
@@ -132,7 +133,7 @@ const AdminProperties = () => {
       if (newId && imgs.length > 0) {
         const putData = new FormData();
         imgs.forEach((img: string) => putData.append('images', img));
-        await axios.put(`${API_URL}/properties/${newId}`, putData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await axios.put(`${API_URL}/properties/${newId}`, putData);
       }
 
       fetchProperties();
@@ -224,11 +225,21 @@ const AdminProperties = () => {
         formData.append('images', file);
       });
       
+      setIsUploading(true);
+      setUploadProgress(0);
       const response = await axios.post(`${API_URL}/properties`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000, // 2 دقيقة للصور الكبيرة
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          }
+        }
       });
       
       if (response.data.success) {
+        setIsUploading(false);
+        setUploadProgress(0);
         setNewProperty({ 
           name: '', 
           type: 'hotel', 
@@ -272,6 +283,8 @@ const AdminProperties = () => {
       }
     } catch (error: any) {
       console.error('Error adding property:', error);
+      setIsUploading(false);
+      setUploadProgress(0);
       alert('فشل في إضافة العقار: ' + (error.response?.data?.message || error.message));
     }
   };
@@ -400,6 +413,8 @@ const AdminProperties = () => {
     }
     
     try {
+      setIsUploading(true);
+      setUploadProgress(0);
       const formData = new FormData();
       
       // Add all property data to formData
@@ -445,13 +460,21 @@ const AdminProperties = () => {
       if (editImagesToRemove.length > 0) {
         formData.append('imagesToRemove', JSON.stringify(editImagesToRemove));
       }
+      // إضافة timeout أطول للطلبات الكبيرة (رفع صور)
       const response = await axios.put(
         `${API_URL}/properties/${editProperty._id}`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            // لا تضبط Content-Type يدوياً - axios يضبطه تلقائياً مع boundary عند استخدام FormData
           },
+          timeout: 120000, // 2 دقيقة للصور الكبيرة
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(percentCompleted);
+            }
+          }
         }
       );
       
@@ -461,12 +484,18 @@ const AdminProperties = () => {
         setEditSelectedImages([]);
         setEditImagePreviews([]);
         setEditImagesToRemove([]);
+        setUploadProgress(0);
+        setIsUploading(false);
         fetchProperties();
         alert('تم تحديث العقار بنجاح');
       } else {
+        setIsUploading(false);
+        setUploadProgress(0);
         alert('فشل في تحديث العقار: ' + response.data.message);
       }
     } catch (error: any) {
+      setIsUploading(false);
+      setUploadProgress(0);
       alert('فشل في تحديث العقار: ' + (error.response?.data?.message || error.message));
     }
   };
@@ -1007,11 +1036,26 @@ const AdminProperties = () => {
                 >
                   إلغاء
                 </button>
+                {isUploading && (
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">جاري رفع الصور...</span>
+                      <span className="text-sm font-medium text-gray-700">{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-gold h-2.5 rounded-full transition-all duration-300" 
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="btn-gold px-6 py-3"
+                  disabled={isUploading}
                 >
-                  إضافة العقار
+                  {isUploading ? 'جاري الإضافة...' : 'إضافة العقار'}
                 </button>
               </div>
             </form>
@@ -1325,11 +1369,26 @@ const AdminProperties = () => {
                 >
                   إلغاء
                 </button>
+                {isUploading && (
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">جاري رفع الصور...</span>
+                      <span className="text-sm font-medium text-gray-700">{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-gold h-2.5 rounded-full transition-all duration-300" 
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="btn-gold px-6 py-3"
+                  disabled={isUploading}
                 >
-                  حفظ التعديلات
+                  {isUploading ? 'جاري الحفظ...' : 'حفظ التعديلات'}
                 </button>
               </div>
             </form>
