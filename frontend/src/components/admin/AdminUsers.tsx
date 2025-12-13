@@ -15,7 +15,9 @@ const AdminUsers = () => {
     email: '',
     phone: '',
     role: 'customer',
-    password: ''
+    password: '',
+    nationalId: '',
+    address: ''
   });
 
   useEffect(() => {
@@ -31,9 +33,19 @@ const AdminUsers = () => {
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    await axios.post(`${API_URL}/users/register`, newUser);
-    setNewUser({ name: '', email: '', phone: '', role: 'customer', password: '' });
-    fetchUsers();
+    try {
+      const res = await axios.post(`${API_URL}/users/register`, newUser);
+      if (res.data.success) {
+        setNewUser({ name: '', email: '', phone: '', role: 'customer', password: '', nationalId: '', address: '' });
+        setShowAddModal(false);
+        fetchUsers();
+      } else {
+        alert(res.data.message || 'فشل في إضافة المستخدم');
+      }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || 'فشل في إضافة المستخدم';
+      alert(errorMessage);
+    }
   };
 
   const handleDeleteUser = async (id: string) => {
@@ -379,6 +391,36 @@ const AdminUsers = () => {
                   required
                   className="input-rtl"
                   placeholder="كلمة مرور قوية"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  الرقم القومي *
+                </label>
+                <input
+                  type="text"
+                  value={newUser.nationalId}
+                  onChange={(e) => setNewUser({...newUser, nationalId: e.target.value})}
+                  required
+                  className="input-rtl"
+                  placeholder="أدخل رقم الهوية الوطنية (10 أرقام)"
+                  maxLength={10}
+                />
+                <p className="text-xs text-gray-500 mt-1">يجب أن يكون 10 أرقام ويبدأ بـ 1 أو 2</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  العنوان *
+                </label>
+                <input
+                  type="text"
+                  value={newUser.address}
+                  onChange={(e) => setNewUser({...newUser, address: e.target.value})}
+                  required
+                  className="input-rtl"
+                  placeholder="المدينة، الحي، الشارع ..."
                 />
               </div>
 

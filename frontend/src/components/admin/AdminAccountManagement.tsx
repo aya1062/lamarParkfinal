@@ -66,7 +66,9 @@ const AdminAccountManagement = () => {
     phone: '',
     role: 'customer',
     password: '',
-    status: 'active'
+    status: 'active',
+    nationalId: '',
+    address: ''
   });
 
   // حالة بيانات التعديل
@@ -130,7 +132,9 @@ const AdminAccountManagement = () => {
         phone: '',
         role: 'customer',
         password: '',
-        status: 'active'
+        status: 'active',
+        nationalId: '',
+        address: ''
       });
       toast.success('تمت إضافة الحساب بنجاح');
     } else {
@@ -549,6 +553,32 @@ const AdminAccountManagement = () => {
                   required
                   className="input-rtl"
                   placeholder="كلمة مرور قوية"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">الرقم القومي *</label>
+                <input
+                  type="text"
+                  value={newAccount.nationalId}
+                  onChange={(e) => setNewAccount({...newAccount, nationalId: e.target.value})}
+                  required
+                  className="input-rtl"
+                  placeholder="أدخل رقم الهوية الوطنية (10 أرقام)"
+                  maxLength={10}
+                />
+                <p className="text-xs text-gray-500 mt-1">يجب أن يكون 10 أرقام ويبدأ بـ 1 أو 2</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">العنوان *</label>
+                <input
+                  type="text"
+                  value={newAccount.address}
+                  onChange={(e) => setNewAccount({...newAccount, address: e.target.value})}
+                  required
+                  className="input-rtl"
+                  placeholder="المدينة، الحي، الشارع ..."
                 />
               </div>
 
