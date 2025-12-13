@@ -28,16 +28,21 @@ const Register = () => {
       const payload = { ...data, name };
       delete payload.firstName;
       delete payload.lastName;
+      delete payload.confirmPassword;
+      delete payload.agreeToTerms;
+      delete payload.subscribeNewsletter;
       console.log('Register payload:', payload); // تحقق من الحقول المرسلة
-      const success = await registerUser(payload);
-      if (success) {
+      const result = await registerUser(payload);
+      if (result && result.success) {
         toast.success('تم إنشاء حسابك بنجاح!');
         navigate('/');
       } else {
-        toast.error(res?.message || 'حدث خطأ أثناء إنشاء الحساب');
+        const errorMessage = result?.message || 'حدث خطأ أثناء إنشاء الحساب';
+        toast.error(errorMessage);
       }
-    } catch (error) {
-      toast.error('حدث خطأ أثناء إنشاء الحساب');
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'حدث خطأ أثناء إنشاء الحساب';
+      toast.error(errorMessage);
     }
   };
 

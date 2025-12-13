@@ -7,6 +7,22 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password, phone, nationalId, address } = req.body;
 
+    // التحقق من الحقول المطلوبة
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'الاسم مطلوب' });
+    }
+    if (!email || email.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'البريد الإلكتروني مطلوب' });
+    }
+    if (!password || password.length < 8) {
+      return res.status(400).json({ success: false, message: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' });
+    }
+    if (!phone || phone.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'رقم الهاتف مطلوب' });
+    }
+    if (!nationalId || nationalId.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'الرقم القومي مطلوب' });
+    }
     // تحقق من الرقم القومي السعودي: 10 أرقام ويبدأ بـ 1 أو 2
     if (!/^([1-2])\d{9}$/.test(nationalId)) {
       return res.status(400).json({ success: false, message: 'الرقم القومي يجب أن يكون 10 أرقام ويبدأ بـ 1 أو 2' });
@@ -17,7 +33,7 @@ exports.register = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'البريد الإلكتروني مستخدم بالفعل' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

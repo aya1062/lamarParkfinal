@@ -50,16 +50,17 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const res = await api.register(userData);
-          if (res && res.user) {
+          if (res && res.success && res.user) {
             set({ user: { ...res.user, id: res.user._id }, isAuthenticated: true, isLoading: false });
             return { success: true, user: res.user };
           } else {
             set({ isLoading: false });
-            return { success: false };
+            return { success: false, message: res?.message || 'فشل في إنشاء الحساب' };
           }
-        } catch (error) {
+        } catch (error: any) {
           set({ isLoading: false });
-          return { success: false };
+          const errorMessage = error?.response?.data?.message || error?.message || 'فشل في إنشاء الحساب';
+          return { success: false, message: errorMessage };
         }
       },
 

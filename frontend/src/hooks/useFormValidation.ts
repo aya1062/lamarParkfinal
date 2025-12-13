@@ -30,7 +30,7 @@ export const registerSchema = yup.object({
   phone: yup
     .string()
     .required('رقم الهاتف مطلوب')
-    .matches(/^(	66|0)?[5][0-9]{8}$/, 'يرجى إدخال رقم هاتف سعودي صحيح'),
+    .matches(/^(\+966|0)?[5][0-9]{8}$/, 'يرجى إدخال رقم هاتف سعودي صحيح'),
   address: yup
     .string()
     .required('العنوان مطلوب')
@@ -38,7 +38,7 @@ export const registerSchema = yup.object({
   nationalId: yup
     .string()
     .required('رقم الهوية الوطنية مطلوب')
-    .matches(/^\d{10}$/,'رقم الهوية يجب أن يكون 10 أرقام'),
+    .matches(/^[1-2]\d{9}$/, 'الرقم القومي يجب أن يكون 10 أرقام ويبدأ بـ 1 أو 2'),
   password: yup
     .string()
     .required('كلمة المرور مطلوبة')
