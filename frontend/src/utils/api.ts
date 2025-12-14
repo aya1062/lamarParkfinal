@@ -102,9 +102,18 @@ export const api = {
   getHotels: async (filters?: any) => {
     try {
       const data = await cachedGet(`${API_URL}/hotels`, filters, 30_000);
-      return { success: true, data };
+      // الـ backend يرجع { success: true, hotels } مباشرة
+      // cachedGet يرجع res.data الذي يكون { success: true, hotels }
+      if (data && data.success && data.hotels) {
+        return { success: true, data: { hotels: data.hotels } };
+      } else if (data && Array.isArray(data)) {
+        return { success: true, data: { hotels: data } };
+      } else if (data && data.hotels) {
+        return { success: true, data: { hotels: data.hotels } };
+      }
+      return { success: true, data: { hotels: [] } };
     } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to fetch hotels' };
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch hotels', data: { hotels: [] } };
     }
   },
 
@@ -449,9 +458,9 @@ export const partnersApi = {
   getPartners: async () => {
     try {
       const res = await axios.get(`${API_URL}/partners`);
-      return { success: true, data: res.data.data };
+      return { success: true, data: res.data?.data || res.data || [] };
     } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to fetch partners' };
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch partners', data: [] };
     }
   },
 

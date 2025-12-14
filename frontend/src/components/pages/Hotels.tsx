@@ -23,11 +23,20 @@ const Hotels = () => {
     // يمكن لاحقاً إضافة فلترة تقييم/سعر عند دعمها في الـ API
     api.getHotels(params)
       .then((res) => {
-        const list = res?.data?.hotels || [];
-        setHotels(list.filter((h: any) => h.type === 'hotel'));
+        if (res.success && res.data && res.data.hotels) {
+          const list = res.data.hotels;
+          if (Array.isArray(list)) {
+            setHotels(list.filter((h: any) => h.type === 'hotel'));
+          } else {
+            setHotels([]);
+          }
+        } else {
+          setHotels([]);
+        }
       })
       .catch((err) => {
         console.error('Error fetching hotels:', err);
+        setHotels([]);
       })
       .finally(() => setLoading(false));
   }, [filters.location]);

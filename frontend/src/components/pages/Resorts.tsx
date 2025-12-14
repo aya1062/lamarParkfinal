@@ -12,12 +12,19 @@ const Resorts = () => {
     setLoading(true);
     api.getHotels({ type: 'resort', status: 'active' })
       .then((res) => {
-        const list = res?.data?.hotels || [];
-        // Fallback filter if backend ignored the type param
-        const resortsOnly = list.length > 0 ? list.filter((h: any) => h.type === 'resort') : [];
-        setResorts(resortsOnly);
+        if (res.success && res.data && res.data.hotels) {
+          const list = res.data.hotels;
+          // Fallback filter if backend ignored the type param
+          const resortsOnly = Array.isArray(list) ? list.filter((h: any) => h.type === 'resort') : [];
+          setResorts(resortsOnly);
+        } else {
+          setResorts([]);
+        }
       })
-      .catch(() => setResorts([]))
+      .catch((error) => {
+        console.error('Error fetching resorts:', error);
+        setResorts([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 

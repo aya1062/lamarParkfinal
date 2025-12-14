@@ -19,9 +19,23 @@ const Navbar = () => {
   useEffect(() => {
     // جلب الفنادق والمنتجعات ثم فصلها حسب النوع (بدون فلترة الحالة لعرض الجميع)
     api.getHotels().then((res) => {
-      const list = res?.data?.hotels || [];
-      setHotels(list.filter((h: any) => h.type === 'hotel').slice(0, 6));
-      setChalets(list.filter((h: any) => h.type === 'resort').slice(0, 6));
+      if (res.success && res.data && res.data.hotels) {
+        const list = res.data.hotels;
+        if (Array.isArray(list)) {
+          setHotels(list.filter((h: any) => h.type === 'hotel').slice(0, 6));
+          setChalets(list.filter((h: any) => h.type === 'resort').slice(0, 6));
+        } else {
+          setHotels([]);
+          setChalets([]);
+        }
+      } else {
+        setHotels([]);
+        setChalets([]);
+      }
+    }).catch((error) => {
+      console.error('Error fetching hotels/chalets:', error);
+      setHotels([]);
+      setChalets([]);
     });
   }, []);
 

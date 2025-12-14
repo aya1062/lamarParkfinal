@@ -11,16 +11,27 @@ const FeaturedProperties = () => {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     api.getHotels().then((res) => {
-      if (res.success && res.data && Array.isArray(res.data.hotels)) {
-        // فلترة المنتجعات فقط
-        const featuredResorts = res.data.hotels.filter((h: any) => 
-          h.type === 'resort'
-        );
-        setResorts(featuredResorts);
+      if (res.success && res.data && res.data.hotels) {
+        const hotels = res.data.hotels;
+        
+        if (Array.isArray(hotels)) {
+          // فلترة المنتجعات فقط
+          const featuredResorts = hotels.filter((h: any) => 
+            h.type === 'resort'
+          );
+          setResorts(featuredResorts);
+        } else {
+          setResorts([]);
+        }
       } else {
-        setError('تعذر تحميل المنتجعات');
+        setResorts([]);
       }
+      setLoading(false);
+    }).catch((error) => {
+      console.error('Error fetching resorts:', error);
+      setResorts([]);
       setLoading(false);
     });
   }, []);

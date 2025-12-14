@@ -19,11 +19,14 @@ const PartnersSection: React.FC = () => {
     const fetchPartners = async () => {
       try {
         const response = await partnersApi.getPartners();
-        if (response.success) {
+        if (response.success && response.data && Array.isArray(response.data)) {
           setPartners(response.data);
+        } else {
+          setPartners([]);
         }
       } catch (error) {
         console.error('Error fetching partners:', error);
+        setPartners([]);
       } finally {
         setLoading(false);
       }
@@ -51,7 +54,7 @@ const PartnersSection: React.FC = () => {
     );
   }
 
-  if (partners.length === 0) {
+  if (!partners || partners.length === 0) {
     return null;
   }
 
@@ -71,7 +74,7 @@ const PartnersSection: React.FC = () => {
           {/* Horizontal Scroll Container */}
           <div className="overflow-x-auto scrollbar-hide scroll-smooth">
             <div className="flex space-x-4 md:space-x space-x-reverse pb-4" style={{ width: 'max-content' }}>
-              {partners.map((partner) => (
+              {partners && partners.length > 0 && partners.map((partner) => (
                 <div
                   key={partner._id}
                   className="flex-shrink-0 w-36 md:w-48" // أصغر على الموبايل
