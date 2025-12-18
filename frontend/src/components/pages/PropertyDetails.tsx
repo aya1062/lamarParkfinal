@@ -16,6 +16,7 @@ const PropertyDetails = () => {
   const [pricing, setPricing] = useState<any>({});
   const [todayPricing, setTodayPricing] = useState<any>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [parentHotel, setParentHotel] = useState<any | null>(null);
 
   // منع اختيار تواريخ سابقة في الحجز
   const today = new Date().toISOString().split('T')[0];
@@ -92,6 +93,31 @@ const PropertyDetails = () => {
       });
     });
   }, [id]);
+
+  // جلب بيانات الفندق/المنتجع المرتبط بالعقار للحصول على رقم الواتساب/الهاتف
+  useEffect(() => {
+    if (!property) return;
+
+    // قد يكون حقل hotel عبارة عن معرف أو كائن
+    const hotelId =
+      (property as any).hotel &&
+      (typeof (property as any).hotel === 'string'
+        ? (property as any).hotel
+        : (property as any).hotel._id || (property as any).hotel.id);
+
+    if (!hotelId) return;
+
+    api.getHotelById(hotelId)
+      .then((res) => {
+        if (res.success && res.data) {
+          const h = (res as any).data.hotel || (res as any).data;
+          setParentHotel(h);
+        }
+      })
+      .catch(() => {
+        // تجاهل أخطاء جلب بيانات الفندق حتى لا تؤثر على عرض الصفحة
+      });
+  }, [property]);
 
   useEffect(() => {
     if (!id || !checkIn || !checkOut) return;
@@ -345,7 +371,12 @@ const PropertyDetails = () => {
               <div className="flex items-center justify-center space-x-3 space-x-reverse">
                 <button
                   onClick={() => {
-                    const phoneNumber = '+966558248265'; // رقم الهاتف المطلوب
+                    // اختر رقم الواتساب/الهاتف من الفندق/المنتجع التابع للعقار، وإن لم يتوفر استخدم الرقم الافتراضي
+                    const rawNumber =
+                      parentHotel?.contact?.whatsapp ||
+                      parentHotel?.contact?.phone ||
+                      '+966558248265';
+                    const phoneNumber = rawNumber.replace(/[^0-9]/g, '');
                     const message = `مرحباً، أرغب في الاستفسار عن عقار: "${propertyData.name || 'عقار'}"`;
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                     window.open(whatsappUrl, '_blank');
