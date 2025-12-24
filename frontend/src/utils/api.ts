@@ -408,9 +408,14 @@ export const api = {
   getUserBookings: async () => {
     try {
       const res = await axios.get(`${API_URL}/bookings/user`);
-      return { success: true, data: res.data.bookings };
+      // الـ backend يرجع { success: true, bookings: [...] }
+      if (res.data && res.data.success && res.data.bookings) {
+        return { success: true, data: res.data.bookings };
+      }
+      return { success: true, data: [] };
     } catch (err: any) {
-      return { success: false, message: err.response?.data?.message || 'Failed to fetch user bookings' };
+      console.error('Error fetching user bookings:', err);
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch user bookings', data: [] };
     }
   },
 

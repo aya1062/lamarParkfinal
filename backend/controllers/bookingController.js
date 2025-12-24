@@ -447,31 +447,88 @@ exports.updateBookingStatus = async (req, res) => {
 exports.getUserBookings = async (req, res) => {
   try {
     const userId = req.user?.userId;
-    console.log('userId from token:', userId);
+    console.log('getUserBookings: userId from token:', userId);
+    
     // في بيئة التطوير: لا تُرجع 401 لتجنب إعادة التوجيه القسرية للـ login
     if (!userId) {
+      console.log('getUserBookings: No userId, returning empty array');
       return res.json({ success: true, bookings: [] });
     }
-    const bookings = await Booking.find({ user: userId }).populate('property');
-    // تجهيز البيانات للفرونت
+    
+    console.log('getUserBookings: Fetching bookings for user:', userId);
+    
+    // جلب بيانات المستخدم للحصول على البريد الإلكتروني
+    const User = require('../models/User');
+    const user = await User.findById(userId).select('email');
+    const userEmail = user?.email;
+    console.log('getUserBookings: userEmail from DB:', userEmail);
+    
+    // جلب الحجوزات المرتبطة بالمستخدم مباشرة
+    let bookings = await Booking.find({ user: userId })
+      .populate('property')
+      .sort({ createdAt: -1 });
+    
+    console.log('getUserBookings: Found', bookings.length, 'bookings by userId');
+    
+    // إذا لم نجد حجوزات مرتبطة بالمستخدم، جرب البحث بالبريد الإلكتروني
+    // (لربط الحجوزات القديمة التي تم إنشاؤها قبل ربطها بالمستخدم)
+    if (bookings.length === 0 && userEmail) {
+      console.log('getUserBookings: No bookings by userId, trying to find by email:', userEmail);
+      const bookingsByEmail = await Booking.find({ 
+        'guest.email': userEmail,
+        $or: [
+          { user: { $exists: false } },
+          { user: null }
+        ]
+      })
+        .populate('property')
+        .sort({ createdAt: -1 });
+      
+      console.log('getUserBookings: Found', bookingsByEmail.length, 'bookings by email');
+      
+      // ربط الحجوزات القديمة بالمستخدم الحالي
+      if (bookingsByEmail.length > 0) {
+        console.log('getUserBookings: Linking', bookingsByEmail.length, 'old bookings to user');
+        await Booking.updateMany(
+          { _id: { $in: bookingsByEmail.map(b => b._id) } },
+          { $set: { user: userId } }
+        );
+        // إعادة جلب الحجوزات بعد الربط
+        bookings = await Booking.find({ user: userId })
+          .populate('property')
+          .sort({ createdAt: -1 });
+        console.log('getUserBookings: After linking, found', bookings.length, 'bookings');
+      }
+    }
+    
+    // تجهيز البيانات للفرونت - إرجاع البيانات الكاملة مع property ككائن
     const result = bookings.map(b => ({
+      _id: b._id,
       id: b._id,
-      property: {
-        name: b.property?.name || '',
-        image: Array.isArray(b.property?.images) ? b.property.images[0] : '',
-        location: b.property?.location || ''
-      },
+      bookingNumber: b.bookingNumber,
+      guest: b.guest,
+      property: b.property ? {
+        _id: b.property._id,
+        name: b.property.name || '',
+        images: b.property.images || [],
+        location: b.property.location || ''
+      } : null,
       dates: b.dates,
       guests: b.guests,
       amount: b.amount,
       status: b.status,
       paymentStatus: b.paymentStatus,
-      bookingNumber: b.bookingNumber
+      paymentMethod: b.paymentMethod,
+      specialRequests: b.specialRequests,
+      bookingDate: b.bookingDate,
+      createdAt: b.createdAt,
+      updatedAt: b.updatedAt
     }));
+    
     res.json({ success: true, bookings: result });
   } catch (err) {
     console.error('Error in getUserBookings:', err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
