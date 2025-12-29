@@ -335,7 +335,7 @@ const AdminProperties = () => {
 
   const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const MAX_FILE_SIZE_MB = 10;
+      const MAX_FILE_SIZE_MB = 50;
       const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
       
       // Convert FileList to array and filter out large files
@@ -383,7 +383,7 @@ const AdminProperties = () => {
 
   // Function to check if any file exceeds the size limit
   const checkFileSizes = (files: File[]): { valid: boolean; message: string } => {
-    const MAX_FILE_SIZE_MB = 10; // Maximum file size in MB
+    const MAX_FILE_SIZE_MB = 50; // Maximum file size in MB
     const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024; // Convert to bytes
     
     const oversizedFiles = files.filter(file => file.size > MAX_FILE_SIZE_BYTES);
@@ -462,14 +462,18 @@ const AdminProperties = () => {
         formData.append('imagesToRemove', JSON.stringify(editImagesToRemove));
       }
       // إضافة timeout أطول للطلبات الكبيرة (رفع صور)
+      const token = localStorage.getItem('token');
       const response = await axios.put(
         `${API_URL}/properties/${editProperty._id}`,
         formData,
         {
           headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'X-Requested-With': 'XMLHttpRequest',
             // لا تضبط Content-Type يدوياً - axios يضبطه تلقائياً مع boundary عند استخدام FormData
           },
           timeout: 120000, // 2 دقيقة للصور الكبيرة
+          withCredentials: false, // لا ترسل credentials مع CORS
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -497,7 +501,18 @@ const AdminProperties = () => {
     } catch (error: any) {
       setIsUploading(false);
       setUploadProgress(0);
-      alert('فشل في تحديث العقار: ' + (error.response?.data?.message || error.message));
+      console.error('Error updating property:', error);
+      
+      let errorMessage = 'فشل في تحديث العقار';
+      if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+        errorMessage = 'خطأ في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت وإعدادات CORS في الخادم.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
     }
   };
 
@@ -1344,7 +1359,7 @@ const AdminProperties = () => {
                     className="input-rtl w-full"
                   />
                   <p className="text-sm text-gray-500 mt-1 text-right">
-                    الحد الأقصى لحجم الملف: 10 ميجابايت (JPEG, PNG, WebP فقط)
+                    الحد الأقصى لحجم الملف: 50 ميجابايت (JPEG, PNG, WebP فقط)
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">

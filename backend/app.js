@@ -85,20 +85,49 @@ const corsOptions = {
     'Accept',
     'Origin',
     'Access-Control-Request-Method',
-    'Access-Control-Request-Headers'
+    'Access-Control-Request-Headers',
+    'Content-Length',
+    'Cache-Control',
+    'X-File-Name'
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
 
-// CORS configuration for all other routes
+// Apply CORS before any routes
 app.use(cors(corsOptions));
 
 // Handle preflight requests for all routes with same CORS options
 app.options('*', cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Manual CORS headers as fallback (in case middleware fails)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log('Request origin:', origin);
+  console.log('Request method:', req.method);
+  console.log('Request path:', req.path);
+  
+  if (origin) {
+    const lamarparksPattern = /^https?:\/\/(www\.)?lamarparks\.com$/i;
+    if (allowedOrigins.includes(origin) || lamarparksPattern.test(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Content-Length, Cache-Control, X-File-Name');
+      res.header('Access-Control-Expose-Headers', 'Content-Range, X-Content-Range');
+      
+      // Handle preflight requests
+      if (req.method === 'OPTIONS') {
+        return res.status(204).end();
+      }
+    }
+  }
+  next();
+});
+
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 // Serve static files for images
 app.use('/lamar', express.static(path.join(__dirname, 'client/public/lamar')));

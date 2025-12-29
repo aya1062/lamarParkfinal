@@ -48,7 +48,7 @@ try {
     
     upload = multer({ 
       storage: storage,
-      limits: { fileSize: 30 * 1024 * 1024 }, // 30MB limit
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
       fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (allowedTypes.includes(file.mimetype)) {
@@ -65,7 +65,7 @@ try {
     // Fallback to memory storage if Cloudinary is not configured
     upload = multer({
       storage: multer.memoryStorage(),
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
       fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (allowedTypes.includes(file.mimetype)) {
@@ -79,7 +79,10 @@ try {
 } catch (error) {
   console.error('Error initializing file upload:', error);
   // Fallback to memory storage on error
-  upload = multer({ storage: multer.memoryStorage() });
+  upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+  });
 }
 
 exports.upload = upload;

@@ -21,6 +21,12 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
+    // معالجة CORS errors بشكل أفضل
+    if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('Network Error')) {
+      console.error('CORS or Network Error detected. Check backend CORS configuration.');
+      console.error('Request URL:', error.config?.url);
+      console.error('Request Origin:', window.location.origin);
+    }
     if (error.response?.status === 401) {
       // إعادة توجيه للـ login إذا انتهت صلاحية الـ token
       window.location.href = '/login';
@@ -37,6 +43,8 @@ axios.interceptors.request.use(
       config.headers = config.headers || {};
       config.headers['Authorization'] = 'Bearer ' + token;
     }
+    // إضافة headers إضافية للـ CORS
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
     return config;
   },
   (error) => Promise.reject(error)

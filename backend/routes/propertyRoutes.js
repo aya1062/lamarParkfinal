@@ -14,7 +14,7 @@ const handleUploadError = (err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ 
         success: false, 
-        message: 'حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت' 
+        message: 'حجم الملف كبير جداً. الحد الأقصى 50 ميجابايت' 
       });
     } else if (err.message.includes('نوع الملف غير مدعوم')) {
       return res.status(400).json({ 
