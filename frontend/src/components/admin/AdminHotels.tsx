@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye, Star, MapPin, Phone, Mail, Video, Image as ImageIcon } from 'lucide-react';
 import { api } from '../../utils/api';
+import { FALLBACK_IMAGES } from '../../utils/imageFallback';
 
 interface Hotel {
   _id: string;
@@ -392,8 +393,8 @@ const AdminHotels: React.FC = () => {
               <img
                 src={hotel.images && hotel.images.length > 0 ? 
                   (typeof hotel.images[0] === 'string' ? hotel.images[0] : 
-                   (hotel.images[0].url || 'https://via.placeholder.com/400x300?text=No+Image')) : 
-                  'https://via.placeholder.com/400x300?text=No+Image'}
+                   (hotel.images[0].url || FALLBACK_IMAGES.property)) : 
+                  FALLBACK_IMAGES.property}
                 alt={hotel.images && hotel.images.length > 0 && typeof hotel.images[0] === 'object' ? 
                   hotel.images[0].alt : hotel.name}
                   className="w-full h-full object-cover"

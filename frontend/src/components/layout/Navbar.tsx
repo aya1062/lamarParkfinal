@@ -4,6 +4,7 @@ import { Menu, X, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 import { api } from '../../utils/api';
+import { FALLBACK_IMAGES } from '../../utils/imageFallback';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +110,7 @@ const Navbar = () => {
                         {hotels && hotels.length > 0 ? hotels.map((h) => {
                           const img = Array.isArray(h.images) && h.images.length
                             ? (typeof h.images[0] === 'string' ? h.images[0] : h.images[0]?.url)
-                            : (h.image || 'https://via.placeholder.com/200x120?text=Hotel');
+                            : (h.image || FALLBACK_IMAGES.hotel);
                           return (
                             <Link
                               key={h._id}
@@ -148,7 +149,7 @@ const Navbar = () => {
                         {chalets && chalets.length > 0 ? chalets.map((c) => {
                           const img = Array.isArray(c.images) && c.images.length
                             ? (typeof c.images[0] === 'string' ? c.images[0] : c.images[0]?.url)
-                            : (c.image || 'https://via.placeholder.com/200x120?text=Resort');
+                            : (c.image || FALLBACK_IMAGES.hotel);
                           return (
                             <Link
                               key={c._id}

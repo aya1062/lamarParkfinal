@@ -25,10 +25,12 @@ const allowedOrigins = [
   'https://lamarpark.up.railway.app',
   'https://your-frontend-domain.com',
   'https://lamar-park.vercel.app',
-  'https://lamarparks.com',   // ← ضيفي ده
+  'https://lamarparks.com',
   'http://lamarparks.com',
-  'https://www.lamarparks.com',   // ← ضيفي ده
+  'https://www.lamarparks.com',
   'http://www.lamarparks.com',
+  'https://api.lamarparks.com',
+  'http://api.lamarparks.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -49,15 +51,27 @@ const corsOptions = {
       return callback(null, true);
     }
     console.log('CORS: Checking origin:', origin);
+    
+    // Check exact match first
     if (allowedOrigins.includes(origin)) {
-      console.log('CORS: Origin allowed:', origin);
+      console.log('CORS: Origin allowed (exact match):', origin);
       return callback(null, true);
     }
+    
+    // Check if origin matches lamarparks.com domain (with or without www, http/https)
+    const lamarparksPattern = /^https?:\/\/(www\.)?lamarparks\.com$/i;
+    if (lamarparksPattern.test(origin)) {
+      console.log('CORS: Origin allowed (lamarparks.com pattern):', origin);
+      return callback(null, true);
+    }
+    
+    // Check local network for development
     const isLocalNetwork = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[0-1])\.)\d+\.\d+:(3000|5173)$/.test(origin);
     if (process.env.NODE_ENV !== 'production' && isLocalNetwork) {
       console.log('CORS: Local network origin allowed:', origin);
       return callback(null, true);
     }
+    
     console.log('CORS: Origin blocked:', origin);
     console.log('CORS: Allowed origins:', allowedOrigins);
     return callback(new Error('Not allowed by CORS'));

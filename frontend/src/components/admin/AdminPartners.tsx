@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Upload, ArrowUp, ArrowDown } from 'lucide-react';
 import { partnersApi } from '../../utils/api';
 import toast from 'react-hot-toast';
+import { getFallbackImage, handleImageError } from '../../utils/imageFallback';
 
 interface Partner {
   _id: string;
@@ -210,9 +211,7 @@ const AdminPartners: React.FC = () => {
                           className="h-10 w-10 rounded-lg object-cover"
                           src={partner.logo}
                           alt={partner.name}
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/40x40?text=' + encodeURIComponent(partner.name);
-                          }}
+                          onError={(e) => handleImageError(e, getFallbackImage(40, 40, partner.name))}
                         />
                       </div>
                       <div className="mr-4">

@@ -84,9 +84,7 @@ const PartnersSection: React.FC = () => {
                       src={partner.logo}
                       alt={partner.name}
                       className="w-full h-full object-contain p-4 md:p-6"
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/200x120?text=' + encodeURIComponent(partner.name);
-                      }}
+                      onError={(e) => handleImageError(e, getFallbackImage(200, 120, partner.name))}
                     />
                   </div>
                 </div>

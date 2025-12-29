@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Eye, Search, Filter, MapPin, Star, X } from 'lucide
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../utils/api';
+import { FALLBACK_IMAGES } from '../../utils/imageFallback';
 
 const AdminProperties = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -603,7 +604,7 @@ const AdminProperties = () => {
                     />
                   </div>
                   <img
-                    src={property.images && property.images.length > 0 ? property.images[0] : 'https://via.placeholder.com/400x300?text=No+Image'}
+                    src={property.images && property.images.length > 0 ? property.images[0] : FALLBACK_IMAGES.property}
                     alt={property.name}
                     className="w-full h-48 object-cover"
                   />

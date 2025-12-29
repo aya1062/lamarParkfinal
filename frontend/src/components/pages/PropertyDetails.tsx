@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin,   Camera,  Shield, Award, Phone, Play, X } from 'lucide-react';
 import { api } from '../../utils/api';
 import toast from 'react-hot-toast';
+import { FALLBACK_IMAGES, handleImageError } from '../../utils/imageFallback';
 
 const PropertyDetails = () => {
   const { id } = useParams();
@@ -322,13 +323,11 @@ const PropertyDetails = () => {
                     src={propertyData.images[selectedImage] || propertyData.images[0]}
                     alt={propertyData.name || 'عقار'}
                     className="w-full h-64 md:h-96 object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/400x300?text=No+Image";
-                    }}
+                    onError={(e) => handleImageError(e, FALLBACK_IMAGES.property)}
                   />
                 ) : (
                   <img
-                    src={"https://via.placeholder.com/400x300?text=No+Image"}
+                    src={FALLBACK_IMAGES.property}
                     alt={propertyData.name || 'عقار'}
                     className="w-full h-64 md:h-96 object-cover"
                   />
@@ -354,9 +353,7 @@ const PropertyDetails = () => {
                             src={image}
                             alt={`صورة ${index + 1}`}
                             className="w-28 h-20 object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://via.placeholder.com/100x80?text=Error";
-                            }}
+                            onError={(e) => handleImageError(e, FALLBACK_IMAGES.thumbnail)}
                           />
                         </button>
                       ))}

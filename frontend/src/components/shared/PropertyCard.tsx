@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { API_ORIGIN } from "../../utils/api";
+import { FALLBACK_IMAGES, handleImageError } from "../../utils/imageFallback";
 
 interface Property {
   id?: string;
@@ -23,7 +24,7 @@ interface PropertyCardProps {
   property: Property;
 }
 
-const fallbackImage = "https://picsum.photos/200/300";
+const fallbackImage = FALLBACK_IMAGES.property;
 
 const API_BASE = API_ORIGIN;
 const absolutize = (url: string) => {
