@@ -126,8 +126,26 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+// Increase body size limits for large file uploads
+app.use(express.json({ limit: '200mb' }));
+app.use(express.urlencoded({ extended: true, limit: '200mb', parameterLimit: 50000 }));
+
+// Handle 413 errors (Request Entity Too Large)
+app.use((err, req, res, next) => {
+  if (err.status === 413 || err.type === 'entity.too.large') {
+    console.error('Request entity too large:', {
+      url: req.url,
+      method: req.method,
+      contentLength: req.headers['content-length'],
+      origin: req.headers.origin
+    });
+    return res.status(413).json({
+      success: false,
+      message: 'حجم الطلب كبير جداً. الحد الأقصى 200 ميجابايت. يرجى تقليل حجم الصور أو رفع عدد أقل من الصور.'
+    });
+  }
+  next(err);
+});
 
 // Serve static files for images
 app.use('/lamar', express.static(path.join(__dirname, 'client/public/lamar')));

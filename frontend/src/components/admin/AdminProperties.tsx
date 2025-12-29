@@ -418,12 +418,17 @@ const AdminProperties = () => {
       setUploadProgress(0);
       const formData = new FormData();
       
-      // Add all property data to formData
+      // Add all property data to formData (optimized - skip unnecessary fields)
+      const fieldsToSkip = ['_id', '__v', 'createdAt', 'updatedAt', 'images'];
+      
       Object.entries(editProperty).forEach(([key, value]) => {
-        if (key === 'images') return; // Skip images here as we'll handle them separately
+        if (fieldsToSkip.includes(key)) return; // Skip these fields
+        
         if (key === 'amenities') {
-          const amenitiesStr = JSON.stringify(value);
-          formData.append(key, amenitiesStr);
+          if (Array.isArray(value) && value.length > 0) {
+            const amenitiesStr = JSON.stringify(value);
+            formData.append(key, amenitiesStr);
+          }
         } else if (key === 'chaletSettings') {
           if (value !== null && value !== undefined && value !== '') {
             const str = typeof value === 'string' ? value : JSON.stringify(value);
@@ -436,9 +441,16 @@ const AdminProperties = () => {
           }
         } else if (key === 'videoUrl') {
           const videoUrl = convertToEmbedUrl(String(value));
-          formData.append(key, videoUrl);
+          if (videoUrl) formData.append(key, videoUrl);
+        } else if (key === 'hotel' && typeof value === 'object' && value !== null) {
+          // Skip hotel object here, we'll handle it separately below
+          return;
         } else if (value !== null && value !== undefined) {
-          formData.append(key, String(value));
+          const stringValue = String(value);
+          // Only append non-empty values to reduce payload size
+          if (stringValue.trim() !== '' || key === 'price' || key === 'discountPrice') {
+            formData.append(key, stringValue);
+          }
         }
       });
       
@@ -461,6 +473,35 @@ const AdminProperties = () => {
       if (editImagesToRemove.length > 0) {
         formData.append('imagesToRemove', JSON.stringify(editImagesToRemove));
       }
+      
+      // Calculate and log FormData size for debugging
+      let totalSize = 0;
+      const sizeBreakdown: { [key: string]: number } = {};
+      
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          totalSize += value.size;
+          sizeBreakdown[`File: ${key}`] = value.size;
+          console.log(`📁 File: ${key} - ${(value.size / 1024 / 1024).toFixed(2)} MB (${value.name})`);
+        } else {
+          const size = new Blob([String(value)]).size;
+          totalSize += size;
+          sizeBreakdown[key] = size;
+          if (size > 1000) { // Log only if larger than 1KB
+            console.log(`📝 Field: ${key} - ${(size / 1024).toFixed(2)} KB`);
+          }
+        }
+      }
+      
+      const totalMB = (totalSize / 1024 / 1024).toFixed(2);
+      console.log(`📊 Total FormData size: ${totalMB} MB`);
+      console.log(`📊 Size breakdown:`, sizeBreakdown);
+      
+      // Warn if size is approaching limits
+      if (totalSize > 100 * 1024 * 1024) { // 100MB
+        console.warn(`⚠️ Warning: Request size (${totalMB} MB) is large. Consider reducing image sizes or number of images.`);
+      }
+      
       // إضافة timeout أطول للطلبات الكبيرة (رفع صور)
       const token = localStorage.getItem('token');
       const response = await axios.put(
@@ -472,7 +513,9 @@ const AdminProperties = () => {
             'X-Requested-With': 'XMLHttpRequest',
             // لا تضبط Content-Type يدوياً - axios يضبطه تلقائياً مع boundary عند استخدام FormData
           },
-          timeout: 120000, // 2 دقيقة للصور الكبيرة
+          timeout: 300000, // 5 دقائق للصور الكبيرة
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
           withCredentials: false, // لا ترسل credentials مع CORS
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
@@ -504,8 +547,14 @@ const AdminProperties = () => {
       console.error('Error updating property:', error);
       
       let errorMessage = 'فشل في تحديث العقار';
-      if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
-        errorMessage = 'خطأ في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت وإعدادات CORS في الخادم.';
+      if (error.response?.status === 413) {
+        errorMessage = 'حجم الطلب كبير جداً. يرجى تقليل حجم الصور أو رفع عدد أقل من الصور (الحد الأقصى 200 ميجابايت).';
+      } else if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+        if (error.message?.includes('413') || error.message?.includes('Request Entity Too Large')) {
+          errorMessage = 'حجم الطلب كبير جداً. يرجى تقليل حجم الصور أو رفع عدد أقل من الصور.';
+        } else {
+          errorMessage = 'خطأ في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت وإعدادات CORS في الخادم.';
+        }
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
