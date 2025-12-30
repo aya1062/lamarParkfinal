@@ -4,7 +4,7 @@ import axios from 'axios';
 const ENV: any = (typeof import.meta !== 'undefined' ? (import.meta as any).env : {}) || {};
 const isLocalHost = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
-export const API_URL: string = ENV?.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL: string = ENV?.VITE_API_URL || 'https://api.lamarparks.com/api';
 export const API_ORIGIN: string = (() => {
   try {
     const u = new URL(API_URL);
@@ -14,7 +14,7 @@ export const API_ORIGIN: string = (() => {
   }
 })();
 // Allow payment endpoints to point to a different backend (e.g., local dev) to avoid 404s on prod API
-export const PAYMENT_API_URL: string = ENV?.VITE_PAYMENT_API_URL || (isLocalHost ? 'http://localhost:5000/api' : API_URL);
+export const PAYMENT_API_URL: string = ENV?.VITE_PAYMENT_API_URL || (isLocalHost ? 'https://api.lamarparks.com/api' : API_URL);
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(
