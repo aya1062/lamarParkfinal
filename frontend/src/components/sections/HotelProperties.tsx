@@ -105,8 +105,8 @@ const HotelProperties = () => {
           <div className="text-center text-red-500">{error}</div>
         ) : (
           <div className="space-y-10">
-            {renderCitySection('فنادق لامار المميزة بتبوك', tabukHotels)}
             {renderCitySection('فنادق لامار المميزة بالرياض', riyadhHotels)}
+            {renderCitySection('فنادق لامار المميزة بتبوك', tabukHotels)}
           </div>
         )}
 

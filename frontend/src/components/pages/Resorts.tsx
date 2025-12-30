@@ -1,7 +1,6 @@
 import React from 'react';
 import { Award } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
-import FloatingContact from '../common/FloatingContact';
 import { api } from '../../utils/api';
 
 const Resorts = () => {
@@ -67,8 +66,6 @@ const Resorts = () => {
           <span className="text-gray-500 text-sm">نهاية القائمة</span>
         </div>
       </div>
-
-      <FloatingContact showWhatsApp={true} showPhone={true} />
     </div>
   );
 };

@@ -59,3 +59,7 @@ sudo nginx -t  # للتحقق من صحة الإعدادات
 sudo systemctl reload nginx  # أو sudo service nginx reload
 ```
 
+
+
+
+

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
-import FloatingContact from '../common/FloatingContact';
 import { api } from '../../utils/api';
 
 const Chalets = () => {
@@ -151,9 +150,6 @@ const Chalets = () => {
           </button>
         </div>
       </div>
-
-      {/* Floating Contact Buttons */}
-      <FloatingContact showWhatsApp={true} showPhone={true} />
     </div>
   );
 };

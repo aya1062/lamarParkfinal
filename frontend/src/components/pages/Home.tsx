@@ -1,4 +1,3 @@
-import React from 'react';
 import Hero from '../sections/Hero';
 import FeaturedProperties from '../sections/FeaturedProperties';
 import HotelProperties from '../sections/HotelProperties';

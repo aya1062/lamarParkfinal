@@ -5,6 +5,7 @@ import PrivateRoute from './components/common/PrivateRoute';
 import Toast from './components/common/Toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import FloatingWhatsApp from './components/common/FloatingWhatsApp';
 import Home from './components/pages/Home';
 const Chalets = React.lazy(() => import('./components/pages/Chalets'));
 const Hotels = React.lazy(() => import('./components/pages/Hotels'));
@@ -45,6 +46,18 @@ const ScrollToTop = () => {
   }, [pathname]);
 
   return null;
+};
+
+// مكون لإظهار زر الواتساب فقط في صفحات الواجهة وليس في الداشبورد
+const ConditionalFloatingWhatsApp = () => {
+  const location = useLocation();
+  const isDashboardPage = location.pathname.startsWith('/admin') || location.pathname.startsWith('/dashboard');
+  
+  if (isDashboardPage) {
+    return null;
+  }
+  
+  return <FloatingWhatsApp />;
 };
 
 function App() {
@@ -143,6 +156,7 @@ function App() {
                     </Suspense>
 					</main>
 					<Footer />
+					<ConditionalFloatingWhatsApp />
 				</div>
 			</Router>
 		</ErrorBoundary>

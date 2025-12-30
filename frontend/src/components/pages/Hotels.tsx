@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { MapPin, Filter, SlidersHorizontal, Award } from 'lucide-react';
+import { Filter, SlidersHorizontal, Award } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
-import FloatingContact from '../common/FloatingContact';
 import { api } from '../../utils/api';
 
 const Hotels = () => {
@@ -165,9 +164,6 @@ const Hotels = () => {
           </button>
         </div>
       </div>
-
-      {/* Floating Contact Buttons */}
-      <FloatingContact showWhatsApp={true} showPhone={true} />
     </div>
   );
 };
