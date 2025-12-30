@@ -17,6 +17,11 @@ export default function PaymentSuccess() {
   const ref = searchParams.get('ref');
 
   useEffect(() => {
+    // تتبع التحويل عند نجاح الدفع
+    if (window.gtag_report_conversion) {
+      window.gtag_report_conversion();
+    }
+
     // Countdown timer to redirect to bookings
     const timer = setInterval(() => {
       setCountdown((prev) => {

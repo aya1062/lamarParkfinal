@@ -1,13 +1,21 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
-    <!-- Google Tag Manager -->
+    <!-- Google Tag Manager (Old Account) -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TRSQ3Z9V');</script>
-    <!-- End Google Tag Manager -->
+    <!-- End Google Tag Manager (Old Account) -->
+    
+    <!-- Google Tag Manager (New Account) -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-M6MCK3CB');</script>
+    <!-- End Google Tag Manager (New Account) -->
     
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -26,12 +34,33 @@
       gtag('js', new Date());
       gtag('config', 'AW-16676612225');
     </script>
+    
+    <!-- Event snippet for Contact conversion page -->
+    <script>
+      function gtag_report_conversion(url) {
+        var callback = function () {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+            'send_to': 'AW-17840494170/rxXWCIjrrdkbENqsgbtC',
+            'event_callback': callback
+        });
+        return false;
+      }
+    </script>
   </head>
   <body dir="rtl">
-    <!-- Google Tag Manager (noscript) -->
+    <!-- Google Tag Manager (noscript) - Old Account -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRSQ3Z9V"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <!-- End Google Tag Manager (noscript) - Old Account -->
+    
+    <!-- Google Tag Manager (noscript) - New Account -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M6MCK3CB"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) - New Account -->
     
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

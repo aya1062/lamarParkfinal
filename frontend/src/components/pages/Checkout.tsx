@@ -206,6 +206,10 @@ const Checkout = () => {
       } else if (paymentMethod === 'cash_on_arrival') {
         const res = await api.createBooking(bookingData);
         if (res.success) {
+          // تتبع التحويل عند نجاح الحجز
+          if (window.gtag_report_conversion) {
+            window.gtag_report_conversion();
+          }
           navigate('/booking/success', { state: { booking: res.booking } });
         } else {
           setError(res.message || 'فشل في إنشاء الحجز');

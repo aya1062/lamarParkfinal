@@ -44,6 +44,11 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
+    // تتبع التحويل عند إرسال نموذج الاتصال
+    if (window.gtag_report_conversion) {
+      window.gtag_report_conversion();
+    }
+    
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);

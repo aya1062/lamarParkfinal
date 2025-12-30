@@ -376,7 +376,14 @@ const PropertyDetails = () => {
                     const phoneNumber = rawNumber.replace(/[^0-9]/g, '');
                     const message = `مرحباً، أرغب في الاستفسار عن عقار: "${propertyData.name || 'عقار'}"`;
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-                    window.open(whatsappUrl, '_blank');
+                    
+                    // تتبع التحويل عند النقر على زر الواتساب
+                    if (window.gtag_report_conversion) {
+                      window.gtag_report_conversion(whatsappUrl);
+                      window.open(whatsappUrl, '_blank');
+                    } else {
+                      window.open(whatsappUrl, '_blank');
+                    }
                   }}
                   className="flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-300 text-sm"
                 >

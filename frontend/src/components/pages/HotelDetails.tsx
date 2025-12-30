@@ -336,6 +336,15 @@ const HotelDetails: React.FC = () => {
                           href={`https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن عقار: "${hotel.name || 'فندق'}"`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => {
+                            const whatsappUrl = `https://wa.me/${(hotel.contact.whatsapp || hotel.contact.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن عقار: "${hotel.name || 'فندق'}"`)}`;
+                            // تتبع التحويل عند النقر على زر الواتساب
+                            if (window.gtag_report_conversion) {
+                              window.gtag_report_conversion(whatsappUrl);
+                              e.preventDefault();
+                              window.open(whatsappUrl, '_blank');
+                            }
+                          }}
                           className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-gold/60 transition"
                         >
                           <span className="text-[#25D366] text-xl"><WhatsAppIcon className="h-5 w-5" /></span>
