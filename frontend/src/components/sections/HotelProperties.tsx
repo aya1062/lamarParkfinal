@@ -41,7 +41,7 @@ const HotelProperties = () => {
   };
 
   // تقسيم الفنادق حسب المدينة
-  const { tabukHotels, riyadhHotels } = useMemo(() => {
+  const { tabukHotels, riyadhHotels, madinahHotels } = useMemo(() => {
     const normalizeCity = (h: any) =>
       String(h?.address?.city || h?.city || h?.location || '')
         .toLowerCase()
@@ -54,7 +54,10 @@ const HotelProperties = () => {
 
     const tabuk = hotels.filter(h => inCity(h, ['تبوك', 'tabuk']));
     const riyadh = hotels.filter(h => inCity(h, ['الرياض', 'riyadh']));
-    return { tabukHotels: tabuk, riyadhHotels: riyadh };
+    const madinah = hotels.filter(h =>
+      inCity(h, ['المدينة المنورة', 'المدينة', 'madinah', 'medina'])
+    );
+    return { tabukHotels: tabuk, riyadhHotels: riyadh, madinahHotels: madinah };
   }, [hotels]);
 
   const renderCitySection = (title: string, items: any[]) => (
@@ -85,19 +88,19 @@ const HotelProperties = () => {
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            فنادق لامار المميزة
-          </h2>
-          {/* <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4">
-            <span className="text-xl font-bold">فندق أبل حي اليرموك</span>
-          </div> */}
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            استمتع بإقامة فاخرة في أفضل فنادق المملكة مع خدمات عصرية ومرافق متطورة
-            <br />
-            احجز الغرفة التي تناسب احتياجاتك
-          </p>
-        </div>
+        {/* <div className="text-center mb-12"> */}
+          {/* <h2 className="text-4xl font-bold text-gray-900 mb-4"> */}
+            {/* فنادق لامار المميزة */}
+          {/* </h2> */}
+          {/* {/* <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4"> */}
+            {/* <span className="text-xl font-bold">فندق أبل حي اليرموك</span> */}
+          {/* </div>  */}
+          {/* <p className="text-xl text-gray-600 max-w-2xl mx-auto"> */}
+            {/* استمتع بإقامة فاخرة في أفضل فنادق المملكة مع خدمات عصرية ومرافق متطورة */}
+            {/* <br /> */}
+            {/* احجز الغرفة التي تناسب احتياجاتك */}
+          {/* </p> */}
+        {/* </div> */}
 
         {loading ? (
           <div className="text-center text-lg">جاري التحميل...</div>
@@ -105,8 +108,9 @@ const HotelProperties = () => {
           <div className="text-center text-red-500">{error}</div>
         ) : (
           <div className="space-y-10">
-            {renderCitySection('فنادق لامار المميزة بالرياض', riyadhHotels)}
-            {renderCitySection('فنادق لامار المميزة بتبوك', tabukHotels)}
+            {renderCitySection('فروعنا بمدينة الرياض', riyadhHotels)}
+            {renderCitySection('فروعنا بمدينة تبوك', tabukHotels)}
+            {renderCitySection('فروعنا بالمدينة المنورة', madinahHotels)}
           </div>
         )}
 
