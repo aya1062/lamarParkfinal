@@ -1,6 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Search } from 'lucide-react';
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
   // استخراج ID الفيديو من الرابط (YouTube Shorts)
   const videoId = 'LzIFAQWieOw';
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
@@ -45,9 +56,29 @@ const Hero = () => {
               className="mx-auto mt-8 h-36 md:h-36 w-auto drop-shadow-lg"
             />
           </h1>
-          <p className="text-xl md:text-2xl mb-12 opacity-90">
+          <p className="text-xl md:text-2xl mb-10 opacity-90">
             اكتشف أفضل الفنادق والشاليهات الفاخرة في المملكة العربية السعودية
           </p>
+
+					{/* Search Bar */}
+					<form onSubmit={handleSearch} className="relative max-w-xl mx-auto w-full mb-10">
+						<div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+							<Search className="h-6 w-6 text-gray-400" />
+						</div>
+						<input
+							type="text"
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							placeholder="ابحث عن الفنادق، الشاليهات، الوجهات..."
+							className="w-full input-rtl py-4 pr-12 pl-24 rounded-full border-none shadow-2xl text-lg text-gray-900 focus:ring-4 focus:ring-[#DfB86c]/50 outline-none"
+						/>
+						<button 
+							type="submit"
+							className="absolute left-2 top-2 bottom-2 px-6 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white rounded-full font-semibold hover:brightness-110 transition shadow-md"
+						>
+							بحث
+						</button>
+					</form>
 
 					{/* CTA Buttons */}
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">

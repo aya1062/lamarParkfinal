@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye, Star, MapPin, Phone, Mail, Video, Image as ImageIcon } from 'lucide-react';
-import { api } from '../../utils/api';
+import { API_URL } from '../../utils/api';
 import { FALLBACK_IMAGES } from '../../utils/imageFallback';
 
 interface Hotel {
@@ -11,6 +11,10 @@ interface Hotel {
   address: {
     city: string;
     country: string;
+    coordinates?: {
+      latitude?: number;
+      longitude?: number;
+    };
   };
   description: string;
   shortDescription: string;
@@ -40,6 +44,8 @@ interface Hotel {
     occupancyRate: number;
   };
   createdAt: string;
+  installmentAvailable?: boolean;
+  installmentLogos?: Array<{ url: string; alt?: string }>;
 }
 
 const AdminHotels: React.FC = () => {
@@ -54,7 +60,11 @@ const AdminHotels: React.FC = () => {
     location: '',
     address: {
       city: '',
-      country: ''
+      country: '',
+      coordinates: {
+        latitude: '',
+        longitude: ''
+      }
     },
     description: '',
     shortDescription: '',
@@ -67,10 +77,13 @@ const AdminHotels: React.FC = () => {
     },
     policies: { checkIn: '15:00', checkOut: '12:00' },
     instructions: [''],
-    amenities: [{ title: '', body: '', icon: '', category: 'general' }]
+    amenities: [{ title: '', body: '', icon: '', category: 'general' }],
+    installmentAvailable: false
   });
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [installmentLogoExistingUrls, setInstallmentLogoExistingUrls] = useState<string[]>([]);
+  const [installmentLogoNewFiles, setInstallmentLogoNewFiles] = useState<File[]>([]);
 
   const [filter, setFilter] = useState({
     type: '',
@@ -83,13 +96,17 @@ const AdminHotels: React.FC = () => {
   }, [filter]);
 
   const fetchHotels = async () => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
       setLoading(true);
       const params = new URLSearchParams();
       if (filter.type) params.append('type', filter.type);
       if (filter.status) params.append('status', filter.status);
       
-      const response = await fetch(`https://api.lamarparks.com/api/hotels?${params.toString()}`);
+      const response = await fetch(`${API_URL}/hotels?${params.toString()}`, {
+        signal: controller.signal
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -107,9 +124,14 @@ const AdminHotels: React.FC = () => {
       } else {
         setError(data.message || 'فشل في جلب الفنادق');
       }
-    } catch (err) {
-      setError('خطأ في الاتصال بالخادم');
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        setError('انتهت مهلة الاتصال بالخادم. تحققي من تشغيل الـ API أو الإنترنت.');
+      } else {
+        setError('خطأ في الاتصال بالخادم');
+      }
     } finally {
+      window.clearTimeout(timeout);
       setLoading(false);
     }
   };
@@ -118,7 +140,7 @@ const AdminHotels: React.FC = () => {
     if (!confirm('هل أنت متأكد من حذف هذا الفندق/المنتجع؟')) return;
 
     try {
-      const response = await fetch(`https://api.lamarparks.com/api/hotels/${hotelId}`, {
+      const response = await fetch(`${API_URL}/hotels/${hotelId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -139,7 +161,7 @@ const AdminHotels: React.FC = () => {
 
   const handleStatusChange = async (hotelId: string, newStatus: string) => {
     try {
-      const response = await fetch(`https://api.lamarparks.com/api/hotels/${hotelId}/status`, {
+      const response = await fetch(`${API_URL}/hotels/${hotelId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -164,6 +186,7 @@ const AdminHotels: React.FC = () => {
 
   const openEdit = (hotel: Hotel) => {
     setEditingHotel(hotel);
+
     // Prefill form data
     setFormData({
       name: hotel.name || '',
@@ -171,7 +194,11 @@ const AdminHotels: React.FC = () => {
       location: hotel.location || '',
       address: {
         city: hotel.address?.city || '',
-        country: hotel.address?.country || ''
+        country: hotel.address?.country || '',
+        coordinates: {
+          latitude: hotel.address?.coordinates?.latitude?.toString() || '',
+          longitude: hotel.address?.coordinates?.longitude?.toString() || ''
+        }
       },
       description: hotel.description || '',
       shortDescription: hotel.shortDescription || '',
@@ -184,12 +211,18 @@ const AdminHotels: React.FC = () => {
         email: hotel.contact?.email || '',
         whatsapp: (hotel as any).contact?.whatsapp || '',
         mapsUrl: (hotel as any).contact?.mapsUrl || ''
-      }
+      },
+      installmentAvailable: !!(hotel as any).installmentAvailable
     });
     // Existing images previews (support url string or object)
     const previews = (hotel.images || []).map((img: any) => img?.url ? img.url : img);
     setImagePreviews(previews.filter(Boolean));
     setSelectedImages([]);
+    const inst = (hotel as any).installmentLogos || [];
+    setInstallmentLogoExistingUrls(
+      inst.map((x: any) => (typeof x === 'string' ? x : x?.url)).filter(Boolean)
+    );
+    setInstallmentLogoNewFiles([]);
     setShowModal(true);
   };
 
@@ -200,7 +233,22 @@ const AdminHotels: React.FC = () => {
       fd.append('name', formData.name);
       fd.append('type', formData.type);
       fd.append('location', formData.location);
-      fd.append('address', JSON.stringify(formData.address));
+      const latitudeRaw = String((formData as any).address?.coordinates?.latitude || '').trim();
+      const longitudeRaw = String((formData as any).address?.coordinates?.longitude || '').trim();
+      const latitudeValue = Number(latitudeRaw);
+      const longitudeValue = Number(longitudeRaw);
+      const hasCoordinates =
+        latitudeRaw !== '' &&
+        longitudeRaw !== '' &&
+        Number.isFinite(latitudeValue) &&
+        Number.isFinite(longitudeValue);
+      const addressPayload = {
+        ...formData.address,
+        coordinates: hasCoordinates
+          ? { latitude: latitudeValue, longitude: longitudeValue }
+          : undefined
+      };
+      fd.append('address', JSON.stringify(addressPayload));
       fd.append('description', formData.description);
       fd.append('shortDescription', formData.shortDescription || '');
       if (formData.videoUrl) fd.append('videoUrl', formData.videoUrl);
@@ -208,6 +256,12 @@ const AdminHotels: React.FC = () => {
       fd.append('amenities', JSON.stringify(formData.amenities.filter(amenity => amenity.title.trim() !== '')));
       fd.append('policies', JSON.stringify({ checkIn: formData.policies.checkIn, checkOut: formData.policies.checkOut }));
       fd.append('contact', JSON.stringify({ phone: formData.contact.phone, email: formData.contact.email, whatsapp: formData.contact.whatsapp || formData.contact.phone, mapsUrl: formData.contact.mapsUrl }));
+      fd.append('installmentAvailable', formData.installmentAvailable ? 'true' : 'false');
+      fd.append(
+        'installmentLogos',
+        JSON.stringify(installmentLogoExistingUrls.map((url) => ({ url, alt: '' })))
+      );
+      installmentLogoNewFiles.forEach((file) => fd.append('installmentLogoImages', file));
       selectedImages.forEach((file) => fd.append('images', file));
 
       let res;
@@ -222,7 +276,7 @@ const AdminHotels: React.FC = () => {
           }));
           fd.append('images', JSON.stringify(existingImages));
         }
-        res = await fetch(`https://api.lamarparks.com/api/hotels/${editingHotel._id}`, {
+        res = await fetch(`${API_URL}/hotels/${editingHotel._id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -230,7 +284,7 @@ const AdminHotels: React.FC = () => {
           body: fd
         });
       } else {
-        res = await fetch('https://api.lamarparks.com/api/hotels', {
+        res = await fetch(`${API_URL}/hotels`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -245,18 +299,21 @@ const AdminHotels: React.FC = () => {
         setEditingHotel(null);
         setSelectedImages([]);
         setImagePreviews([]);
+        setInstallmentLogoExistingUrls([]);
+        setInstallmentLogoNewFiles([]);
         setFormData({
           name: '',
           type: 'hotel',
           location: '',
-          address: { city: '', country: '' },
+          address: { city: '', country: '', coordinates: { latitude: '', longitude: '' } },
           description: '',
           shortDescription: '',
           videoUrl: '',
           policies: { checkIn: '15:00', checkOut: '12:00' },
           instructions: [''],
           amenities: [{ title: '', body: '', icon: '', category: 'general' }],
-          contact: { phone: '', email: '', whatsapp: '', mapsUrl: '' }
+          contact: { phone: '', email: '', whatsapp: '', mapsUrl: '' },
+          installmentAvailable: false
         });
         fetchHotels();
         alert(editingHotel ? 'تم تحديث الفندق/المنتجع' : 'تم إنشاء الفندق/المنتجع بنجاح');
@@ -321,7 +378,7 @@ const AdminHotels: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">إدارة الفنادق والمنتجعات</h1>
         <button
-          onClick={() => { setShowModal(true); setEditingHotel(null); setSelectedImages([]); setImagePreviews([]); setFormData({ name:'', type:'hotel', location:'', address:{city:'', country:''}, description:'', shortDescription:'', videoUrl:'', instructions:[''], amenities:[{ title: '', body: '', icon: '', category: 'general' }], contact:{phone:'', email:'', whatsapp:''}}); }}
+          onClick={() => { setShowModal(true); setEditingHotel(null); setSelectedImages([]); setImagePreviews([]); setInstallmentLogoExistingUrls([]); setInstallmentLogoNewFiles([]); setFormData({ name:'', type:'hotel', location:'', address:{city:'', country:'', coordinates:{ latitude:'', longitude:'' }}, description:'', shortDescription:'', videoUrl:'', instructions:[''], amenities:[{ title: '', body: '', icon: '', category: 'general' }], contact:{phone:'', email:'', whatsapp:'', mapsUrl:''}, installmentAvailable: false}); }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
@@ -858,6 +915,79 @@ const AdminHotels: React.FC = () => {
                     placeholder="https://maps.google.com/?q=..."
                   />
                 </div>
+
+                <div className="md:col-span-2 border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!(formData as any).installmentAvailable}
+                      onChange={(e) =>
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          installmentAvailable: e.target.checked
+                        }))
+                      }
+                      className="rounded border-gray-300"
+                    />
+                    <span className="text-sm font-medium text-gray-800">متاح التقسيط</span>
+                  </label>
+                  {(formData as any).installmentAvailable && (
+                    <>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">شعارات طرق التقسيط (صور — تابي، تمارا، إلخ)</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            setInstallmentLogoNewFiles((prev) => [...prev, ...files]);
+                            e.target.value = '';
+                          }}
+                          className="w-full text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">يمكن رفع أكثر من صورة. للعرض في الكارد على الموقع.</p>
+                      </div>
+                      {installmentLogoNewFiles.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {installmentLogoNewFiles.map((f, i) => (
+                            <div key={`${f.name}-${i}`} className="relative">
+                              <img src={URL.createObjectURL(f)} alt="" className="h-12 w-auto rounded border object-contain" />
+                              <button
+                                type="button"
+                                className="absolute -top-1 -left-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-5"
+                                onClick={() =>
+                                  setInstallmentLogoNewFiles((prev) => prev.filter((_, idx) => idx !== i))
+                                }
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {installmentLogoExistingUrls.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {installmentLogoExistingUrls.map((url, i) => (
+                            <div key={url} className="relative">
+                              <img src={url} alt="" className="h-12 w-auto rounded border object-contain bg-white" />
+                              <button
+                                type="button"
+                                className="absolute -top-1 -left-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-5"
+                                onClick={() =>
+                                  setInstallmentLogoExistingUrls((prev) => prev.filter((_, idx) => idx !== i))
+                                }
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
               <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">رقم واتساب (اختياري)</label>
                 <input

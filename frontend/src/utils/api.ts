@@ -3,8 +3,8 @@ import axios from 'axios';
 // Base URLs
 const ENV: any = (typeof import.meta !== 'undefined' ? (import.meta as any).env : {}) || {};
 const isLocalHost = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
-
-export const API_URL: string = ENV?.VITE_API_URL || 'https://api.lamarparks.com/api';
+// https://api.lamarparks.com/api
+export const API_URL: string = ENV?.VITE_API_URL || 'http://localhost:5000/api';
 export const API_ORIGIN: string = (() => {
   try {
     const u = new URL(API_URL);
@@ -14,7 +14,7 @@ export const API_ORIGIN: string = (() => {
   }
 })();
 // Allow payment endpoints to point to a different backend (e.g., local dev) to avoid 404s on prod API
-export const PAYMENT_API_URL: string = ENV?.VITE_PAYMENT_API_URL || (isLocalHost ? 'https://api.lamarparks.com/api' : API_URL);
+export const PAYMENT_API_URL: string = ENV?.VITE_PAYMENT_API_URL || (isLocalHost ? 'http://localhost:5000/api' : API_URL);
 
 // إضافة axios interceptor للـ error handling
 axios.interceptors.response.use(
@@ -208,6 +208,43 @@ export const api = {
       return { success: true, message: 'تم إرسال رسالتك بنجاح' };
     } catch (err: any) {
       return { success: false, message: 'فشل في إرسال الرسالة' };
+    }
+  },
+
+  // الروابط السريعة (Quick Links)
+  getQuickLinks: async (all: boolean = false) => {
+    try {
+      const res = await axios.get(`${API_URL}/quick-links?all=${all}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch quick links' };
+    }
+  },
+
+  createQuickLink: async (data: any) => {
+    try {
+      const res = await axios.post(`${API_URL}/quick-links`, data);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to create quick link' };
+    }
+  },
+
+  updateQuickLink: async (id: string, data: any) => {
+    try {
+      const res = await axios.put(`${API_URL}/quick-links/${id}`, data);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to update quick link' };
+    }
+  },
+
+  deleteQuickLink: async (id: string) => {
+    try {
+      const res = await axios.delete(`${API_URL}/quick-links/${id}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to delete quick link' };
     }
   },
 
@@ -536,6 +573,43 @@ export const partnersApi = {
       return { success: true, data: res.data };
     } catch (err: any) {
       return { success: false, message: err.response?.data?.message || 'Failed to update partners order' };
+    }
+  },
+
+  // الروابط السريعة (Quick Links)
+  getQuickLinks: async (all: boolean = false) => {
+    try {
+      const res = await axios.get(`${API_URL}/quick-links?all=${all}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to fetch quick links' };
+    }
+  },
+
+  createQuickLink: async (data: any) => {
+    try {
+      const res = await axios.post(`${API_URL}/quick-links`, data);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to create quick link' };
+    }
+  },
+
+  updateQuickLink: async (id: string, data: any) => {
+    try {
+      const res = await axios.put(`${API_URL}/quick-links/${id}`, data);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to update quick link' };
+    }
+  },
+
+  deleteQuickLink: async (id: string) => {
+    try {
+      const res = await axios.delete(`${API_URL}/quick-links/${id}`);
+      return { success: true, data: res.data };
+    } catch (err: any) {
+      return { success: false, message: err.response?.data?.message || 'Failed to delete quick link' };
     }
   }
 };

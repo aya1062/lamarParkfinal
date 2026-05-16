@@ -82,3 +82,78 @@ html {
     @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#DfB86c] focus:ring-2 focus:ring-[#DfB86c]/30 transition-all duration-200 text-right;
   }
 }
+
+@layer utilities {
+  .animate-splash-logo {
+    animation: splashLogo 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  
+  .animate-splash-text {
+    animation: splashText 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s forwards;
+    opacity: 0;
+  }
+  
+  .animate-splash-fade-out {
+    animation: splashFadeOut 0.8s ease-in-out forwards;
+  }
+
+  @keyframes splashLogo {
+    0% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+      filter: blur(5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes splashText {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+      letter-spacing: -0.5px;
+      filter: blur(5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      letter-spacing: 1px;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes splashFadeOut {
+    0% {
+      opacity: 1;
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}
+
+/* ===== Leaflet Branch Card Tooltip (Always Visible) ===== */
+.branch-card-tooltip {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  pointer-events: auto !important;
+}
+
+.branch-card-tooltip::before {
+  display: none !important;
+}
+
+.leaflet-tooltip.branch-card-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}

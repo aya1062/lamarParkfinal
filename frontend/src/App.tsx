@@ -6,7 +6,9 @@ import Toast from './components/common/Toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import FloatingWhatsApp from './components/common/FloatingWhatsApp';
+import SplashScreen from './components/common/SplashScreen';
 import Home from './components/pages/Home';
+const SearchResults = React.lazy(() => import('./components/pages/SearchResults'));
 const Chalets = React.lazy(() => import('./components/pages/Chalets'));
 const Hotels = React.lazy(() => import('./components/pages/Hotels'));
 const Resorts = React.lazy(() => import('./components/pages/Resorts'));
@@ -31,11 +33,14 @@ const AdminAccountManagement = React.lazy(() => import('./components/admin/Admin
 const AdminPricing = React.lazy(() => import('./components/admin/AdminPricing'));
 const AdminHotels = React.lazy(() => import('./components/admin/AdminHotels'));
 const AdminPartners = React.lazy(() => import('./components/admin/AdminPartners'));
+const AdminQuickLinks = React.lazy(() => import('./components/admin/AdminQuickLinks'));
 const RoomBooking = React.lazy(() => import('./components/pages/RoomBooking'));
 const PaymentSuccess = React.lazy(() => import('./components/pages/PaymentSuccess'));
 const PaymentError = React.lazy(() => import('./components/pages/PaymentError'));
 const NotFound = React.lazy(() => import('./components/pages/NotFound'));
 const Policies = React.lazy(() => import('./components/pages/Policies'));
+const Minibar = React.lazy(() => import('./components/pages/Minibar'));
+const DigitalNewspapers = React.lazy(() => import('./components/pages/DigitalNewspapers'));
 
 // مكون لإجبار الصفحة على البدء من الأعلى
 const ScrollToTop = () => {
@@ -63,6 +68,7 @@ const ConditionalFloatingWhatsApp = () => {
 function App() {
 	return (
 		<ErrorBoundary>
+			<SplashScreen />
 			<Router>
 				<ScrollToTop />
 				<div className="min-h-screen bg-gray-50 flex flex-col">
@@ -72,6 +78,7 @@ function App() {
                     <Suspense fallback={<div style={{ display: 'none' }}>.</div>}>
                         <Routes>
 							<Route path="/" element={<Home />} />
+							<Route path="/search" element={<SearchResults />} />
 							<Route path="/chalets" element={<Chalets />} />
                             <Route path="/hotels" element={<Hotels />} />
                             <Route path="/resorts" element={<Resorts />} />
@@ -88,6 +95,8 @@ function App() {
 							<Route path="/contact" element={<Contact />} />
 							<Route path="/policies" element={<Policies />} />
 							<Route path="/room-booking" element={<RoomBooking />} />
+							<Route path="/services/minibar" element={<Minibar />} />
+							<Route path="/services/digital-newspapers" element={<DigitalNewspapers />} />
 							<Route path="/login" element={<Login />} />
 							<Route path="/register" element={<Register />} />
 							
@@ -147,6 +156,11 @@ function App() {
 							<Route path="/admin/partners" element={
 								<PrivateRoute requiredRole="admin">
 									<AdminPartners />
+								</PrivateRoute>
+							} />
+							<Route path="/admin/quick-links" element={
+								<PrivateRoute requiredRole="admin">
+									<AdminQuickLinks />
 								</PrivateRoute>
 							} />
 							

@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Award } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
 
 const Resorts = () => {
-  const [resorts, setResorts] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [searchParams] = useSearchParams();
+  const cityQuery = searchParams.get('city');
 
-  React.useEffect(() => {
+  const [resorts, setResorts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
     setLoading(true);
-    api.getHotels({ type: 'resort', status: 'active' })
+    const params: any = { type: 'resort', status: 'active' };
+    if (cityQuery) params.city = cityQuery;
+
+    api.getHotels(params)
       .then((res) => {
         if (res.success && res.data && res.data.hotels) {
           const list = res.data.hotels;
@@ -25,7 +32,7 @@ const Resorts = () => {
         setResorts([]);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [cityQuery]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-8">

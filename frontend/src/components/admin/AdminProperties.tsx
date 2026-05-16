@@ -45,16 +45,19 @@ const AdminProperties = () => {
         totalUnits: 1,
         availableUnits: 1
       }
-    }
+    },
+    installmentAvailable: false
   });
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [installmentAddFiles, setInstallmentAddFiles] = useState<File[]>([]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editProperty, setEditProperty] = useState<any>(null);
   const [editSelectedImages, setEditSelectedImages] = useState<File[]>([]);
   const [editImagePreviews, setEditImagePreviews] = useState<string[]>([]);
   const [editImagesToRemove, setEditImagesToRemove] = useState<string[]>([]);
+  const [editInstallmentNewFiles, setEditInstallmentNewFiles] = useState<File[]>([]);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -112,11 +115,17 @@ const AdminProperties = () => {
       if (property.type === 'room' && property.roomSettings) {
         basePayload.roomSettings = property.roomSettings;
       }
+      basePayload.installmentAvailable = !!property.installmentAvailable;
+      basePayload.installmentLogos = Array.isArray(property.installmentLogos) ? property.installmentLogos : [];
 
       const formData = new FormData();
       Object.entries(basePayload).forEach(([key, value]) => {
         if (key === 'amenities' || key === 'roomSettings') {
           formData.append(key, JSON.stringify(value));
+        } else if (key === 'installmentLogos') {
+          formData.append(key, JSON.stringify(value));
+        } else if (key === 'installmentAvailable') {
+          formData.append(key, value ? 'true' : 'false');
         } else {
           formData.append(key, String(value));
         }
@@ -206,6 +215,8 @@ const AdminProperties = () => {
         if (key === 'amenities') {
           // تحويل المرافق إلى JSON string
           formData.append(key, JSON.stringify(value));
+        } else if (key === 'installmentAvailable') {
+          formData.append(key, value ? 'true' : 'false');
         } else if (key === 'roomSettings') {
           // تحويل إعدادات الغرفة إلى JSON string
           formData.append(key, JSON.stringify(value));
@@ -218,12 +229,17 @@ const AdminProperties = () => {
             formData.append(key, String(value));
           }
         } else {
-          formData.append(key, value);
+          formData.append(key, value as any);
         }
       });
+
+      formData.append('installmentLogos', JSON.stringify([]));
       
       selectedImages.forEach((file) => {
         formData.append('images', file);
+      });
+      installmentAddFiles.forEach((file) => {
+        formData.append('installmentLogoImages', file);
       });
       
       setIsUploading(true);
@@ -272,10 +288,12 @@ const AdminProperties = () => {
               totalUnits: 1,
               availableUnits: 1
             }
-          }
+          },
+          installmentAvailable: false
         });
         setSelectedImages([]);
         setImagePreviews([]);
+        setInstallmentAddFiles([]);
         setShowAddModal(false);
         fetchProperties();
         alert('تم إضافة العقار بنجاح');
@@ -326,10 +344,21 @@ const AdminProperties = () => {
       amenities = [{ title: '', body: '' }];
     }
     
-    setEditProperty({ ...property, amenities });
+    const instRaw = property.installmentLogos || [];
+    const installmentLogos = instRaw.map((x: any) =>
+      typeof x === 'string' ? { url: x, alt: '' } : { url: x?.url, alt: x?.alt || '' }
+    ).filter((x: any) => x.url);
+
+    setEditProperty({
+      ...property,
+      amenities,
+      installmentAvailable: !!property.installmentAvailable,
+      installmentLogos
+    });
     setEditSelectedImages([]);
     setEditImagePreviews([]);
     setEditImagesToRemove([]);
+    setEditInstallmentNewFiles([]);
     setShowEditModal(true);
   };
 
@@ -419,7 +448,7 @@ const AdminProperties = () => {
       const formData = new FormData();
       
       // Add all property data to formData (optimized - skip unnecessary fields)
-      const fieldsToSkip = ['_id', '__v', 'createdAt', 'updatedAt', 'images'];
+      const fieldsToSkip = ['_id', '__v', 'createdAt', 'updatedAt', 'images', 'installmentLogos', 'installmentAvailable'];
       
       Object.entries(editProperty).forEach(([key, value]) => {
         if (fieldsToSkip.includes(key)) return; // Skip these fields
@@ -464,9 +493,15 @@ const AdminProperties = () => {
         }
       }
 
+      formData.append('installmentAvailable', editProperty.installmentAvailable ? 'true' : 'false');
+      formData.append('installmentLogos', JSON.stringify(editProperty.installmentLogos || []));
+
       // Add new images
       editSelectedImages.forEach((file) => {
         formData.append('images', file);
+      });
+      editInstallmentNewFiles.forEach((file) => {
+        formData.append('installmentLogoImages', file);
       });
       
       // Add images to be removed
@@ -532,6 +567,7 @@ const AdminProperties = () => {
         setEditSelectedImages([]);
         setEditImagePreviews([]);
         setEditImagesToRemove([]);
+        setEditInstallmentNewFiles([]);
         setUploadProgress(0);
         setIsUploading(false);
         fetchProperties();
@@ -850,6 +886,52 @@ const AdminProperties = () => {
                     placeholder="خصم عام (ريال)"
                   />
                 </div>
+
+              <div className="md:col-span-2 border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!(newProperty as any).installmentAvailable}
+                    onChange={(e) =>
+                      setNewProperty((prev: any) => ({ ...prev, installmentAvailable: e.target.checked }))
+                    }
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm font-medium text-gray-800">متاح التقسيط (فندق / شاليه / غرفة)</span>
+                </label>
+                {(newProperty as any).installmentAvailable && (
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">شعارات طرق التقسيط (صور)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setInstallmentAddFiles((prev) => [...prev, ...files]);
+                        e.target.value = '';
+                      }}
+                      className="w-full text-sm"
+                    />
+                    {installmentAddFiles.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {installmentAddFiles.map((f, i) => (
+                          <div key={`${f.name}-${i}`} className="relative">
+                            <img src={URL.createObjectURL(f)} alt="" className="h-12 w-auto rounded border object-contain bg-white" />
+                            <button
+                              type="button"
+                              className="absolute -top-1 -left-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs"
+                              onClick={() => setInstallmentAddFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* إعدادات الغرفة عند اختيار النوع غرفة */}
               {newProperty.type === 'room' && (
@@ -1293,6 +1375,74 @@ const AdminProperties = () => {
                     placeholder="خصم عام (ريال)"
                   />
               </div>
+
+              <div className="md:col-span-2 border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!editProperty.installmentAvailable}
+                    onChange={(e) =>
+                      setEditProperty({ ...editProperty, installmentAvailable: e.target.checked })
+                    }
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm font-medium text-gray-800">متاح التقسيط</span>
+                </label>
+                {editProperty.installmentAvailable && (
+                  <>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">إضافة شعارات تقسيط جديدة</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          setEditInstallmentNewFiles((prev) => [...prev, ...files]);
+                          e.target.value = '';
+                        }}
+                        className="w-full text-sm"
+                      />
+                    </div>
+                    {editInstallmentNewFiles.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {editInstallmentNewFiles.map((f, i) => (
+                          <div key={`${f.name}-n-${i}`} className="relative">
+                            <img src={URL.createObjectURL(f)} alt="" className="h-12 w-auto rounded border object-contain bg-white" />
+                            <button
+                              type="button"
+                              className="absolute -top-1 -left-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs"
+                              onClick={() => setEditInstallmentNewFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {(editProperty.installmentLogos || []).length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {(editProperty.installmentLogos || []).map((logo: any, i: number) => (
+                          <div key={logo.url || i} className="relative">
+                            <img src={logo.url} alt="" className="h-12 w-auto rounded border object-contain bg-white" />
+                            <button
+                              type="button"
+                              className="absolute -top-1 -left-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs"
+                              onClick={() => {
+                                const next = (editProperty.installmentLogos || []).filter((_: any, idx: number) => idx !== i);
+                                setEditProperty({ ...editProperty, installmentLogos: next });
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">رابط الفيديو (اختياري)</label>
                 <input

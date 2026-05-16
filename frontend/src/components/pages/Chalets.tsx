@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Filter, SlidersHorizontal } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Filter, SlidersHorizontal, Search } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
 
 const Chalets = () => {
   const [filters, setFilters] = useState({
+    search: '',
     location: '',
     priceRange: '',
     rooms: '',
@@ -15,9 +16,23 @@ const Chalets = () => {
   const [chalets, setChalets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  const fetchChalets = useCallback(() => {
     setLoading(true);
-    api.getProperties({ type: 'chalet' }).then((res) => {
+    
+    const params: any = { type: 'chalet' };
+    
+    if (filters.search) params.search = filters.search;
+    if (filters.location) params.location = filters.location;
+    if (filters.rooms) params.rooms = filters.rooms;
+    
+    if (filters.priceRange) {
+      if (filters.priceRange === '0-500') { params.maxPrice = 500; }
+      else if (filters.priceRange === '500-800') { params.minPrice = 500; params.maxPrice = 800; }
+      else if (filters.priceRange === '800-1200') { params.minPrice = 800; params.maxPrice = 1200; }
+      else if (filters.priceRange === '1200+') { params.minPrice = 1200; }
+    }
+
+    api.getProperties(params).then((res) => {
       console.log("Returned data from API:", res.data);
       if (res.success && res.data && Array.isArray(res.data.properties)) {
         setChalets(res.data.properties);
@@ -25,8 +40,16 @@ const Chalets = () => {
         setChalets([]);
       }
       setLoading(false);
+    }).catch(err => {
+      console.error("Error fetching chalets:", err);
+      setChalets([]);
+      setLoading(false);
     });
-  }, []);
+  }, [filters]);
+
+  useEffect(() => {
+    fetchChalets();
+  }, []); // Initial load. User must click "Apply Filters" to search again.
 
   return (
     <div className="min-h-screen bg-gray-50 pt-8">
@@ -43,14 +66,30 @@ const Chalets = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-4 lg:mb-0">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-6 lg:mb-4 gap-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center self-start md:self-auto">
               <Filter className="h-5 w-5 ml-2 text-gold" />
               تصفية النتائج
             </h3>
+            
+            {/* Search Input */}
+            <div className="relative w-full md:w-96">
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="ابحث باسم الشاليه أو الموقع..."
+                className="input-rtl pl-4 pr-10 py-2 w-full border border-gray-300 rounded-lg focus:ring-gold focus:border-gold"
+                value={filters.search}
+                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                onKeyDown={(e) => e.key === 'Enter' && fetchChalets()}
+              />
+            </div>
+
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden btn-gold px-4 py-2 text-sm"
+              className="lg:hidden btn-gold px-4 py-2 text-sm self-start md:self-auto shrink-0"
             >
               <SlidersHorizontal className="h-4 w-4" />
             </button>
@@ -108,7 +147,10 @@ const Chalets = () => {
 
             {/* Search Button */}
             <div className="flex items-end">
-              <button className="w-full btn-gold">
+              <button 
+                onClick={fetchChalets}
+                className="w-full btn-gold"
+              >
                 تطبيق الفلاتر
               </button>
             </div>

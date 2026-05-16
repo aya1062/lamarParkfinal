@@ -13,7 +13,8 @@ import {
   Settings,
   DollarSign,
   UserCheck,
-  Handshake
+  Handshake,
+  Link as LinkIcon
 } from 'lucide-react';
 import { api } from '../../utils/api';
 
@@ -234,6 +235,13 @@ const AdminDashboard = () => {
       icon: Handshake,
       link: '/admin/partners',
       color: 'bg-purple-500'
+    },
+    {
+      title: 'الروابط السريعة للناف بار',
+      description: 'إدارة الروابط والأقسام في الناف بار',
+      icon: LinkIcon,
+      link: '/admin/quick-links',
+      color: 'bg-emerald-500'
     }
   ];
 

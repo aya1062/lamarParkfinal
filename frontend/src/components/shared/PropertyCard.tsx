@@ -1,27 +1,35 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, CheckCircle2, ChevronRight } from "lucide-react";
 import { API_ORIGIN } from "../../utils/api";
 import { FALLBACK_IMAGES, handleImageError } from "../../utils/imageFallback";
+
+type InstallmentLogo = { url?: string; alt?: string } | string;
 
 interface Property {
   id?: string;
   _id?: string;
   name: string;
-  type: "hotel" | "chalet" | "resort";
+  type: "hotel" | "chalet" | "resort" | "room";
   location: string;
   price?: number;
   rating?: number;
   image?: string;
   images?: string[] | Array<{url: string, alt: string, isMain: boolean}>;
-  features: string[];
+  features?: string[];
   discountPrice?: number;
   description?: string;
   shortDescription?: string;
+  installmentAvailable?: boolean;
+  installmentLogos?: InstallmentLogo[];
 }
 
 interface PropertyCardProps {
   property: Property;
+  /** When set, overrides the default CTA label for this card */
+  ctaLabel?: string;
+  /** Hide the gold type pill on the image (e.g. home chalets grid) */
+  hideTypeBadge?: boolean;
 }
 
 const fallbackImage = FALLBACK_IMAGES.property;
@@ -41,7 +49,11 @@ const getFirstImageUrl = (images: Property["images"], fallback?: string) => {
   return absolutize(src);
 };
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({
+  property,
+  ctaLabel: ctaLabelProp,
+  hideTypeBadge
+}) => {
   if (!property) return null;
   const targetUrl =
     property.type === 'hotel'
@@ -50,7 +62,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
       ? `/resort/${property._id || property.id}`
       : `/property/${property._id || property.id}`;
 
-  // تجهيز الصور كسلايدر تلقائي
+  const installmentLogos = useMemo(() => {
+    const raw = property.installmentLogos || [];
+    return raw
+      .map((x) => (typeof x === 'string' ? { url: x, alt: '' } : { url: x?.url, alt: x?.alt || '' }))
+      .filter((x) => x.url && String(x.url).trim() !== '');
+  }, [property.installmentLogos]);
+
+  const showInstallmentLine = !!property.installmentAvailable;
+
   const images = useMemo(() => {
     const list: any[] = Array.isArray(property.images)
       ? property.images
@@ -79,17 +99,24 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     ? images[Math.min(activeIndex, images.length - 1)]
     : getFirstImageUrl(property.images, property.image);
 
+  const typeLabel =
+    property.type === "hotel" ? "فندق" : property.type === "resort" ? "منتجع" : property.type === "room" ? "غرفة" : "شاليه";
+
+  const ctaLabel =
+    ctaLabelProp ??
+    (property.type === 'hotel' || property.type === 'resort' ? 'احجز الآن' : 'عرض التفاصيل');
+
   return (
-    <div className="card-luxury overflow-hidden h-full flex flex-col">
-      {/* تقليل ارتفاع الصورة لجعل الكارد أكثر استقامة */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden">
+    <div className="card-luxury bg-white rounded-[32px] p-3 sm:p-4 h-full flex flex-col shadow-sm border border-gray-100 overflow-hidden">
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-[24px] sm:rounded-[28px]">
         <img
           src={currentImage}
           alt={property.name || "صورة العقار"}
           className="absolute inset-0 w-full h-full object-cover"
+          onError={handleImageError}
         />
         {hasMultiple && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/35 backdrop-blur">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
             {images.map((_, i) => (
               <button
                 key={i}
@@ -99,65 +126,100 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                   e.stopPropagation();
                   setActiveIndex(i);
                 }}
-                className={`h-2 rounded-full transition-all ${
-                  i === activeIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/70'
+                className={`h-1.5 rounded-full transition-all ${
+                  i === activeIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/60'
                 }`}
               />
             ))}
           </div>
         )}
-        <div className="absolute top-4 right-4 bg-gold text-white px-3 py-1 rounded-full text-sm font-semibold">
-          {property.type === "hotel" ? "فندق" : property.type === "resort" ? "منتجع" : "شاليه"}
-        </div>
-        {/* Rating removed as requested */}
+        {!hideTypeBadge && (
+          <div className="absolute top-4 right-4 bg-[#c9a55a] text-white px-3.5 py-1 rounded-full text-sm font-semibold shadow-md">
+            {typeLabel}
+          </div>
+        )}
       </div>
-      {/* تقليل الهوامش الداخلية لتصغير الكارد عمودياً */}
-      <div className="p-3 flex-1 flex flex-col">
-        <h3 className="text-base font-bold text-gray-900 mb-1">
-          {property.name}
-        </h3>
-        <div className="flex items-center text-gray-600 mb-1.5">
-          <MapPin className="h-4 w-4 ml-1 text-gold" />
-          <span className="text-xs sm:text-sm">{property.location}</span>
-        </div>
-        <div className="flex flex-wrap gap-2 mb-2.5">
-          {property.features && property.features.slice(0, 2).map((feature: string, index: number) => (
-            <span
-              key={index}
-              className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs"
-            >
-              {feature}
-            </span>
-          ))}
-          {property.features && property.features.length > 2 && (
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
-              +{property.features.length - 2} المزيد
-            </span>
-          )}
-        </div>
-        <div className="mt-auto flex items-center justify-between pt-1.5">
-          <div className="text-right leading-tight">
-            {property.price ? (
+
+      <div className="flex-1 flex flex-col justify-between w-full pt-4 px-1 pb-1 gap-4" dir="rtl">
+        {/* Top Row: Title/Location on Right, Price/Text on Left */}
+        <div className="flex justify-between items-start gap-2 w-full">
+          {/* Right side: Title & Location */}
+          <div className="flex flex-col items-start gap-1">
+            <h3 className="font-bold text-[#c9a55a] text-[22px] md:text-[24px] leading-tight tracking-tight">
+              {property.name}
+            </h3>
+            <div className="flex items-center text-[#b89650] text-[13px] md:text-sm font-medium mt-1">
+              <MapPin className="h-[18px] w-[18px] ml-1 text-red-600 flex-shrink-0" />
+              <span>{property.location}</span>
+            </div>
+          </div>
+
+          {/* Left side: Price & Installment Text */}
+          <div className="flex flex-col items-start gap-1.5 shrink-0">
+            {property.price != null && property.price > 0 ? (
               property.discountPrice && property.discountPrice < property.price ? (
-                <>
-                  <span className="line-through text-gray-400 text-base mr-2">{property.price.toLocaleString("ar-SA")}</span>
-                  <span className="text-xl font-bold text-green-700">{property.discountPrice.toLocaleString("ar-SA")}</span>
-                  <span className="text-gray-600 text-sm mr-1">ريال / ليلة</span>
-                </>
+                <div className="flex flex-col items-start gap-0.5">
+                  <span className="line-through text-gray-400 text-sm font-medium ml-8">{property.price.toLocaleString("en-US")}</span>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                      {property.discountPrice.toLocaleString("en-US")}
+                    </span>
+                    <span className="text-[14px] font-bold text-black">ريال</span>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <span className="text-xl font-bold text-gray-900">{property.price.toLocaleString("ar-SA")}</span>
-                  <span className="text-gray-600 text-sm mr-1">ريال / ليلة</span>
-                </>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                    {property.price.toLocaleString("en-US")}
+                  </span>
+                  <span className="text-[14px] font-bold text-black">ريال</span>
+                </div>
               )
             ) : null}
+            
+            {showInstallmentLine && (
+              <div className="flex items-center gap-1.5 text-black font-bold text-[14px] md:text-[15px] tracking-tight mt-1 whitespace-nowrap">
+                <CheckCircle2 className="h-[18px] w-[18px] text-[#4ecb71] fill-[#4ecb71] text-white flex-shrink-0" aria-hidden />
+                <span>متاح بالتقسيط</span>
+              </div>
+            )}
           </div>
-          <Link
-            to={targetUrl}
-            className="bg-gold hover:bg-gold-light text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-300 text-sm"
-          >
-            {property.type === 'hotel' || property.type === 'resort' ? 'احجز الآن' : 'عرض التفاصيل'}
-          </Link>
+        </div>
+
+        {/* Bottom Row: Button on Right, Logos on Left */}
+        <div className="flex flex-wrap justify-between items-center gap-2 w-full mt-auto pt-2 overflow-hidden">
+          {/* Right side: Button */}
+          <div className="shrink-0">
+            <Link
+              to={targetUrl}
+              dir="ltr"
+              className="inline-flex items-center gap-2.5 rounded-[30px] border-[2.5px] border-black bg-white py-1 pr-4 pl-1 text-[14px] md:text-[15px] font-bold text-black hover:bg-gray-50 transition-colors"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white flex-shrink-0">
+                <ChevronRight className="h-5 w-5 ml-0.5" aria-hidden />
+              </span>
+              <span className="tracking-wide uppercase pt-0.5 whitespace-nowrap">
+                {ctaLabel === 'احجز الآن' ? 'BOOK NOW' : ctaLabel}
+              </span>
+            </Link>
+          </div>
+
+          {/* Left side: Installment Logos */}
+          {showInstallmentLine && installmentLogos.length > 0 && (
+            <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end max-w-[48%] overflow-hidden">
+              {installmentLogos.map((logo, idx) => (
+                <img
+                  key={`${logo.url}-${idx}`}
+                  src={absolutize(logo.url!)}
+                  alt={logo.alt || 'تقسيط'}
+                  className="h-5 md:h-6 w-auto object-contain"
+                  style={{ maxWidth: '60px' }}
+                  loading="lazy"
+                  onError={handleImageError}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

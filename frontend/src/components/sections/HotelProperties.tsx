@@ -1,124 +1,141 @@
-import  { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import LamarParkChaletsHomeSection from './LamarParkChaletsHomeSection';
 import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
 
+/* ─── City Section ─── */
+const CitySection = ({
+  title,
+  items,
+  onViewMore,
+}: {
+  title: string;
+  items: any[];
+  onViewMore: () => void;
+}) => {
+  // Show max 4
+  const DISPLAY_LIMIT = 4;
+  const displayed = items.slice(0, DISPLAY_LIMIT);
+
+  return (
+    <div className="mb-16 md:mb-20">
+      {/* section header */}
+      <header className="text-right md:text-center mb-8 md:mb-10">
+        <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
+          <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">{title}</span>
+        </h3>
+      </header>
+
+      {items.length === 0 ? (
+        <p className="text-center text-gray-400 text-sm py-4">لا توجد فنادق للعرض</p>
+      ) : (
+        <>
+          <div className="flex md:grid md:grid-cols-2 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {displayed.map((hotel) => (
+              <div key={hotel._id || hotel.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
+                <PropertyCard property={hotel} hideTypeBadge />
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10 md:mt-12 pt-2">
+            <button
+              onClick={onViewMore}
+              className="inline-block text-[20px] md:text-[22px] text-gray-900 hover:text-[#c9a55a] transition-colors"
+            >
+              عرض المزيد
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ─── Main Section ─── */
 const HotelProperties = () => {
   const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
-    setError(null);
     api.getHotels().then((res) => {
-      if (res.success && res.data && res.data.hotels) {
-        const hotelsData = res.data.hotels;
-        
-        if (Array.isArray(hotelsData)) {
-          // فلترة الفنادق فقط
-          const featuredHotels = hotelsData.filter((h: any) => 
-            h.type === 'hotel'
-          );
-          setHotels(featuredHotels);
-        } else {
-          setHotels([]);
-        }
+      if (res.success && res.data?.hotels) {
+        const all = Array.isArray(res.data.hotels) ? res.data.hotels : [];
+        setHotels(all.filter((h: any) => h.type === 'hotel'));
       } else {
         setHotels([]);
       }
       setLoading(false);
-    }).catch((error) => {
-      console.error('Error fetching hotels:', error);
+    }).catch(() => {
       setHotels([]);
       setLoading(false);
     });
   }, []);
 
-  const handleViewAllHotels = () => {
-    navigate('/hotels');
-  };
-
-  // تقسيم الفنادق حسب المدينة
   const { tabukHotels, riyadhHotels, madinahHotels } = useMemo(() => {
-    const normalizeCity = (h: any) =>
-      String(h?.address?.city || h?.city || h?.location || '')
-        .toLowerCase()
-        .trim();
-
-    const inCity = (h: any, keywords: string[]) => {
-      const city = normalizeCity(h);
-      return keywords.some(k => city.includes(k));
+    const norm = (h: any) =>
+      String(h?.address?.city || h?.city || h?.location || '').toLowerCase().trim();
+    const has = (h: any, kws: string[]) => kws.some(k => norm(h).includes(k));
+    return {
+      tabukHotels:   hotels.filter(h => has(h, ['تبوك', 'tabuk'])),
+      riyadhHotels:  hotels.filter(h => has(h, ['الرياض', 'riyadh'])),
+      madinahHotels: hotels.filter(h => has(h, ['المدينة المنورة', 'المدينة', 'madinah', 'medina'])),
     };
-
-    const tabuk = hotels.filter(h => inCity(h, ['تبوك', 'tabuk']));
-    const riyadh = hotels.filter(h => inCity(h, ['الرياض', 'riyadh']));
-    const madinah = hotels.filter(h =>
-      inCity(h, ['المدينة المنورة', 'المدينة', 'madinah', 'medina'])
-    );
-    return { tabukHotels: tabuk, riyadhHotels: riyadh, madinahHotels: madinah };
   }, [hotels]);
 
-  const renderCitySection = (title: string, items: any[]) => (
-    <div className="mb-12">
-      <div className="flex items-center justify-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 text-center">{title}</h3>
-      </div>
-      <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0">
-        <div className="flex gap-4 md:gap-6 pb-4 snap-x snap-mandatory justify-start md:justify-center w-max md:w-full mx-auto">
-          {items.length === 0 ? (
-            <div className="text-center text-gray-500 w-full px-4">لا توجد فنادق للعرض</div>
-          ) : (
-            items.map((hotel) => (
-              <div
-                key={hotel._id || hotel.id}
-                className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-[340px] md:h-[380px] snap-start"
-                style={{ minWidth: '16rem', maxWidth: '20rem' }}
-              >
-                <PropertyCard property={hotel} />
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-12 md:py-16 bg-gray-50" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* <div className="text-center mb-12"> */}
-          {/* <h2 className="text-4xl font-bold text-gray-900 mb-4"> */}
-            {/* فنادق لامار المميزة */}
-          {/* </h2> */}
-          {/* {/* <div className="bg-gradient-to-r from-gold to-gold-light text-white px-6 py-3 rounded-full inline-block mb-4"> */}
-            {/* <span className="text-xl font-bold">فندق أبل حي اليرموك</span> */}
-          {/* </div>  */}
-          {/* <p className="text-xl text-gray-600 max-w-2xl mx-auto"> */}
-            {/* استمتع بإقامة فاخرة في أفضل فنادق المملكة مع خدمات عصرية ومرافق متطورة */}
-            {/* <br /> */}
-            {/* احجز الغرفة التي تناسب احتياجاتك */}
-          {/* </p> */}
-        {/* </div> */}
 
         {loading ? (
-          <div className="text-center text-lg">جاري التحميل...</div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
+          /* skeleton grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 lg:gap-12">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-[32px] bg-white shadow-sm border border-gray-100 overflow-hidden animate-pulse h-[400px]">
+                <div className="bg-gray-200 h-1/2 w-full" />
+                <div className="p-4 space-y-4 mt-4">
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-10 bg-gray-200 rounded-full w-full mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
-          <div className="space-y-10">
-            {renderCitySection('فروعنا بمدينة الرياض', riyadhHotels)}
-            {renderCitySection('فروعنا بمدينة تبوك', tabukHotels)}
-            {renderCitySection('فروعنا بالمدينة المنورة', madinahHotels)}
+          <div>
+            <CitySection
+              title="فروعنا بمدينة الرياض"
+              items={riyadhHotels}
+              onViewMore={() => navigate('/hotels?city=الرياض')}
+            />
+            <CitySection
+              title="فروعنا بمدينة تبوك"
+              items={tabukHotels}
+              onViewMore={() => navigate('/hotels?city=تبوك')}
+            />
+            {madinahHotels.length > 0 && (
+              <CitySection
+                title="فروعنا بالمدينة المنورة"
+                items={madinahHotels}
+                onViewMore={() => navigate('/hotels?city=المدينة المنورة')}
+              />
+            )}
           </div>
         )}
 
-        <div className="text-center mt-12">
-          <button 
-            onClick={handleViewAllHotels}
-            className="btn-gold text-lg px-8 py-4 hover:bg-gold-dark transition-colors duration-300"
+        <LamarParkChaletsHomeSection />
+
+        {/* view all button */}
+        <div className="text-center mt-12 md:mt-16">
+          <button
+            onClick={() => navigate('/hotels')}
+            className="inline-flex items-center gap-2 bg-[#c9a55a] hover:bg-[#b8943f] text-white font-bold px-8 py-3.5 rounded-full text-sm md:text-base transition-colors duration-300 shadow-md hover:shadow-lg"
           >
+            <ArrowLeft className="w-4 h-4" />
             عرض جميع الفنادق
           </button>
         </div>
@@ -127,4 +144,4 @@ const HotelProperties = () => {
   );
 };
 
-export default HotelProperties; 
+export default HotelProperties;

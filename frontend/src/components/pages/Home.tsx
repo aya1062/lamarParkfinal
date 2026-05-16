@@ -1,6 +1,7 @@
 import Hero from '../sections/Hero';
 import FeaturedProperties from '../sections/FeaturedProperties';
 import HotelProperties from '../sections/HotelProperties';
+import BranchesMapSection from '../sections/BranchesMapSection';
 import AboutSection from '../sections/AboutSection';
 // import Testimonials from '../sections/Testimonials';
 import PartnersSection from '../sections/PartnersSection';
@@ -13,6 +14,7 @@ const Home = () => {
       <FeaturedProperties />
       <PartnersSection />
       <HotelProperties />
+      <BranchesMapSection />
       <AboutSection />
       {/* <Testimonials /> */}
     </div>

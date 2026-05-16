@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Filter, SlidersHorizontal, Award } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
 import { api } from '../../utils/api';
 
 const Hotels = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialLocation = searchParams.get('city') || '';
+
   const [filters, setFilters] = useState({
-    location: '',
+    location: searchParams.get('city') || '',
     priceRange: '',
     stars: '',
     amenities: []
@@ -15,7 +19,28 @@ const Hotels = () => {
   const [hotels, setHotels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  // Sync state to URL
+  useEffect(() => {
+    const currentCity = searchParams.get('city') || '';
+    if (filters.location !== currentCity) {
+      if (filters.location) {
+        searchParams.set('city', filters.location);
+      } else {
+        searchParams.delete('city');
+      }
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [filters.location]); // eslint-disable-line
+
+  // Sync URL to state (for when user clicks a link while already on the page)
+  useEffect(() => {
+    const cityInUrl = searchParams.get('city') || '';
+    if (cityInUrl !== filters.location) {
+      setFilters(prev => ({ ...prev, location: cityInUrl }));
+    }
+  }, [searchParams.get('city')]); // eslint-disable-line
+
+  useEffect(() => {
     setLoading(true);
     const params: any = { type: 'hotel' };
     if (filters.location) params.city = filters.location; // خريطة بسيطة للمدينة
