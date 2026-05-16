@@ -12,8 +12,12 @@ router.post('/check-availability', roomController.checkRoomAvailability);
 router.use(authenticateToken);
 
 // مسارات الإدارة
-router.post('/', roomController.upload.array('images', 10), roomController.createRoom);
-router.put('/:id', roomController.upload.array('images', 10), roomController.updateRoom);
+const roomUploads = roomController.upload.fields([
+  { name: 'images', maxCount: 10 },
+  { name: 'installmentLogoImages', maxCount: 8 }
+]);
+router.post('/', roomUploads, roomController.createRoom);
+router.put('/:id', roomUploads, roomController.updateRoom);
 router.delete('/:id', roomController.deleteRoom);
 router.patch('/:roomId/availability', roomController.updateRoomAvailability);
 router.get('/:id/stats', roomController.getRoomStats);

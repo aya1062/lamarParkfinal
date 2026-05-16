@@ -1,68 +1,10 @@
 const Room = require('../models/Room');
+const { filesFromField, parseInstallmentLogosJson } = require('../utils/uploadFields');
 const Hotel = require('../models/Hotel');
 const RoomBooking = require('../models/RoomBooking');
-const multer = require('multer');
-const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { createMulterUpload, uploadFilesToCloudinary } = require('../utils/createMulterUpload');
 
-// Initialize Cloudinary for room images
-let upload;
-
-try {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (cloudName && apiKey && apiSecret) {
-    cloudinary.config({
-      cloud_name: cloudName,
-      api_key: apiKey,
-      api_secret: apiSecret,
-    });
-
-    const storage = new CloudinaryStorage({
-      cloudinary: cloudinary,
-      params: {
-        folder: 'lamar/rooms',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-      },
-    });
-    
-    upload = multer({ 
-      storage: storage,
-      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new Error('نوع الملف غير مدعوم. يرجى تحميل ملف صورة (JPEG, PNG, WebP)'));
-        }
-      }
-    });
-  } else {
-    upload = multer({
-      storage: multer.memoryStorage(),
-      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new Error('نوع الملف غير مدعوم. يرجى تحميل ملف صورة (JPEG, PNG, WebP)'));
-        }
-      }
-    });
-  }
-} catch (error) {
-  console.error('Error initializing file upload:', error);
-  upload = multer({ 
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
-  });
-}
-
-exports.upload = upload;
+exports.upload = createMulterUpload({ folder: 'lamar/rooms' });
 
 // جلب جميع الغرف
 exports.getAllRooms = async (req, res) => {
@@ -143,15 +85,32 @@ exports.createRoom = async (req, res) => {
       });
     }
 
-    // معالجة الصور
+    // معالجة الصور: رفع إلى Cloudinary والحصول على secure_url و public_id
+    const imageFiles = filesFromField(req, 'images');
     let images = [];
-    if (req.files && req.files.length > 0) {
-      images = req.files.map((file, index) => ({
-        url: file.path,
+    if (imageFiles.length > 0) {
+      const cloudinaryResults = await uploadFilesToCloudinary(imageFiles, 'lamar/rooms');
+      images = cloudinaryResults.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
         alt: `${name} - صورة ${index + 1}`,
         isMain: index === 0
       }));
     }
+
+    const installmentAvailable = req.body.installmentAvailable === true || req.body.installmentAvailable === 'true';
+    const logoFiles = filesFromField(req, 'installmentLogoImages');
+    const uploadedLogos = logoFiles.length > 0
+      ? await uploadFilesToCloudinary(logoFiles, 'lamar/rooms/logos')
+      : [];
+    const installmentLogos = [
+      ...parseInstallmentLogosJson(req.body.installmentLogos),
+      ...uploadedLogos.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
+        alt: `شعار تقسيط ${index + 1}`
+      }))
+    ];
 
     // معالجة البيانات المعقدة
     let specificationsObj = {};
@@ -216,7 +175,9 @@ exports.createRoom = async (req, res) => {
       specifications: specificationsObj,
       amenities: amenitiesArray,
       pricing: pricingObj,
-      availability: availabilityObj
+      availability: availabilityObj,
+      installmentAvailable,
+      installmentLogos
     });
 
     await room.save();
@@ -244,10 +205,15 @@ exports.updateRoom = async (req, res) => {
   try {
     let updateData = { ...req.body };
 
-    // معالجة الصور الجديدة
-    if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file, index) => ({
-        url: file.path,
+    const newLogoFiles = filesFromField(req, 'installmentLogoImages');
+
+    // معالجة الصور الجديدة: رفع إلى Cloudinary
+    const imageFiles = filesFromField(req, 'images');
+    if (imageFiles.length > 0) {
+      const cloudinaryResults = await uploadFilesToCloudinary(imageFiles, 'lamar/rooms');
+      const newImages = cloudinaryResults.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
         alt: `${req.body.name || 'غرفة'} - صورة ${index + 1}`,
         isMain: false
       }));
@@ -261,8 +227,44 @@ exports.updateRoom = async (req, res) => {
       }
     }
 
+    if (newLogoFiles.length > 0) {
+      let baseLogos = [];
+      if (updateData.installmentLogos !== undefined && updateData.installmentLogos !== null) {
+        try {
+          baseLogos = parseInstallmentLogosJson(
+            typeof updateData.installmentLogos === 'string'
+              ? updateData.installmentLogos
+              : JSON.stringify(updateData.installmentLogos)
+          );
+        } catch {
+          return res.status(400).json({
+            success: false,
+            message: 'تنسيق لوجوهات التقسيط غير صحيح'
+          });
+        }
+      } else {
+        const existingRoom = await Room.findById(req.params.id).select('installmentLogos');
+        baseLogos = (existingRoom && existingRoom.installmentLogos)
+          ? existingRoom.installmentLogos.map((x) => ({ url: x.url, alt: x.alt || '' }))
+          : [];
+      }
+      const uploadedNewLogos = await uploadFilesToCloudinary(newLogoFiles, 'lamar/rooms/logos');
+      updateData.installmentLogos = [
+        ...baseLogos,
+        ...uploadedNewLogos.map((result, index) => ({
+          url: result.secure_url,
+          public_id: result.public_id,
+          alt: `شعار تقسيط ${index + 1}`
+        }))
+      ];
+    }
+
+    if (updateData.installmentAvailable !== undefined) {
+      updateData.installmentAvailable = updateData.installmentAvailable === true || updateData.installmentAvailable === 'true';
+    }
+
     // معالجة البيانات المعقدة
-    ['specifications', 'amenities', 'pricing', 'availability'].forEach(field => {
+    ['specifications', 'amenities', 'pricing', 'availability', 'installmentLogos'].forEach(field => {
       if (updateData[field] && typeof updateData[field] === 'string') {
         try {
           updateData[field] = JSON.parse(updateData[field]);

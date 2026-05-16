@@ -37,16 +37,21 @@ router.get('/stats/active-full', propertyController.getActivePropertiesStats);
 router.get('/:id', propertyController.getPropertyById);
 
 // File upload routes with error handling
+const propertyUploads = upload.fields([
+  { name: 'images', maxCount: 10 },
+  { name: 'installmentLogoImages', maxCount: 8 }
+]);
+
 router.post(
   '/', 
-  upload.array('images', 10), // Max 10 files
+  propertyUploads,
   handleUploadError,
   propertyController.createProperty
 );
 
 router.put(
   '/:id', 
-  upload.array('images', 10), // Max 10 files
+  propertyUploads,
   handleUploadError,
   propertyController.updateProperty
 );

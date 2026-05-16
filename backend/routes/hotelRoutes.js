@@ -9,8 +9,26 @@ router.get('/:id', hotelController.getHotelById);
 
 // مسارات محمية للإدارة
 router.use(authenticateToken, isAdmin);
-router.post('/', hotelController.upload.array('images', 10), hotelController.createHotel);
-router.put('/:id', hotelController.upload.array('images', 10), hotelController.updateHotel);
+const hotelUploads = hotelController.upload.fields([
+  { name: 'images', maxCount: 10 },
+  { name: 'installmentLogoImages', maxCount: 8 }
+]);
+
+const runHotelUploads = (req, res, next) => {
+  hotelUploads(req, res, (err) => {
+    if (err) {
+      console.error('Hotel upload error:', err);
+      return res.status(500).json({
+        success: false,
+        message: err.message || 'حدث خطأ أثناء رفع الملفات'
+      });
+    }
+    next();
+  });
+};
+
+router.post('/', runHotelUploads, hotelController.createHotel);
+router.put('/:id', runHotelUploads, hotelController.updateHotel);
 router.delete('/:id', hotelController.deleteHotel);
 router.patch('/:id/status', hotelController.updateHotelStatus);
 router.get('/:id/stats', hotelController.getHotelStats);

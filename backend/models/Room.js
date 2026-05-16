@@ -28,6 +28,7 @@ const roomSchema = new mongoose.Schema({
   },
   images: [{
     url: { type: String, required: true },
+    public_id: { type: String },
     alt: { type: String, default: '' },
     isMain: { type: Boolean, default: false }
   }],
@@ -133,7 +134,16 @@ const roomSchema = new mongoose.Schema({
     type: String, 
     enum: ['active', 'inactive', 'maintenance', 'out_of_order'], 
     default: 'active' 
-  }
+  },
+  installmentAvailable: {
+    type: Boolean,
+    default: false
+  },
+  installmentLogos: [{
+    url: { type: String, trim: true },
+    public_id: { type: String },
+    alt: { type: String, default: '' }
+  }]
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

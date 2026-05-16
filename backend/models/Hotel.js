@@ -37,6 +37,7 @@ const hotelSchema = new mongoose.Schema({
   },
   images: [{
     url: { type: String },
+    public_id: { type: String },
     alt: { type: String, default: '' },
     isMain: { type: Boolean, default: false }
   }],
@@ -93,6 +94,15 @@ const hotelSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   },
+  installmentAvailable: {
+    type: Boolean,
+    default: false
+  },
+  installmentLogos: [{
+    url: { type: String, trim: true },
+    public_id: { type: String },
+    alt: { type: String, default: '' }
+  }],
   // إعدادات الحجز
   bookingSettings: {
     minStay: { type: Number, default: 1 }, // الحد الأدنى للإقامة

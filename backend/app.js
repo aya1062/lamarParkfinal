@@ -14,6 +14,7 @@ const roomRoutes = require('./routes/roomRoutes');
 const roomBookingRoutes = require('./routes/roomBookingRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
+const quickLinkRoutes = require('./routes/quickLinks');
 const path = require("path");
 
 const app = express();
@@ -166,6 +167,7 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/room-bookings', roomBookingRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/partners', partnerRoutes);
+app.use('/api/quick-links', quickLinkRoutes);
 
 // Test routes
 // Payment test pages removed

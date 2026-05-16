@@ -22,6 +22,11 @@ const propertySchema = new mongoose.Schema({
   }],
   description: { type: String },
   available: { type: Boolean, default: true },
+  installmentAvailable: { type: Boolean, default: false },
+  installmentLogos: [{
+    url: { type: String, trim: true },
+    alt: { type: String, default: '' }
+  }],
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   // إعدادات خاصة بالشاليه
   chaletSettings: {

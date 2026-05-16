@@ -2,68 +2,15 @@ const Hotel = require('../models/Hotel');
 const Property = require('../models/Property');
 const Room = require('../models/Room');
 const RoomBooking = require('../models/RoomBooking');
-const multer = require('multer');
-const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const { filesFromField, parseInstallmentLogosJson } = require('../utils/uploadFields');
+const {
+  applyMapsCoordinatesToAddress,
+  getHotelMapPosition,
+  isMapsLikeUrl
+} = require('../utils/mapsCoords');
+const { createMulterUpload, uploadFilesToCloudinary } = require('../utils/createMulterUpload');
 
-// Initialize Cloudinary for hotel images
-let upload;
-
-try {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-  if (cloudName && apiKey && apiSecret) {
-    cloudinary.config({
-      cloud_name: cloudName,
-      api_key: apiKey,
-      api_secret: apiSecret,
-    });
-
-    const storage = new CloudinaryStorage({
-      cloudinary: cloudinary,
-      params: {
-        folder: 'lamar/hotels',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-      },
-    });
-    
-    upload = multer({ 
-      storage: storage,
-      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new Error('نوع الملف غير مدعوم. يرجى تحميل ملف صورة (JPEG, PNG, WebP)'));
-        }
-      }
-    });
-  } else {
-    upload = multer({
-      storage: multer.memoryStorage(),
-      limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
-      fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (allowedTypes.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new Error('نوع الملف غير مدعوم. يرجى تحميل ملف صورة (JPEG, PNG, WebP)'));
-        }
-      }
-    });
-  }
-} catch (error) {
-  console.error('Error initializing file upload:', error);
-  upload = multer({ 
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
-  });
-}
-
-exports.upload = upload;
+exports.upload = createMulterUpload({ folder: 'lamar/hotels' });
 
 // جلب جميع الفنادق
 exports.getAllHotels = async (req, res) => {
@@ -72,15 +19,40 @@ exports.getAllHotels = async (req, res) => {
     if (req.query.type) filter.type = req.query.type;
     if (req.query.status) filter.status = req.query.status;
     if (req.query.featured !== undefined) filter.isFeatured = req.query.featured === 'true';
-    if (req.query.city) filter['address.city'] = new RegExp(req.query.city, 'i');
+    
+    if (req.query.search) {
+      filter.$or = [
+        { name: { $regex: req.query.search, $options: 'i' } },
+        { 'address.city': { $regex: req.query.search, $options: 'i' } },
+        { location: { $regex: req.query.search, $options: 'i' } },
+        { description: { $regex: req.query.search, $options: 'i' } }
+      ];
+    } else if (req.query.city) {
+      filter['address.city'] = new RegExp(req.query.city, 'i');
+    }
 
-    const hotels = await Hotel.find(filter)
+    let hotels = await Hotel.find(filter)
       .populate('stats.totalRooms stats.totalChalets')
       .sort({ isFeatured: -1, createdAt: -1 });
 
+    const forMap = req.query.forMap === '1' || req.query.forMap === 'true';
+    if (forMap) {
+      const enriched = await Promise.all(
+        hotels.map(async (doc) => {
+          const hotel = doc.toObject();
+          const mapPosition = await getHotelMapPosition(hotel);
+          return { ...hotel, mapPosition: mapPosition || null };
+        })
+      );
+      hotels = enriched;
+    } else {
+      hotels = hotels.map((doc) => doc.toObject());
+    }
+
     res.json({ success: true, hotels });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('getAllHotels error:', err);
+    res.status(500).json({ success: false, message: err?.message || 'Internal Server Error' });
   }
 };
 
@@ -133,18 +105,34 @@ exports.createHotel = async (req, res) => {
       });
     }
 
-    // معالجة الصور
+    // معالجة الصور: رفع إلى Cloudinary والحصول على secure_url و public_id
+    const imageFiles = filesFromField(req, 'images');
     let images = undefined;
-    if (req.files && req.files.length > 0) {
-      const validFiles = req.files.filter((f) => !!f.path);
-      if (validFiles.length > 0) {
-        images = validFiles.map((file, index) => ({
-        url: file.path,
-        alt: `${name} - صورة ${index + 1}`,
-        isMain: index === 0
-      }));
+    if (imageFiles.length > 0) {
+      const cloudinaryResults = await uploadFilesToCloudinary(imageFiles, 'lamar/hotels');
+      if (cloudinaryResults.length > 0) {
+        images = cloudinaryResults.map((result, index) => ({
+          url: result.secure_url,
+          public_id: result.public_id,
+          alt: `${name} - صورة ${index + 1}`,
+          isMain: index === 0
+        }));
       }
     }
+
+    const installmentAvailable = req.body.installmentAvailable === true || req.body.installmentAvailable === 'true';
+    const logoFiles = filesFromField(req, 'installmentLogoImages');
+    const uploadedLogos = logoFiles.length > 0
+      ? await uploadFilesToCloudinary(logoFiles, 'lamar/hotels/logos')
+      : [];
+    const installmentLogos = [
+      ...parseInstallmentLogosJson(req.body.installmentLogos),
+      ...uploadedLogos.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
+        alt: `شعار تقسيط ${index + 1}`
+      }))
+    ];
 
     // معالجة البيانات المعقدة
     let amenitiesArray = [];
@@ -171,6 +159,22 @@ exports.createHotel = async (req, res) => {
       }
     }
 
+    let contactObj = {};
+    if (contact) {
+      try {
+        contactObj = typeof contact === 'string' ? JSON.parse(contact) : contact;
+      } catch (err) {
+        return res.status(400).json({
+          success: false,
+          message: 'تنسيق بيانات التواصل غير صحيح'
+        });
+      }
+    }
+    if (!contactObj.mapsUrl && isMapsLikeUrl(location)) {
+      contactObj.mapsUrl = String(location).trim();
+    }
+    addressObj = applyMapsCoordinatesToAddress(contactObj, addressObj);
+
     const hotel = new Hotel({
       name,
       type,
@@ -183,8 +187,10 @@ exports.createHotel = async (req, res) => {
       instructions: instructions ? (typeof instructions === 'string' ? JSON.parse(instructions) : instructions) : [],
       amenities: amenitiesArray,
       policies: policies ? (typeof policies === 'string' ? JSON.parse(policies) : policies) : {},
-      contact: contact ? (typeof contact === 'string' ? JSON.parse(contact) : contact) : {},
-      bookingSettings: bookingSettings ? (typeof bookingSettings === 'string' ? JSON.parse(bookingSettings) : bookingSettings) : {}
+      contact: contactObj,
+      bookingSettings: bookingSettings ? (typeof bookingSettings === 'string' ? JSON.parse(bookingSettings) : bookingSettings) : {},
+      installmentAvailable,
+      installmentLogos
     });
 
     await hotel.save();
@@ -207,10 +213,15 @@ exports.updateHotel = async (req, res) => {
   try {
     let updateData = { ...req.body };
 
-    // معالجة الصور الجديدة
-    if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file, index) => ({
-        url: file.path,
+    const newLogoFiles = filesFromField(req, 'installmentLogoImages');
+
+    // معالجة الصور الجديدة: رفع إلى Cloudinary
+    const imageFiles = filesFromField(req, 'images');
+    if (imageFiles.length > 0) {
+      const cloudinaryResults = await uploadFilesToCloudinary(imageFiles, 'lamar/hotels');
+      const newImages = cloudinaryResults.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
         alt: `${req.body.name || 'فندق'} - صورة ${index + 1}`,
         isMain: false
       }));
@@ -236,19 +247,66 @@ exports.updateHotel = async (req, res) => {
       }
     }
 
+    if (newLogoFiles.length > 0) {
+      let baseLogos = [];
+      if (updateData.installmentLogos !== undefined && updateData.installmentLogos !== null) {
+        try {
+          baseLogos = parseInstallmentLogosJson(
+            typeof updateData.installmentLogos === 'string'
+              ? updateData.installmentLogos
+              : JSON.stringify(updateData.installmentLogos)
+          );
+        } catch {
+          return res.status(400).json({
+            success: false,
+            message: 'تنسيق لوجوهات التقسيط غير صحيح'
+          });
+        }
+      } else {
+        const existingHotel = await Hotel.findById(req.params.id).select('installmentLogos');
+        baseLogos = (existingHotel && existingHotel.installmentLogos) ? existingHotel.installmentLogos.map((x) => ({ url: x.url, alt: x.alt || '' })) : [];
+      }
+      const uploadedNewLogos = await uploadFilesToCloudinary(newLogoFiles, 'lamar/hotels/logos');
+      const appended = uploadedNewLogos.map((result, index) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
+        alt: `شعار تقسيط ${index + 1}`
+      }));
+      updateData.installmentLogos = [...baseLogos, ...appended];
+    }
+
+    if (updateData.installmentAvailable !== undefined) {
+      updateData.installmentAvailable = updateData.installmentAvailable === true || updateData.installmentAvailable === 'true';
+    }
+
     // معالجة البيانات المعقدة
-    ['amenities', 'address', 'policies', 'contact', 'bookingSettings', 'instructions'].forEach(field => {
+    for (const field of ['amenities', 'address', 'policies', 'contact', 'bookingSettings', 'instructions', 'installmentLogos']) {
       if (updateData[field] && typeof updateData[field] === 'string') {
         try {
           updateData[field] = JSON.parse(updateData[field]);
         } catch (err) {
-          return res.status(400).json({ 
-            success: false, 
-            message: `تنسيق ${field} غير صحيح` 
+          return res.status(400).json({
+            success: false,
+            message: `تنسيق ${field} غير صحيح`
           });
         }
       }
-    });
+    }
+
+    if (updateData.contact !== undefined || updateData.address !== undefined) {
+      const existingHotel = await Hotel.findById(req.params.id).select('address contact');
+      const contactMerged = updateData.contact ?? (existingHotel?.contact?.toObject?.() ?? existingHotel?.contact ?? {});
+      const addressMerged = updateData.address ?? (existingHotel?.address?.toObject?.() ?? existingHotel?.address ?? {});
+      const loc = updateData.location ?? existingHotel?.location;
+      if (!contactMerged.mapsUrl && isMapsLikeUrl(loc)) {
+        contactMerged.mapsUrl = String(loc).trim();
+      }
+      const forceFromMapsUrl = !!(updateData.contact && updateData.contact.mapsUrl);
+      updateData.address = applyMapsCoordinatesToAddress(contactMerged, addressMerged, { forceFromMapsUrl });
+      if (contactMerged.mapsUrl) {
+        updateData.contact = contactMerged;
+      }
+    }
 
     const hotel = await Hotel.findByIdAndUpdate(
       req.params.id,
