@@ -153,7 +153,7 @@ const Minibar = () => {
       </style>
 
       {/* Main Experience Container */}
-      <div className="relative min-h-[100dvh] bg-[#fbfaf8] flex flex-col items-center justify-center overflow-hidden font-sans pb-10 pt-16 md:pt-24" dir="rtl">
+      <div className="relative min-h-[100dvh] bg-white flex flex-col items-center justify-center overflow-hidden font-sans pb-10 pt-16 md:pt-24" dir="rtl">
         
         <FloatingIcons />
 
