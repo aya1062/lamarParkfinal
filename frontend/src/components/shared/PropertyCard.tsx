@@ -149,42 +149,42 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           {/* Top Row: Title/Location on Right, Price/Text on Left */}
           <div className="flex justify-between items-start gap-2 w-full">
             {/* Right side: Title & Location */}
-            <div className="flex flex-col items-start gap-1">
-              <h3 className="font-bold text-[#c9a55a] text-[22px] md:text-[24px] leading-tight tracking-tight">
+            <div className="flex flex-col items-start gap-0.5">
+              <h3 className="font-bold text-[#c9a55a] text-[17px] sm:text-[22px] md:text-[24px] leading-tight tracking-tight">
                 {property.name}
               </h3>
-              <div className="flex items-center text-[#b89650] text-[13px] md:text-sm font-medium mt-1">
-                <MapPin className="h-[18px] w-[18px] ml-1 text-red-600 flex-shrink-0" />
+              <div className="flex items-center text-[#b89650] text-[11px] sm:text-[13px] md:text-sm font-medium mt-1">
+                <MapPin className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px] ml-1 text-red-600 flex-shrink-0" />
                 <span>{property.location}</span>
               </div>
             </div>
 
             {/* Left side: Price & Installment Text */}
-            <div className="flex flex-col items-start gap-1.5 shrink-0">
+            <div className="flex flex-col items-start gap-1 shrink-0">
               {property.price != null && property.price > 0 ? (
                 property.discountPrice && property.discountPrice < property.price ? (
                   <div className="flex flex-col items-start gap-0.5">
-                    <span className="line-through text-gray-400 text-sm font-medium ml-8">{property.price.toLocaleString("en-US")}</span>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                    <span className="line-through text-gray-400 text-[10px] sm:text-sm font-medium ml-4 sm:ml-8">{property.price.toLocaleString("en-US")}</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[18px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
                         {property.discountPrice.toLocaleString("en-US")}
                       </span>
-                      <span className="text-[14px] font-bold text-black">ريال</span>
+                      <span className="text-[10px] sm:text-[14px] font-bold text-black">ريال</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-[18px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
                       {property.price.toLocaleString("en-US")}
                     </span>
-                    <span className="text-[14px] font-bold text-black">ريال</span>
+                    <span className="text-[10px] sm:text-[14px] font-bold text-black">ريال</span>
                   </div>
                 )
               ) : null}
               
               {showInstallmentLine && (
-                <div className="flex items-center gap-1.5 text-black font-bold text-[14px] md:text-[15px] tracking-tight mt-1 whitespace-nowrap">
-                  <CheckCircle2 className="h-[18px] w-[18px] text-[#4ecb71] fill-[#4ecb71] text-white flex-shrink-0" aria-hidden />
+                <div className="flex items-center gap-1 text-black font-bold text-[11px] sm:text-[14px] md:text-[15px] tracking-tight mt-0.5 whitespace-nowrap">
+                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px] text-[#4ecb71] fill-[#4ecb71] text-white flex-shrink-0" aria-hidden />
                   <span>متاح بالتقسيط</span>
                 </div>
               )}
@@ -198,10 +198,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               <Link
                 to={targetUrl}
                 dir="ltr"
-                className="inline-flex items-center gap-2.5 rounded-[30px] border-[2.5px] border-black bg-white py-1 pr-4 pl-1 text-[14px] md:text-[15px] font-bold text-black hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-[30px] border-[2px] sm:border-[2.5px] border-black bg-white py-0.5 sm:py-1 pr-3 sm:pr-4 pl-1 text-[11px] sm:text-[14px] md:text-[15px] font-bold text-black hover:bg-gray-50 transition-colors"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white flex-shrink-0">
-                  <ChevronRight className="h-5 w-5 ml-0.5" aria-hidden />
+                <span className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-black text-white flex-shrink-0">
+                  <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5 ml-0.5" aria-hidden />
                 </span>
                 <span className="tracking-wide uppercase pt-0.5 whitespace-nowrap">
                   {ctaLabel === 'احجز الآن' ? 'BOOK NOW' : ctaLabel}
@@ -211,14 +211,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
             {/* Left side: Installment Logos */}
             {showInstallmentLine && installmentLogos.length > 0 && (
-              <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end max-w-[48%] overflow-hidden">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-wrap justify-end max-w-[48%] overflow-hidden">
                 {installmentLogos.map((logo, idx) => (
                   <img
                     key={`${logo.url}-${idx}`}
                     src={absolutize(logo.url!)}
                     alt={logo.alt || 'تقسيط'}
-                    className="h-5 md:h-6 w-auto object-contain"
-                    style={{ maxWidth: '60px' }}
+                    className="h-4 sm:h-5 md:h-6 w-auto object-contain"
+                    style={{ maxWidth: '50px' }}
                     loading="lazy"
                     onError={handleImageError}
                   />

@@ -42,7 +42,7 @@ const CitySection = ({
 
             <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {displayed.map((hotel) => (
-                <div key={hotel._id || hotel.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
+                <div key={hotel._id || hotel.id} className="w-[82%] sm:w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
                   <PropertyCard property={hotel} hideTypeBadge />
                 </div>
               ))}
