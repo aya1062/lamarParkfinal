@@ -74,12 +74,12 @@ const Hero = () => {
 						/>
 						<button 
 							type="submit"
-							className="absolute left-2 top-2 bottom-2 px-6 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white rounded-full font-semibold hover:brightness-110 transition shadow-md"
+							className="absolute left-2 top-2 bottom-2 px-6 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white rounded-full font-semibold hover:brightness-110 transition shadow-md luxury-pulse-btn"
 						>
 							بحث
 						</button>
 					</form>
-
+ 
 					{/* CTA Buttons */}
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
 						<Link
@@ -100,6 +100,17 @@ const Hero = () => {
 							<span className="absolute -inset-0.5 rounded-xl blur opacity-10 group-hover:opacity-20 bg-white" aria-hidden="true"></span>
 						</Link>
           </div>
+        </div>
+      </div>
+
+      {/* Animated Vertical Scroll Down Indicator - PURELY VISUAL */}
+      <div 
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center cursor-pointer text-white/80 hover:text-[#c9a55a] transition-all hover:scale-110"
+        onClick={() => window.scrollTo({ top: window.innerHeight - 56, behavior: 'smooth' })}
+        aria-label="Scroll Down"
+      >
+        <div className="w-[26px] h-[42px] rounded-full border-2 border-white/70 flex justify-center p-1.5 shadow-lg backdrop-blur-[2px]">
+          <div className="w-[4px] h-[8px] bg-[#c9a55a] rounded-full scroll-down-dot" />
         </div>
       </div>
     </div>

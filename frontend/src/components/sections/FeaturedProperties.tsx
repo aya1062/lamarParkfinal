@@ -42,10 +42,10 @@ const FeaturedProperties = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 bg-white" dir="rtl">
+    <section className="py-8 md:py-16 bg-white" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <header className="text-right md:text-center mb-10 md:mb-12">
+        <header className="text-right md:text-center mb-6 md:mb-12">
           <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight mb-4">
             <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">منتجعات لامار المميزة</span>
           </h3>
@@ -55,8 +55,8 @@ const FeaturedProperties = () => {
         </header>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 lg:gap-12">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 md:gap-10 lg:gap-12">
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="rounded-[32px] bg-white shadow-sm border border-gray-100 overflow-hidden animate-pulse h-[400px]">
                 <div className="bg-gray-200 h-1/2 w-full" />
                 <div className="p-4 space-y-4 mt-4">
@@ -70,20 +70,29 @@ const FeaturedProperties = () => {
         ) : error ? (
           <div className="text-center text-red-500 py-8">{error}</div>
         ) : (
-          <div className="flex md:grid md:grid-cols-2 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {resorts.length === 0 ? (
-              <div className="w-full text-center text-gray-500 py-8">لا توجد منتجعات للعرض</div>
-            ) : (
-              resorts.map((resort) => (
-                <div key={resort._id || resort.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
-                  <PropertyCard property={resort} hideTypeBadge />
-                </div>
-              ))
+          <div className="relative w-full">
+            {/* Purely Visual Floating Swipe Helper Indicator on mobile - Only shows if there are more than 2 resorts (since mobile fits exactly 2) */}
+            {resorts.length > 2 && (
+              <div className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-xl flex items-center justify-center z-20 animate-pulse pointer-events-none border border-gray-100">
+                <ArrowLeft className="w-5 h-5 text-[#c9a55a] horizontal-swipe-arrow" />
+              </div>
             )}
+
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {resorts.length === 0 ? (
+                <div className="w-full text-center text-gray-500 py-8">لا توجد منتجعات للعرض</div>
+              ) : (
+                resorts.map((resort) => (
+                  <div key={resort._id || resort.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
+                    <PropertyCard property={resort} hideTypeBadge />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 
-        <div className="text-center mt-10 md:mt-12 pt-2">
+        <div className="text-center mt-6 md:mt-12 pt-2">
           <button 
             onClick={handleViewAllResorts}
             className="inline-block text-[20px] md:text-[22px] text-gray-900 hover:text-[#c9a55a] transition-colors"

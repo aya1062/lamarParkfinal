@@ -86,7 +86,7 @@ const LamarParkChaletsHomeSection = () => {
   }, [chalets]);
 
   const shellClass =
-    'mt-14 sm:mt-16 rounded-[24px] bg-white px-4 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14 shadow-[0_4px_40px_-12px_rgba(0,0,0,0.08)] border border-gray-100/90';
+    'mt-6 sm:mt-10 rounded-[24px] bg-white px-4 py-6 sm:px-8 sm:py-10 md:px-10 md:py-14 shadow-[0_4px_40px_-12px_rgba(0,0,0,0.08)] border border-gray-100/90';
 
   if (loading) {
     return (
@@ -106,7 +106,7 @@ const LamarParkChaletsHomeSection = () => {
   return (
     <div className={shellClass} dir="rtl">
       {/* عناوين مثل المرجع: عنوان + خط تحته + سطر فرعي */}
-      <header className="text-right md:text-center mb-8 md:mb-10">
+      <header className="text-right md:text-center mb-4 md:mb-10">
         <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
           <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">شاليهات لامار بارك</span>
         </h3>
@@ -114,7 +114,7 @@ const LamarParkChaletsHomeSection = () => {
       </header>
 
       {/* بانر كامل العرض بزوايا كبيرة — يظهر دائمًا */}
-      <div className="mb-10 md:mb-12 overflow-hidden rounded-[20px] border border-gray-200/80 shadow-sm">
+      <div className="mb-5 md:mb-12 overflow-hidden rounded-[20px] border border-gray-200/80 shadow-sm">
         <img
           src={bannerUrl}
           alt="شاليهات لامار بارك"
@@ -144,7 +144,7 @@ const LamarParkChaletsHomeSection = () => {
         </div>
       )}
 
-      <div className="text-center mt-10 md:mt-12 pt-2">
+      <div className="text-center mt-5 md:mt-12 pt-2">
         <Link
           to="/chalets"
           className="inline-block text-[20px] md:text-[22px] text-gray-900 hover:text-[#c9a55a] transition-colors"

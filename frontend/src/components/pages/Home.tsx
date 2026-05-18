@@ -9,12 +9,12 @@ import PartnersSection from '../sections/PartnersSection';
 
 const Home = () => {
   return (
-    <div className="space-y-16">
+    <div className="space-y-0 md:space-y-16">
       <Hero />
       <FeaturedProperties />
-      <PartnersSection />
       <HotelProperties />
       <BranchesMapSection />
+      <PartnersSection />
       <AboutSection />
       {/* <Testimonials /> */}
     </div>

@@ -157,3 +157,164 @@ html {
   box-shadow: none !important;
   padding: 0 !important;
 }
+
+/* ===== Luxury Sheen Animated Moving Border (Linear Sheen Swipe) ===== */
+.luxury-sheen-border-card {
+  position: relative;
+  padding: 1.5px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: transparent;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+/* On desktop, keep translate and soft shadow on hover */
+@media (min-width: 768px) {
+  .luxury-sheen-border-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -15px rgba(201, 165, 90, 0.25);
+  }
+}
+
+/* The animated background layers - ALWAYS ACTIVE but Calm */
+.luxury-sheen-border-card .sheen-animation-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  pointer-events: none;
+  border-radius: 32px;
+  overflow: hidden;
+  
+  /* Diagonal gradient with transparent ends, and a bright gold-white sheen highlight in the middle */
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 35%,
+    #c9a55a 45%,
+    #ffffff 50%,
+    #ffebd2 54%,
+    #c9a55a 58%,
+    transparent 68%,
+    transparent 100%
+  );
+  background-size: 300% 100%;
+  animation: sheenSweepMotion 4.5s ease-in-out infinite;
+}
+
+@keyframes sheenSweepMotion {
+  0% {
+    background-position: 250% 0%;
+  }
+  30% {
+    background-position: -50% 0%;
+  }
+  100% {
+    background-position: -50% 0%;
+  }
+}
+
+/* The inner card itself, masking the center */
+.luxury-sheen-inner-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 30.5px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 2;
+  transition: background 0.3s ease;
+}
+
+/* ===== Elegant Scroll Helper & Navigation Animations ===== */
+
+/* 1. Vertical Mouse Scroll Wheel Animation */
+@keyframes scrollMouseDot {
+  0% { transform: translateY(0); opacity: 0; }
+  25% { opacity: 1; }
+  50% { transform: translateY(8px); opacity: 1; }
+  75% { opacity: 0; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+
+.scroll-down-dot {
+  animation: scrollMouseDot 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* 2. Horizontal Bounce Chevron Animation for RTL Swiping */
+@keyframes bounceHorizontalRTL {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-6px); }
+}
+
+.horizontal-swipe-arrow {
+  animation: bounceHorizontalRTL 1.5s ease-in-out infinite;
+}
+
+/* 3. Luxury Clicking Button Glow Pulse */
+@keyframes clickPulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 165, 90, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(201, 165, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 165, 90, 0); }
+}
+
+.luxury-pulse-btn {
+  animation: clickPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===== Leaflet Map Custom Luxury Style Overrides ===== */
+.leaflet-bar {
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background: white !important;
+  color: #c9a55a !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  font-weight: bold !important;
+}
+
+.leaflet-bar a:first-child {
+  border-top-left-radius: 14px !important;
+  border-top-right-radius: 14px !important;
+}
+
+.leaflet-bar a:last-child {
+  border-bottom-left-radius: 14px !important;
+  border-bottom-right-radius: 14px !important;
+  border-bottom: none !important;
+}
+
+.leaflet-bar a:hover {
+  background: #c9a55a !important;
+  color: white !important;
+}
+
+.leaflet-container {
+  font-family: inherit !important;
+}
+
+/* Make Leaflet default tooltips for hotel markers look like luxury floating cards */
+.branch-card-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.leaflet-tooltip-top:before, 
+.leaflet-tooltip-bottom:before, 
+.leaflet-tooltip-left:before, 
+.leaflet-tooltip-right:before {
+  display: none !important; /* Hide ugly default triangle arrows */
+}

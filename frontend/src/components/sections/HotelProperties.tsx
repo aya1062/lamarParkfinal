@@ -15,14 +15,14 @@ const CitySection = ({
   items: any[];
   onViewMore: () => void;
 }) => {
-  // Show max 4
-  const DISPLAY_LIMIT = 4;
+  // Show max 3 (fits exactly 1 full row on desktop)
+  const DISPLAY_LIMIT = 3;
   const displayed = items.slice(0, DISPLAY_LIMIT);
 
   return (
-    <div className="mb-16 md:mb-20">
+    <div className="mb-8 md:mb-20">
       {/* section header */}
-      <header className="text-right md:text-center mb-8 md:mb-10">
+      <header className="text-right md:text-center mb-5 md:mb-10">
         <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
           <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">{title}</span>
         </h3>
@@ -32,15 +32,24 @@ const CitySection = ({
         <p className="text-center text-gray-400 text-sm py-4">لا توجد فنادق للعرض</p>
       ) : (
         <>
-          <div className="flex md:grid md:grid-cols-2 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {displayed.map((hotel) => (
-              <div key={hotel._id || hotel.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
-                <PropertyCard property={hotel} hideTypeBadge />
+          <div className="relative w-full">
+            {/* Purely Visual Floating Swipe Helper Indicator on mobile - Only shows if there are more than 2 hotels (since mobile fits exactly 2) */}
+            {displayed.length > 2 && (
+              <div className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-xl flex items-center justify-center z-20 animate-pulse pointer-events-none border border-gray-100">
+                <ArrowLeft className="w-5 h-5 text-[#c9a55a] horizontal-swipe-arrow" />
               </div>
-            ))}
+            )}
+
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-10 lg:gap-12 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {displayed.map((hotel) => (
+                <div key={hotel._id || hotel.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
+                  <PropertyCard property={hotel} hideTypeBadge />
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="text-center mt-10 md:mt-12 pt-2">
+          <div className="text-center mt-5 md:mt-12 pt-2">
             <button
               onClick={onViewMore}
               className="inline-block text-[20px] md:text-[22px] text-gray-900 hover:text-[#c9a55a] transition-colors"
@@ -88,13 +97,13 @@ const HotelProperties = () => {
   }, [hotels]);
 
   return (
-    <section className="py-12 md:py-16 bg-gray-50" dir="rtl">
+    <section className="py-8 md:py-16 bg-gray-50" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {loading ? (
           /* skeleton grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 lg:gap-12">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 md:gap-10 lg:gap-12">
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="rounded-[32px] bg-white shadow-sm border border-gray-100 overflow-hidden animate-pulse h-[400px]">
                 <div className="bg-gray-200 h-1/2 w-full" />
                 <div className="p-4 space-y-4 mt-4">
@@ -130,7 +139,7 @@ const HotelProperties = () => {
         <LamarParkChaletsHomeSection />
 
         {/* view all button */}
-        <div className="text-center mt-12 md:mt-16">
+        <div className="text-center mt-6 md:mt-16">
           <button
             onClick={() => navigate('/hotels')}
             className="inline-flex items-center gap-2 bg-[#c9a55a] hover:bg-[#b8943f] text-white font-bold px-8 py-3.5 rounded-full text-sm md:text-base transition-colors duration-300 shadow-md hover:shadow-lg"

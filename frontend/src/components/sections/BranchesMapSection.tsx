@@ -101,6 +101,7 @@ const BranchesMapSection = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [missingMapCount, setMissingMapCount] = useState(0);
+  const [selectedCity, setSelectedCity] = useState<string>('الكل');
 
   useEffect(() => {
     let isMounted = true;
@@ -141,10 +142,41 @@ const BranchesMapSection = () => {
     };
   }, []);
 
+  // Compute unique cities from branches
+  const cities = useMemo(() => {
+    const list = new Set<string>();
+    branches.forEach((b) => {
+      const city = b.address?.city || b.location;
+      if (city) {
+        list.add(city.trim());
+      }
+    });
+    return ['الكل', ...Array.from(list)];
+  }, [branches]);
+
+  // Filter branches based on selected city tab
+  const filteredBranches = useMemo(() => {
+    if (selectedCity === 'الكل') return branches;
+    return branches.filter((b) => {
+      const city = b.address?.city || b.location;
+      return city?.trim() === selectedCity;
+    });
+  }, [branches, selectedCity]);
+
   const selectedBranch = useMemo(
-    () => branches.find((b) => b._id === selectedId) || branches[0],
-    [branches, selectedId]
+    () => filteredBranches.find((b) => b._id === selectedId) || filteredBranches[0] || branches[0],
+    [filteredBranches, branches, selectedId]
   );
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+    const targetBranches = city === 'الكل' 
+      ? branches 
+      : branches.filter(b => (b.address?.city || b.location || '').trim() === city);
+    if (targetBranches.length > 0) {
+      setSelectedId(targetBranches[0]._id);
+    }
+  };
 
   const points = useMemo(() => {
     const raw = branches
@@ -175,6 +207,14 @@ const BranchesMapSection = () => {
     return points.find((p) => p.branch._id === selectedId)?.point ?? points[0]?.point ?? null;
   }, [points, selectedId]);
 
+  const filteredPoints = useMemo(() => {
+    return points.filter((p) => {
+      if (selectedCity === 'الكل') return true;
+      const city = p.branch.address?.city || p.branch.location;
+      return city?.trim() === selectedCity;
+    });
+  }, [points, selectedCity]);
+
   const mapCenter = useMemo(() => {
     if (selectedPoint) return selectedPoint;
     if (points[0]) return points[0].point;
@@ -183,7 +223,7 @@ const BranchesMapSection = () => {
 
   if (loading) {
     return (
-      <section className="py-16 bg-white">
+      <section className="py-8 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
           جاري تحميل خريطة الفروع...
         </div>
@@ -193,7 +233,7 @@ const BranchesMapSection = () => {
 
   if (loadError) {
     return (
-      <section className="py-16 bg-white">
+      <section className="py-8 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-red-600">
           {loadError}
         </div>
@@ -206,13 +246,13 @@ const BranchesMapSection = () => {
   }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8 md:py-16 bg-white" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 md:mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">فروعنا على الخريطة</h2>
-          <p className="text-gray-600">
+          {/* <p className="text-gray-600">
             أي فندق أو منتجع نشط يُضاف له رابط Google Maps أو مدينة واضحة يظهر هنا تلقائياً
-          </p>
+          </p> */}
           {missingMapCount > 0 && (
             <p className="text-sm text-amber-700 mt-2">
               {missingMapCount} فرع نشط بدون موقع على الخريطة — أضف رابط Google Maps من لوحة التحكم
@@ -220,30 +260,107 @@ const BranchesMapSection = () => {
           )}
         </div>
 
+        {/* Dynamic City Filter Tabs */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-6 md:mb-10" dir="rtl">
+          {cities.map((city) => {
+            const isActive = selectedCity === city;
+            return (
+              <button
+                key={city}
+                type="button"
+                onClick={() => handleCityChange(city)}
+                className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-bold transition-all duration-300 shadow-sm border ${
+                  isActive
+                    ? 'bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] border-[#c9a55a] text-white shadow-md scale-105'
+                    : 'bg-white border-gray-200 text-gray-600 hover:border-[#c9a55a] hover:text-[#c9a55a] hover:bg-gray-50'
+                }`}
+              >
+                {city}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 bg-gray-50 rounded-2xl border border-gray-200 p-4 max-h-[520px] overflow-y-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">قائمة الفروع ({branches.length})</h3>
-            <div className="space-y-2">
-              {branches.map((branch) => {
+          {/* Branch List Column */}
+          <div className="lg:col-span-1 bg-gray-50/50 rounded-3xl border border-gray-200/80 p-4 max-h-[520px] overflow-y-auto">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 px-1 flex items-center justify-between">
+              <span>قائمة الفروع ({filteredBranches.length})</span>
+              {selectedCity !== 'الكل' && (
+                <span className="text-xs bg-[#c9a55a]/10 text-[#c9a55a] px-2 py-0.5 rounded-full">
+                  مدينة {selectedCity}
+                </span>
+              )}
+            </h3>
+            
+            <div className="space-y-3">
+              {filteredBranches.map((branch) => {
                 const isSelected = selectedBranch?._id === branch._id;
+                
+                // resolve image
+                const rawImgs = Array.isArray(branch.images) ? branch.images : [];
+                const firstImg: any = rawImgs[0];
+                const imgSrc = firstImg
+                  ? (typeof firstImg === 'string' ? firstImg : firstImg?.url)
+                  : branch.image || '';
+                
+                const cityLabel = branch.address?.city || branch.location || 'بدون مدينة';
+                
                 return (
                   <button
                     key={branch._id}
                     type="button"
                     onClick={() => setSelectedId(branch._id)}
-                    className={`w-full text-right p-3 rounded-xl border transition ${
+                    className={`w-full text-right p-3 rounded-2xl border transition duration-300 flex items-center gap-3.5 relative overflow-hidden group ${
                       isSelected
-                        ? 'bg-gold/10 border-gold text-gray-900'
-                        : 'bg-white border-gray-200 hover:border-gold/50'
+                        ? 'bg-gradient-to-r from-[#c9a55a]/12 to-[#c9a55a]/4 border-[#c9a55a] text-gray-900 shadow-md'
+                        : 'bg-white border-gray-150 hover:border-[#c9a55a]/50 text-gray-700 shadow-sm hover:-translate-y-0.5'
                     }`}
                   >
-                    <div className="font-semibold">{branch.name}</div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {branch.type === 'hotel' ? 'فندق' : 'منتجع'} —{' '}
-                      {branch.address?.city || branch.location || 'بدون مدينة'}
-                      {branch.mapPosition?.approximate && (
-                        <span className="text-amber-600 mr-1"> (موقع تقريبي)</span>
+                    {/* Glowing golden side indicator */}
+                    {isSelected && (
+                      <div className="absolute top-0 right-0 bottom-0 w-1.5 bg-[#c9a55a] rounded-l" />
+                    )}
+
+                    {/* Image thumbnail */}
+                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100 shadow-inner relative">
+                      {imgSrc ? (
+                        <img src={imgSrc} alt={branch.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#c9a55a]/10 to-[#c9a55a]/20 flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-[#c9a55a]/70" />
+                        </div>
                       )}
+                    </div>
+
+                    {/* Card details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          branch.type === 'hotel' 
+                            ? 'bg-blue-50 text-blue-700 border border-blue-100' 
+                            : 'bg-amber-50 text-amber-700 border border-amber-100'
+                        }`}>
+                          {branch.type === 'hotel' ? 'فندق' : 'منتجع'}
+                        </span>
+                        
+                        {/* 5 Golden Stars rating */}
+                        <div className="flex items-center text-amber-400 text-[10px]">
+                          ★ ★ ★ ★ ★
+                        </div>
+                      </div>
+                      
+                      <h4 className="font-bold text-[14px] text-gray-900 truncate leading-snug group-hover:text-[#c9a55a] transition-colors">
+                        {branch.name}
+                      </h4>
+                      
+                      <div className="text-[11px] text-gray-500 mt-1 flex items-center gap-1 font-semibold">
+                        <MapPin className="w-3 h-3 text-[#e53935] shrink-0" />
+                        <span>{cityLabel}</span>
+                        {branch.mapPosition?.approximate && (
+                          <span className="text-[9px] text-amber-600 bg-amber-50 px-1 py-0.5 rounded shrink-0">موقع تقريبي</span>
+                        )}
+                      </div>
                     </div>
                   </button>
                 );
@@ -251,29 +368,43 @@ const BranchesMapSection = () => {
             </div>
           </div>
 
+          {/* Map Column */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-md">
+              {/* Map header with selected branch details */}
+              <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedBranch?.name}</h3>
-                  <div className="text-sm text-gray-600 flex items-center mt-1">
-                    <MapPin className="w-4 h-4 ml-1 text-gold shrink-0" />
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-gray-900">{selectedBranch?.name}</h3>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      selectedBranch?.type === 'hotel' 
+                        ? 'bg-blue-50 text-blue-700 border border-blue-100' 
+                        : 'bg-amber-50 text-amber-700 border border-amber-100'
+                    }`}>
+                      {selectedBranch?.type === 'hotel' ? 'فندق' : 'منتجع'}
+                    </span>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 flex items-center mt-1 font-semibold">
+                    <MapPin className="w-3.5 h-3.5 ml-1 text-[#e53935] shrink-0" />
                     <span>{selectedBranch?.location || selectedBranch?.address?.city || 'الموقع'}</span>
                   </div>
                 </div>
+                
                 {selectedBranch?.contact?.mapsUrl && (
                   <a
                     href={selectedBranch.contact.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm bg-gold text-white px-3 py-2 rounded-lg hover:opacity-90"
+                    className="inline-flex items-center gap-1.5 text-xs md:text-sm bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white px-4 py-2.5 rounded-full hover:brightness-105 transition shadow-sm font-bold"
                   >
-                    <Navigation className="w-4 h-4" />
+                    <Navigation className="w-3.5 h-3.5" />
                     فتح في Google Maps
                   </a>
                 )}
               </div>
 
+              {/* Leaflet Map container */}
               <div className="w-full h-[450px] z-0" dir="ltr">
                 <MapContainer
                   center={[mapCenter.lat, mapCenter.lng]}
@@ -286,10 +417,10 @@ const BranchesMapSection = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
                   <MapController
-                    points={points.map((x) => x.point)}
+                    points={filteredPoints.map((x) => x.point)}
                     selectedPoint={selectedPoint}
                     selectedId={selectedId}
-                    fitAllKey={branches.length}
+                    fitAllKey={filteredBranches.length}
                   />
                   {points.map(({ branch, point }) => {
                     // resolve image
