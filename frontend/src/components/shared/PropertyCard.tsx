@@ -112,8 +112,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <div className="sheen-animation-bg" />
 
       {/* The inner premium card */}
-      <div className="luxury-sheen-inner-card p-3 sm:p-4">
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-[24px] sm:rounded-[28px]">
+      <div className="luxury-sheen-inner-card p-2 sm:p-4">
+        <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-[20px] sm:rounded-[28px]">
           <img
             src={currentImage}
             alt={property.name || "صورة العقار"}
@@ -121,7 +121,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             onError={handleImageError}
           />
           {hasMultiple && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-md">
               {images.map((_, i) => (
                 <button
                   key={i}
@@ -131,77 +131,77 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                     e.stopPropagation();
                     setActiveIndex(i);
                   }}
-                  className={`h-1.5 rounded-full transition-all ${
-                    i === activeIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/60'
+                  className={`h-1 rounded-full transition-all ${
+                    i === activeIndex ? 'w-3 bg-white' : 'w-1 bg-white/60'
                   }`}
                 />
               ))}
             </div>
           )}
           {!hideTypeBadge && (
-            <div className="absolute top-4 right-4 bg-[#c9a55a] text-white px-3.5 py-1 rounded-full text-sm font-semibold shadow-md">
+            <div className="absolute top-2 right-2 bg-[#c9a55a] text-white px-2 py-0.5 rounded-full text-[10px] sm:text-sm font-semibold shadow-md">
               {typeLabel}
             </div>
           )}
         </div>
 
-        <div className="flex-1 flex flex-col justify-between w-full pt-4 px-1 pb-1 gap-4" dir="rtl">
+        <div className="flex-1 flex flex-col justify-between w-full pt-3 px-0.5 pb-0.5 gap-2" dir="rtl">
           {/* Top Row: Title/Location on Right, Price/Text on Left */}
-          <div className="flex justify-between items-start gap-2 w-full">
+          <div className="flex justify-between items-start gap-1 w-full">
             {/* Right side: Title & Location */}
-            <div className="flex flex-col items-start gap-0.5">
-              <h3 className="font-bold text-[#c9a55a] text-[17px] sm:text-[22px] md:text-[24px] leading-tight tracking-tight">
+            <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1">
+              <h3 className="font-bold text-[#c9a55a] text-[13px] sm:text-[22px] md:text-[24px] leading-tight tracking-tight truncate w-full">
                 {property.name}
               </h3>
-              <div className="flex items-center text-[#b89650] text-[11px] sm:text-[13px] md:text-sm font-medium mt-1">
-                <MapPin className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px] ml-1 text-red-600 flex-shrink-0" />
-                <span>{property.location}</span>
+              <div className="flex items-center text-[#b89650] text-[10px] sm:text-[13px] md:text-sm font-medium mt-0.5 truncate w-full">
+                <MapPin className="h-3 w-3 sm:h-[18px] sm:w-[18px] ml-1 text-red-600 flex-shrink-0" />
+                <span className="truncate">{property.location}</span>
               </div>
             </div>
 
             {/* Left side: Price & Installment Text */}
-            <div className="flex flex-col items-start gap-1 shrink-0">
+            <div className="flex flex-col items-end gap-0.5 shrink-0 text-left">
               {property.price != null && property.price > 0 ? (
                 property.discountPrice && property.discountPrice < property.price ? (
-                  <div className="flex flex-col items-start gap-0.5">
-                    <span className="line-through text-gray-400 text-[10px] sm:text-sm font-medium ml-4 sm:ml-8">{property.price.toLocaleString("en-US")}</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-[18px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                  <div className="flex flex-col items-end gap-0">
+                    <span className="line-through text-gray-400 text-[9px] sm:text-sm font-medium">{property.price.toLocaleString("en-US")}</span>
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="text-[14px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
                         {property.discountPrice.toLocaleString("en-US")}
                       </span>
-                      <span className="text-[10px] sm:text-[14px] font-bold text-black">ريال</span>
+                      <span className="text-[9px] sm:text-[14px] font-bold text-black">ريال</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-[18px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
+                  <div className="flex items-baseline gap-0.5">
+                    <span className="text-[14px] sm:text-[26px] md:text-[30px] font-extrabold text-black leading-none tracking-tighter">
                       {property.price.toLocaleString("en-US")}
                     </span>
-                    <span className="text-[10px] sm:text-[14px] font-bold text-black">ريال</span>
+                    <span className="text-[9px] sm:text-[14px] font-bold text-black">ريال</span>
                   </div>
                 )
               ) : null}
               
               {showInstallmentLine && (
-                <div className="flex items-center gap-1 text-black font-bold text-[11px] sm:text-[14px] md:text-[15px] tracking-tight mt-0.5 whitespace-nowrap">
-                  <CheckCircle2 className="h-3.5 w-3.5 sm:h-[18px] sm:w-[18px] text-[#4ecb71] fill-[#4ecb71] text-white flex-shrink-0" aria-hidden />
-                  <span>متاح بالتقسيط</span>
+                <div className="flex items-center gap-0.5 text-black font-bold text-[9px] sm:text-[14px] md:text-[15px] tracking-tight mt-0.5 whitespace-nowrap">
+                  <CheckCircle2 className="h-3 w-3 sm:h-[18px] sm:w-[18px] text-[#4ecb71] fill-[#4ecb71] text-white flex-shrink-0" aria-hidden />
+                  <span>بالتقسيط</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Bottom Row: Button on Right, Logos on Left */}
-          <div className="flex flex-wrap justify-between items-center gap-2 w-full mt-auto pt-2 overflow-hidden">
+          <div className="flex justify-between items-center gap-1 w-full mt-auto pt-1 overflow-hidden">
             {/* Right side: Button */}
             <div className="shrink-0">
               <Link
                 to={targetUrl}
                 dir="ltr"
-                className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-[30px] border-[2px] sm:border-[2.5px] border-black bg-white py-0.5 sm:py-1 pr-3 sm:pr-4 pl-1 text-[11px] sm:text-[14px] md:text-[15px] font-bold text-black hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-2.5 rounded-[30px] border-[1.5px] sm:border-[2.5px] border-black bg-white py-0.5 sm:py-1 pr-2 sm:pr-4 pl-0.5 sm:pl-1 text-[9px] sm:text-[14px] md:text-[15px] font-bold text-black hover:bg-gray-50 transition-colors"
               >
-                <span className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-black text-white flex-shrink-0">
-                  <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5 ml-0.5" aria-hidden />
+                <span className="flex h-5 w-5 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-black text-white flex-shrink-0">
+                  <ChevronRight className="h-3 w-3 sm:h-5 sm:w-5 ml-0.5" aria-hidden />
                 </span>
                 <span className="tracking-wide uppercase pt-0.5 whitespace-nowrap">
                   {ctaLabel === 'احجز الآن' ? 'BOOK NOW' : ctaLabel}
@@ -211,14 +211,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
             {/* Left side: Installment Logos */}
             {showInstallmentLine && installmentLogos.length > 0 && (
-              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-wrap justify-end max-w-[48%] overflow-hidden">
+              <div className="flex items-center gap-0.5 shrink-0 flex-nowrap justify-end overflow-hidden">
                 {installmentLogos.map((logo, idx) => (
                   <img
                     key={`${logo.url}-${idx}`}
                     src={absolutize(logo.url!)}
                     alt={logo.alt || 'تقسيط'}
-                    className="h-4 sm:h-5 md:h-6 w-auto object-contain"
-                    style={{ maxWidth: '50px' }}
+                    className="h-3.5 sm:h-5 md:h-6 w-auto object-contain flex-shrink-0"
+                    style={{ maxWidth: '32px' }}
                     loading="lazy"
                     onError={handleImageError}
                   />

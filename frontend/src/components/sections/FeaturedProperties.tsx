@@ -83,7 +83,7 @@ const FeaturedProperties = () => {
                 <div className="w-full text-center text-gray-500 py-8">لا توجد منتجعات للعرض</div>
               ) : (
                 resorts.map((resort) => (
-                  <div key={resort._id || resort.id} className="w-[82%] sm:w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
+                  <div key={resort._id || resort.id} className="w-[calc(50%-8px)] md:w-auto flex-shrink-0 snap-start md:snap-align-none h-full">
                     <PropertyCard property={resort} hideTypeBadge />
                   </div>
                 ))
