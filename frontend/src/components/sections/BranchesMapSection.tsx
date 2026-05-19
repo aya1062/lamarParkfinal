@@ -429,11 +429,7 @@ const BranchesMapSection = () => {
                     const imgSrc = firstImg
                       ? (typeof firstImg === 'string' ? firstImg : firstImg?.url)
                       : branch.image || '';
-                    const typeLabel = branch.type === 'hotel' ? 'فندق' : 'منتجع';
-                    const targetUrl = branch.type === 'hotel'
-                      ? `/hotel/${branch._id}`
-                      : `/resort/${branch._id}`;
-                    const cityLabel = branch.address?.city || branch.location || '';
+                    const isSelected = selectedId === branch._id;
 
                     return (
                       <Marker
@@ -454,95 +450,64 @@ const BranchesMapSection = () => {
                             style={{
                               fontFamily: 'inherit',
                               direction: 'rtl',
-                              width: 130,
-                              background: '#fff',
-                              borderRadius: 14,
-                              overflow: 'hidden',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                              border: '1px solid #f0ebe0',
-                              padding: 0,
+                              background: isSelected 
+                                ? 'linear-gradient(135deg, #DfB86c 0%, #c9a55a 100%)' 
+                                : '#ffffff',
+                              color: isSelected ? '#ffffff' : '#1f2937',
+                              borderRadius: '30px',
+                              boxShadow: isSelected 
+                                ? '0 6px 15px rgba(201, 165, 90, 0.4)' 
+                                : '0 4px 10px rgba(0, 0, 0, 0.08)',
+                              border: isSelected 
+                                ? '1.5px solid #c9a55a' 
+                                : '1.5px solid rgba(201, 165, 90, 0.3)',
+                              padding: '4px 6px 4px 14px',
                               cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              whiteSpace: 'nowrap',
+                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                              transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                             }}
                             onClick={() => setSelectedId(branch._id)}
                           >
-                            {/* Image */}
-                            <div style={{ position: 'relative', width: '100%', height: 65, overflow: 'hidden', borderRadius: '13px 13px 0 0' }}>
+                            {/* الصورة المصغرة كأيقونة دائرية */}
+                            <div style={{
+                              width: '28px',
+                              height: '28px',
+                              borderRadius: '50%',
+                              overflow: 'hidden',
+                              backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : 'rgba(201,165,90,0.1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              border: isSelected ? '1px solid #ffffff' : '1px solid rgba(201,165,90,0.3)'
+                            }}>
                               {imgSrc ? (
-                                <img
-                                  src={imgSrc}
-                                  alt={branch.name}
-                                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                <img 
+                                  src={imgSrc} 
+                                  alt={branch.name} 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
                               ) : (
-                                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #c9a55a22, #f5efe0)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <MapPin style={{ color: '#c9a55a', width: 20, height: 20 }} />
-                                </div>
+                                <MapPin style={{ 
+                                  width: '14px', 
+                                  height: '14px', 
+                                  color: isSelected ? '#ffffff' : '#c9a55a' 
+                                }} />
                               )}
-                              {/* Type badge */}
-                              <div style={{
-                                position: 'absolute', top: 4, right: 4,
-                                background: '#c9a55a', color: '#fff',
-                                borderRadius: 30, padding: '2px 6px',
-                                fontSize: 9, fontWeight: 700,
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
-                              }}>
-                                {typeLabel}
-                              </div>
                             </div>
-
-                            {/* Body */}
-                            <div style={{ padding: '6px 8px 8px', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                              <div style={{ fontWeight: 800, fontSize: 11, color: '#c9a55a', lineHeight: 1.2 }}>
-                                {branch.name}
-                              </div>
-                              {cityLabel && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#b89650', fontSize: 9, fontWeight: 500 }}>
-                                  <MapPin style={{ width: 9, height: 9, color: '#e53935', flexShrink: 0 }} />
-                                  <span>{cityLabel}</span>
-                                </div>
-                              )}
-
-                              {/* Buttons row */}
-                              <div style={{ display: 'flex', gap: 3, marginTop: 3, alignItems: 'center' }}>
-                                <Link
-                                  to={targetUrl}
-                                  onClick={(e) => e.stopPropagation()}
-                                  style={{
-                                    flex: 1,
-                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                    background: '#000', color: '#fff',
-                                    borderRadius: 30,
-                                    padding: '4px 6px',
-                                    fontSize: 9, fontWeight: 700,
-                                    textDecoration: 'none',
-                                    letterSpacing: '0.02em',
-                                  }}
-                                >
-                                  BOOK NOW
-                                </Link>
-                                {branch.contact?.mapsUrl && (
-                                  <a
-                                    href={branch.contact.mapsUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    style={{
-                                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                      width: 22, height: 22,
-                                      background: '#f5efe0',
-                                      borderRadius: '50%',
-                                      flexShrink: 0,
-                                      border: '1px solid #c9a55a',
-                                      color: '#c9a55a',
-                                      textDecoration: 'none',
-                                    }}
-                                    title="فتح في Google Maps"
-                                  >
-                                    <Navigation style={{ width: 9, height: 9 }} />
-                                  </a>
-                                )}
-                              </div>
-                            </div>
+                            
+                            {/* اسم الفرع */}
+                            <span style={{ 
+                              fontWeight: 800, 
+                              fontSize: '12px',
+                              letterSpacing: '0.01em'
+                            }}>
+                              {branch.name}
+                            </span>
                           </div>
                         </Tooltip>
                       </Marker>

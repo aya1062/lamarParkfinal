@@ -1,10 +1,28 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 
 const Hero = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // اختيار ID الفيديو المناسب: موبايل (YouTube Short) أو كمبيوتر
+  const videoId = isMobile ? 'lV9SkFRQ6Kg' : 'TShpHlJ5tvE';
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,9 +30,6 @@ const Hero = () => {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
-  // استخراج ID الفيديو من الرابط (YouTube Shorts)
-  const videoId = 'LzIFAQWieOw';
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
 
   return (
     <div 
@@ -23,19 +38,30 @@ const Hero = () => {
       {/* YouTube Video Background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <iframe
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full"
           src={embedUrl}
           title="Hero Background Video"
           allow="autoplay; encrypted-media"
           allowFullScreen
-          style={{
-            pointerEvents: 'none',
-            border: 'none',
-            width: '100vw',
-            height: '56.25vw',
-            minHeight: '100%',
-            minWidth: '177.78vh'
-          }}
+          style={
+            isMobile
+              ? {
+                  pointerEvents: 'none',
+                  border: 'none',
+                  height: '100vh',
+                  width: '56.25vh',
+                  minWidth: '100vw',
+                  minHeight: '177.78vw',
+                }
+              : {
+                  pointerEvents: 'none',
+                  border: 'none',
+                  width: '100vw',
+                  height: '56.25vw',
+                  minHeight: '100%',
+                  minWidth: '177.78vh',
+                }
+          }
         />
       </div>
 
