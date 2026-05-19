@@ -214,7 +214,7 @@ const Navbar = () => {
                     )}
                     {/* Mega Menu - Services */}
                     {item.path === '/services' && showServicesMenu && (
-                      <div className="absolute right-1/2 translate-x-1/2 top-full mt-0 pt-0 w-[240px] z-50">
+                      <div className="absolute right-1/2 translate-x-1/2 top-full mt-0 pt-0 w-[280px] z-50">
                         <div className="bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.12)] border border-gray-100 p-3 animate-fade-in relative mt-2">
                           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
                           <Link
@@ -228,6 +228,32 @@ const Navbar = () => {
                             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all text-gray-700 hover:text-gold font-semibold text-sm"
                           >
                             📰 الصحف الإلكترونية
+                          </Link>
+                          <div className="h-px bg-gray-100 my-2"></div>
+                          <div className="px-4 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">التشغيل وإدارة الفنادق</div>
+                          <Link
+                            to="/services/operations-management"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all text-gray-700 hover:text-gold font-semibold text-sm"
+                          >
+                            ⚙️ إدارة التشغيل
+                          </Link>
+                          <Link
+                            to="/services/accounting-management"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all text-gray-700 hover:text-gold font-semibold text-sm"
+                          >
+                            📊 إدارة المحاسبة
+                          </Link>
+                          <Link
+                            to="/services/marketing-management"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all text-gray-700 hover:text-gold font-semibold text-sm"
+                          >
+                            📣 إدارة التسويق
+                          </Link>
+                          <Link
+                            to="/services/hr-management"
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-all text-gray-700 hover:text-gold font-semibold text-sm"
+                          >
+                            👥 إدارة الموارد البشرية
                           </Link>
                         </div>
                       </div>
@@ -431,6 +457,35 @@ const Navbar = () => {
                       className="block px-8 py-3.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gold rounded-xl transition-colors"
                     >
                       📰 الصحف الإلكترونية
+                    </Link>
+                    <div className="h-px bg-gray-100 my-2 mx-8"></div>
+                    <Link
+                      to="/services/operations-management"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-8 py-3.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gold rounded-xl transition-colors"
+                    >
+                      ⚙️ إدارة التشغيل
+                    </Link>
+                    <Link
+                      to="/services/accounting-management"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-8 py-3.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gold rounded-xl transition-colors"
+                    >
+                      📊 إدارة المحاسبة
+                    </Link>
+                    <Link
+                      to="/services/marketing-management"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-8 py-3.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gold rounded-xl transition-colors"
+                    >
+                      📣 إدارة التسويق
+                    </Link>
+                    <Link
+                      to="/services/hr-management"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-8 py-3.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gold rounded-xl transition-colors"
+                    >
+                      👥 إدارة الموارد البشرية
                     </Link>
                   </div>
                 ) : (

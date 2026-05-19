@@ -37,10 +37,15 @@ const AdminQuickLinks = React.lazy(() => import('./components/admin/AdminQuickLi
 const RoomBooking = React.lazy(() => import('./components/pages/RoomBooking'));
 const PaymentSuccess = React.lazy(() => import('./components/pages/PaymentSuccess'));
 const PaymentError = React.lazy(() => import('./components/pages/PaymentError'));
-const NotFound = React.lazy(() => import('./components/pages/NotFound'));
-const Policies = React.lazy(() => import('./components/pages/Policies'));
-const Minibar = React.lazy(() => import('./components/pages/Minibar'));
 const DigitalNewspapers = React.lazy(() => import('./components/pages/DigitalNewspapers'));
+const OperationsManagement = React.lazy(() => import('./components/pages/OperationsManagement'));
+const AccountingManagement = React.lazy(() => import('./components/pages/AccountingManagement'));
+const MarketingManagement = React.lazy(() => import('./components/pages/MarketingManagement'));
+const HRManagement = React.lazy(() => import('./components/pages/HRManagement'));
+const Minibar = React.lazy(() => import('./components/pages/Minibar'));
+const Policies = React.lazy(() => import('./components/pages/Policies'));
+const NotFound = React.lazy(() => import('./components/pages/NotFound'));
+
 
 // مكون لإجبار الصفحة على البدء من الأعلى
 const ScrollToTop = () => {
@@ -97,6 +102,10 @@ function App() {
 							<Route path="/room-booking" element={<RoomBooking />} />
 							<Route path="/services/minibar" element={<Minibar />} />
 							<Route path="/services/digital-newspapers" element={<DigitalNewspapers />} />
+							<Route path="/services/operations-management" element={<OperationsManagement />} />
+							<Route path="/services/accounting-management" element={<AccountingManagement />} />
+							<Route path="/services/marketing-management" element={<MarketingManagement />} />
+							<Route path="/services/hr-management" element={<HRManagement />} />
 							<Route path="/login" element={<Login />} />
 							<Route path="/register" element={<Register />} />
 							

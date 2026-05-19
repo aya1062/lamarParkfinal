@@ -49,9 +49,9 @@ const FeaturedProperties = () => {
           <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight mb-4">
             <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">منتجعات لامار المميزة</span>
           </h3>
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+          {/* <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
             اكتشف مجموعة مختارة من أفضل المنتجعات في المملكة مع إطلالات خلابة وخصوصية تامة
-          </p>
+          </p> */}
         </header>
 
         {loading ? (
