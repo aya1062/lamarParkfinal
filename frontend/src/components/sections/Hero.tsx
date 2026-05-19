@@ -103,13 +103,56 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* Light Architectural Polygon Divider */}
+      <div className="absolute bottom-[-2px] left-0 right-0 w-full overflow-hidden leading-[0] z-20 pointer-events-none">
+        <svg 
+          viewBox="0 0 1200 120" 
+          preserveAspectRatio="none" 
+          className="relative block w-full h-[55px] md:h-[95px] text-white fill-current"
+        >
+          <defs>
+            <linearGradient id="gold-grad-poly" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#DfB86c" />
+              <stop offset="30%" stopColor="#ffebd2" />
+              <stop offset="70%" stopColor="#c9a55a" />
+              <stop offset="100%" stopColor="#DfB86c" />
+            </linearGradient>
+          </defs>
+          
+          {/* Glowing background stroke for a neon-like luxury effect */}
+          <path 
+            d="M0,70 L500,50 L700,80 L1200,40" 
+            fill="none" 
+            stroke="url(#gold-grad-poly)" 
+            strokeWidth="5.5"
+            strokeOpacity="0.4"
+            className="blur-[4px]"
+          />
+
+          {/* Crisp, glowing golden line */}
+          <path 
+            d="M0,70 L500,50 L700,80 L1200,40" 
+            fill="none" 
+            stroke="url(#gold-grad-poly)" 
+            strokeWidth="3.5"
+            className="drop-shadow-[0_2px_8px_rgba(201,165,90,0.8)]"
+          />
+
+          {/* Pure White Faceted Mask to blend with the next section */}
+          <path 
+            d="M0,71 L500,51 L700,81 L1200,41 L1200,120 L0,120 Z" 
+            fill="#ffffff"
+          />
+        </svg>
+      </div>
+
       {/* Animated Vertical Scroll Down Indicator - PURELY VISUAL */}
       <div 
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center cursor-pointer text-white/80 hover:text-[#c9a55a] transition-all hover:scale-110"
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center cursor-pointer text-gray-800 hover:text-[#c9a55a] transition-all hover:scale-110"
         onClick={() => window.scrollTo({ top: window.innerHeight - 56, behavior: 'smooth' })}
         aria-label="Scroll Down"
       >
-        <div className="w-[26px] h-[42px] rounded-full border-2 border-white/70 flex justify-center p-1.5 shadow-lg backdrop-blur-[2px]">
+        <div className="w-[28px] h-[44px] rounded-full border-2 border-[#c9a55a]/80 flex justify-center p-1.5 shadow-xl bg-white/90 backdrop-blur-[6px] hover:border-[#DfB86c]">
           <div className="w-[4px] h-[8px] bg-[#c9a55a] rounded-full scroll-down-dot" />
         </div>
       </div>
