@@ -223,7 +223,7 @@ const BranchesMapSection = () => {
 
   if (loading) {
     return (
-      <section className="py-8 md:py-16 bg-white">
+      <section className="py-8 md:py-16 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
           جاري تحميل خريطة الفروع...
         </div>
@@ -233,7 +233,7 @@ const BranchesMapSection = () => {
 
   if (loadError) {
     return (
-      <section className="py-8 md:py-16 bg-white">
+      <section className="py-8 md:py-16 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-red-600">
           {loadError}
         </div>
@@ -246,7 +246,7 @@ const BranchesMapSection = () => {
   }
 
   return (
-    <section className="py-8 md:py-16 bg-white" dir="rtl">
+    <section className="py-8 md:py-16 bg-transparent" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-6 md:mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">فروعنا على الخريطة</h2>

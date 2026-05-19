@@ -97,7 +97,7 @@ const HotelProperties = () => {
   }, [hotels]);
 
   return (
-    <section className="py-8 md:py-16 bg-gray-50" dir="rtl">
+    <section className="py-8 md:py-16 bg-transparent" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {loading ? (

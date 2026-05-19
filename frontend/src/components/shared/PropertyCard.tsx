@@ -112,8 +112,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       <div className="sheen-animation-bg" />
 
       {/* The inner premium card */}
-      <div className="luxury-sheen-inner-card p-2 sm:p-4">
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-[20px] sm:rounded-[28px]">
+      <div className="luxury-sheen-inner-card p-1 sm:p-2">
+        <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-[16px] sm:rounded-[24px]">
           <img
             src={currentImage}
             alt={property.name || "صورة العقار"}
@@ -145,7 +145,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           )}
         </div>
 
-        <div className="flex-1 flex flex-col justify-between w-full pt-3 px-0.5 pb-0.5 gap-2" dir="rtl">
+        <div className="flex-1 flex flex-col justify-between w-full pt-3 px-1.5 pb-1 sm:px-2.5 sm:pb-2 gap-2" dir="rtl">
           {/* Top Row: Title/Location on Right, Price/Text on Left */}
           <div className="flex justify-between items-start gap-1 w-full">
             {/* Right side: Title & Location */}

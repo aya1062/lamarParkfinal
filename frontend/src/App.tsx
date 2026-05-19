@@ -71,7 +71,7 @@ function App() {
 			<SplashScreen />
 			<Router>
 				<ScrollToTop />
-				<div className="min-h-screen bg-gray-50 flex flex-col">
+				<div className="min-h-screen bg-transparent flex flex-col">
 					<Toast />
 					<Navbar />
 					<main className="flex-1">
