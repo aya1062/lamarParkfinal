@@ -1,10 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Hotel, Palmtree } from 'lucide-react';
 
 const Hero = () => {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth < 768;
@@ -23,13 +21,6 @@ const Hero = () => {
   // اختيار ID الفيديو المناسب: موبايل (YouTube Short) أو كمبيوتر
   const videoId = isMobile ? 'lV9SkFRQ6Kg' : 'TShpHlJ5tvE';
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`;
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
 
   return (
     <div 
@@ -73,57 +64,43 @@ const Hero = () => {
 			<div className="pointer-events-none absolute -bottom-24 -left-24 h-[28rem] w-[28rem] rounded-full bg-[#c9a55a] opacity-10 blur-3xl z-10"></div>
 
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="text-center text-white max-w-4xl px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            مرحباً بك في 
-            <img
-              src="/lamar/logo بدون خلفية.png"
-              alt="لامار بارك"
-              className="mx-auto mt-8 h-36 md:h-36 w-auto drop-shadow-lg"
-            />
-          </h1>
-          <p className="text-xl md:text-2xl mb-10 opacity-90">
-            اكتشف أفضل الفنادق والشاليهات الفاخرة في المملكة العربية السعودية
-          </p>
+        <div className="text-center text-white max-w-5xl px-4 animate-fade-in-up">
+          {/* Glassmorphic Luxury Badge */}
+          <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-xl select-none">
+            <span className="text-[#DfB86c] text-sm animate-pulse">⚜️</span>
+            <span className="text-xs md:text-sm font-semibold tracking-wider text-[#DfB86c]">
+              تجربة استثنائية من الرفاهية والفخامة
+            </span>
+          </div>
 
-					{/* Search Bar */}
-					<form onSubmit={handleSearch} className="relative max-w-xl mx-auto w-full mb-10">
-						<div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-							<Search className="h-6 w-6 text-gray-400" />
-						</div>
-						<input
-							type="text"
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							placeholder="ابحث عن الفنادق، الشاليهات، الوجهات..."
-							className="w-full input-rtl py-4 pr-12 pl-24 rounded-full border-none shadow-2xl text-lg text-gray-900 focus:ring-4 focus:ring-[#DfB86c]/50 outline-none"
-						/>
-						<button 
-							type="submit"
-							className="absolute left-2 top-2 bottom-2 px-6 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white rounded-full font-semibold hover:brightness-110 transition shadow-md luxury-pulse-btn"
-						>
-							بحث
-						</button>
-					</form>
- 
+          {/* Fancy Title */}
+          <h1 className="text-4xl md:text-6xl font-black mb-8 leading-normal text-white drop-shadow-2xl">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-[#fcf5e9] to-[#DfB86c] py-2">
+              اكتشف أفضل الفنادق والشاليهات الفاخرة
+            </span>
+            <span className="block text-xl md:text-2xl font-light text-gray-200 mt-4 relative after:content-[''] after:block after:w-32 after:h-[2px] after:bg-gradient-to-r after:from-transparent after:via-[#DfB86c] after:to-transparent after:mx-auto after:mt-5 opacity-90">
+              في المملكة العربية السعودية
+            </span>
+          </h1>
+
 					{/* CTA Buttons */}
-					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
+					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-10">
 						<Link
 							to="/hotels"
-						className="group relative inline-flex items-center justify-center rounded-xl px-6 py-2 min-w-[150px] font-semibold text-lg bg-gradient-to-r from-[#DfB86c] to-[#c9a55a] text-white shadow-xl transition transform hover:translate-y-[-1px] hover:brightness-110 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
+							className="group relative inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-3.5 min-w-[200px] font-bold text-lg text-[#1a1102] shadow-2xl transition duration-500 overflow-hidden bg-gradient-to-r from-[#DfB86c] via-[#ffebd2] to-[#c9a55a] hover:brightness-110 hover:shadow-[0_20px_40px_-15px_rgba(201,165,90,0.45)] transform hover:scale-[1.02] luxury-sheen-btn"
 						>
-							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition bg-white"></span>
-							<span className="relative z-10">حجز فندق</span>
-						<span className="absolute -inset-0.5 rounded-xl blur opacity-30 group-hover:opacity-50 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a]" aria-hidden="true"></span>
+							<Hotel className="h-5 w-5 text-[#1a1102] transition-transform duration-500 group-hover:scale-110" />
+							<span>حجز الفنادق الفاخرة</span>
+							<span className="absolute -inset-0.5 rounded-2xl blur opacity-30 group-hover:opacity-50 bg-gradient-to-r from-[#DfB86c] to-[#c9a55a]" aria-hidden="true"></span>
 						</Link>
 
 						<Link
 							to="/resorts"
-						className="group relative inline-flex items-center justify-center rounded-xl px-8 py-2 min-w-[150px] font-semibold text-lg bg-white text-black shadow-xl border border-white/80 transition transform hover:translate-y-[-1px] hover:bg-[#DfB86c]/5 hover:ring-2 hover:ring-[#DfB86c]/50 focus:outline-none"
+							className="group relative inline-flex items-center justify-center gap-3 rounded-2xl px-8 py-3.5 min-w-[200px] font-bold text-lg text-white shadow-2xl transition duration-500 overflow-hidden border border-white/20 hover:border-[#DfB86c]/80 bg-white/5 backdrop-blur-md hover:bg-[#DfB86c]/20 hover:shadow-[0_20px_40px_-15px_rgba(255,255,255,0.15)] transform hover:scale-[1.02]"
 						>
-							<span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-5 transition bg-black"></span>
-							<span className="relative z-10">حجز شالية</span>
-							<span className="absolute -inset-0.5 rounded-xl blur opacity-10 group-hover:opacity-20 bg-white" aria-hidden="true"></span>
+							<Palmtree className="h-5 w-5 text-[#DfB86c] transition-transform duration-500 group-hover:scale-110 group-hover:text-white" />
+							<span>حجز الشاليهات الراقية</span>
+							<span className="absolute -inset-0.5 rounded-2xl blur opacity-10 group-hover:opacity-20 bg-white" aria-hidden="true"></span>
 						</Link>
           </div>
         </div>

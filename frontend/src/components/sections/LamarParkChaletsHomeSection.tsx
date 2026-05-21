@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import PropertyCard from '../shared/PropertyCard';
 import { api, API_ORIGIN } from '../../utils/api';
 import { FALLBACK_IMAGES, handleImageError } from '../../utils/imageFallback';
@@ -53,6 +54,18 @@ function bannerSrcFromChalets(chalets: any[]): string | null {
 const LamarParkChaletsHomeSection = () => {
   const [chalets, setChalets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollAmount = clientWidth * 0.75;
+      scrollRef.current.scrollTo({
+        left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -107,8 +120,8 @@ const LamarParkChaletsHomeSection = () => {
     <div className={shellClass} dir="rtl">
       {/* عناوين مثل المرجع: عنوان + خط تحته + سطر فرعي */}
       <header className="text-right md:text-center mb-4 md:mb-10">
-        <h3 className="text-2xl sm:text-3xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
-          <span className="inline-block border-b-[3px] border-gray-900 pb-2 px-1">شاليهات لامار بارك</span>
+        <h3 className="text-xl sm:text-2xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
+          <span className="inline-block border-b-[3px] border-[#DfB86c] pb-2 px-1">شاليهات لامار بارك</span>
         </h3>
         <p className="text-lg sm:text-xl font-bold text-gray-900 mt-6 md:mt-7">تجربة إقامة لا تنسي</p>
       </header>
@@ -126,21 +139,54 @@ const LamarParkChaletsHomeSection = () => {
       {chalets.length === 0 ? (
         <p className="text-center text-gray-600 py-4 mb-2">لا توجد شاليهات للعرض حالياً.</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 lg:gap-12">
-          {chalets.map((raw) => {
-            const property = {
-              ...raw,
-              type: 'chalet' as const
-            };
-            return (
-              <div
-                key={raw._id || raw.id}
-                className="h-full [&_.card-luxury]:rounded-[20px] [&_.card-luxury]:shadow-md [&_.card-luxury]:border [&_.card-luxury]:border-gray-100 [&_.card-luxury>div:first-child]:rounded-t-[20px] [&_.card-luxury>div:first-child]:overflow-hidden"
+        <div className="relative w-full group">
+          {/* Desktop Navigation Arrows */}
+          {chalets.length > 3 && (
+            <>
+              <button
+                onClick={() => handleScroll('left')}
+                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-[#DfB86c] text-gray-800 hover:text-white backdrop-blur-sm shadow-xl items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 border border-gray-100 hover:scale-110"
+                aria-label="Scroll Left"
               >
-                <PropertyCard property={property} ctaLabel="احجز الآن" hideTypeBadge />
-              </div>
-            );
-          })}
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => handleScroll('right')}
+                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-[#DfB86c] text-gray-800 hover:text-white backdrop-blur-sm shadow-xl items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 border border-gray-100 hover:scale-110"
+                aria-label="Scroll Right"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+
+          {/* Purely Visual Floating Swipe Helper Indicator on mobile */}
+          {chalets.length > 2 && (
+            <div className="md:hidden absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-xl flex items-center justify-center z-20 animate-pulse pointer-events-none border border-gray-100">
+              <ArrowLeft className="w-5 h-5 text-[#c9a55a] horizontal-swipe-arrow" />
+            </div>
+          )}
+
+          <div
+            ref={scrollRef}
+            className="flex gap-4 md:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide w-full"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {chalets.map((raw) => {
+              const property = {
+                ...raw,
+                type: 'chalet' as const
+              };
+              return (
+                <div
+                  key={raw._id || raw.id}
+                  className="w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full [&_.card-luxury]:rounded-[20px] [&_.card-luxury]:shadow-md [&_.card-luxury]:border [&_.card-luxury]:border-gray-100 [&_.card-luxury>div:first-child]:rounded-t-[20px] [&_.card-luxury>div:first-child]:overflow-hidden"
+                >
+                  <PropertyCard property={property} ctaLabel="احجز الآن" hideTypeBadge />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

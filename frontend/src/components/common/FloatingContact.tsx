@@ -28,7 +28,7 @@ const FloatingContact: React.FC<FloatingContactProps> = ({
 		: 'مرحباً، أرغب في الاستفسار عن عقار';
 
 	return (
-		<div className="fixed bottom-6 left-6 flex flex-col gap-3 z-40">
+		<div className="fixed bottom-6 left-6 flex flex-col gap-3 z-[1060]">
 			{showWhatsApp && (
 				<a
 					href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`}

@@ -35,14 +35,14 @@ const Resorts = () => {
   }, [cityQuery]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-8">
+    <div className="min-h-screen bg-transparent pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">منتجعات لامار</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">استكشف أفضل المنتجعات واستمتع بتجربة إقامة فاخرة</p>
         </div>
 
-        <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-6 mb-8 text-white text-center">
+        <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-6 mb-8 text-white text-center animate-fade-in-up opacity-0" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-center mb-3">
             <Award className="h-8 w-8 ml-2" />
             <h3 className="text-2xl font-bold">عروض المنتجعات</h3>
@@ -50,7 +50,7 @@ const Resorts = () => {
           <p className="text-lg opacity-90">خصومات خاصة على حجوزات المنتجعات لفترة محدودة</p>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in-up opacity-0" style={{ animationDelay: '200ms' }}>
           <p className="text-gray-600">تم العثور على <span className="font-semibold text-gray-900">{resorts.length}</span> منتجع</p>
         </div>
 
@@ -62,14 +62,20 @@ const Resorts = () => {
             <a href="/hotels" className="btn-gold inline-block">تصفح الفنادق المتاحة</a>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {resorts.map((resort) => (
-              <PropertyCard key={resort._id || resort.id} property={resort} />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8 mb-12">
+            {resorts.map((resort, index) => (
+              <div 
+                key={resort._id || resort.id}
+                className="animate-fade-in-up opacity-0"
+                style={{ animationDelay: `${300 + index * 80}ms` }}
+              >
+                <PropertyCard property={resort} />
+              </div>
             ))}
           </div>
         )}
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up opacity-0" style={{ animationDelay: '600ms' }}>
           <span className="text-gray-500 text-sm">نهاية القائمة</span>
         </div>
       </div>

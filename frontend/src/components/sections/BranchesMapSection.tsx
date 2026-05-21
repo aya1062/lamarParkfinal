@@ -405,7 +405,7 @@ const BranchesMapSection = () => {
               </div>
 
               {/* Leaflet Map container */}
-              <div className="w-full h-[450px] z-0" dir="ltr">
+              <div className="w-full h-[450px] relative z-10" dir="ltr">
                 <MapContainer
                   center={[mapCenter.lat, mapCenter.lng]}
                   zoom={points.length <= 1 ? 13 : 6}

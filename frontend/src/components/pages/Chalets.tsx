@@ -52,10 +52,10 @@ const Chalets = () => {
   }, []); // Initial load. User must click "Apply Filters" to search again.
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-8">
+    <div className="min-h-screen bg-transparent pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             الشاليهات الفاخرة
           </h1>
@@ -65,7 +65,7 @@ const Chalets = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 animate-fade-in-up opacity-0" style={{ animationDelay: '100ms' }}>
           <div className="flex flex-col md:flex-row items-center justify-between mb-6 lg:mb-4 gap-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center self-start md:self-auto">
               <Filter className="h-5 w-5 ml-2 text-gold" />
@@ -158,18 +158,18 @@ const Chalets = () => {
         </div>
 
         {/* Results */}
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in-up opacity-0" style={{ animationDelay: '200ms' }}>
           <p className="text-gray-600">
             تم العثور على <span className="font-semibold text-gray-900">{chalets.length}</span> شاليه
           </p>
         </div>
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8 mb-12">
           {loading ? (
-            <div>جاري التحميل...</div>
+            <div className="col-span-full">جاري التحميل...</div>
           ) : chalets.length === 0 ? (
-            <div>لا توجد شاليهات متاحة</div>
+            <div className="col-span-full">لا توجد شاليهات متاحة</div>
           ) : (
             chalets
               .filter(
@@ -179,14 +179,20 @@ const Chalets = () => {
                   chalet.name &&
                   typeof chalet.price !== "undefined"
               )
-              .map((chalet) => (
-                <PropertyCard key={chalet._id || chalet.id} property={chalet} />
+              .map((chalet, index) => (
+                <div 
+                  key={chalet._id || chalet.id}
+                  className="animate-fade-in-up opacity-0"
+                  style={{ animationDelay: `${300 + index * 80}ms` }}
+                >
+                  <PropertyCard property={chalet} />
+                </div>
               ))
           )}
         </div>
 
         {/* Load More */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up opacity-0" style={{ animationDelay: '600ms' }}>
           <button className="btn-gold px-8 py-3">
             عرض المزيد من الشاليهات
           </button>

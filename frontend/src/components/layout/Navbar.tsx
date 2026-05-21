@@ -83,7 +83,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100/50 backdrop-blur-md bg-white/95">
+    <nav className="bg-white sticky top-0 z-[1050] shadow-sm border-b border-gray-100/50 backdrop-blur-md bg-white/95">
       {/* 
         ========================================
         DESKTOP NAVBAR

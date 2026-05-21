@@ -66,10 +66,10 @@ const Hotels = () => {
   }, [filters.location]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-8">
+    <div className="min-h-screen bg-transparent pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             الفنادق الفاخرة
           </h1>
@@ -79,7 +79,7 @@ const Hotels = () => {
         </div>
 
         {/* Special Offers Banner */}
-        <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-6 mb-8 text-white text-center">
+        <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-6 mb-8 text-white text-center animate-fade-in-up opacity-0" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-center mb-3">
             <Award className="h-8 w-8 ml-2" />
             <h3 className="text-2xl font-bold">عروض حصرية</h3>
@@ -90,7 +90,7 @@ const Hotels = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8 animate-fade-in-up opacity-0" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center justify-between mb-4 lg:mb-0">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
               <Filter className="h-5 w-5 ml-2 text-gold" />
@@ -163,7 +163,7 @@ const Hotels = () => {
         </div>
 
         {/* Results */}
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in-up opacity-0" style={{ animationDelay: '300ms' }}>
           <p className="text-gray-600">
             تم العثور على <span className="font-semibold text-gray-900">{hotels.length}</span> فندق
           </p>
@@ -175,15 +175,21 @@ const Hotels = () => {
         ) : hotels.length === 0 ? (
           <div>لا توجد فنادق متاحة</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {hotels.map((hotel) => (
-              <PropertyCard key={hotel._id || hotel.id} property={hotel} />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8 mb-12">
+            {hotels.map((hotel, index) => (
+              <div 
+                key={hotel._id || hotel.id}
+                className="animate-fade-in-up opacity-0"
+                style={{ animationDelay: `${400 + index * 80}ms` }}
+              >
+                <PropertyCard property={hotel} />
+              </div>
             ))}
           </div>
         )}
 
         {/* Load More */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up opacity-0" style={{ animationDelay: '700ms' }}>
           <button className="btn-gold px-8 py-3">
             عرض المزيد من الفنادق
           </button>
