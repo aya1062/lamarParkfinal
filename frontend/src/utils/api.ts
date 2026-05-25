@@ -4,7 +4,9 @@ import axios from 'axios';
 const ENV: any = (typeof import.meta !== 'undefined' ? (import.meta as any).env : {}) || {};
 const isLocalHost = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
 // https://api.lamarparks.com/api
+// http://localhost:5000/api
 export const API_URL: string = ENV?.VITE_API_URL || 'https://api.lamarparks.com/api';
+console.log("API_URL:", API_URL);
 export const API_ORIGIN: string = (() => {
   try {
     const u = new URL(API_URL);
@@ -21,7 +23,7 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
-    
+
     // معالجة 413 Request Entity Too Large
     if (error.response?.status === 413 || error.code === 'ERR_NETWORK' && error.message?.includes('413')) {
       console.error('Request Entity Too Large (413):', {
@@ -31,14 +33,14 @@ axios.interceptors.response.use(
       });
       error.message = 'حجم الطلب كبير جداً. يرجى تقليل حجم الصور أو رفع عدد أقل من الصور.';
     }
-    
+
     // معالجة CORS errors بشكل أفضل
     if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS') || error.message?.includes('Network Error')) {
       console.error('CORS or Network Error detected. Check backend CORS configuration.');
       console.error('Request URL:', error.config?.url);
       console.error('Request Origin:', window.location.origin);
     }
-    
+
     if (error.response?.status === 401) {
       // إعادة توجيه للـ login إذا انتهت صلاحية الـ token
       window.location.href = '/login';
@@ -567,7 +569,7 @@ export const partnersApi = {
   },
 
   // تحديث ترتيب الشركاء
-  updatePartnersOrder: async (partners: Array<{id: string, order: number}>) => {
+  updatePartnersOrder: async (partners: Array<{ id: string, order: number }>) => {
     try {
       const res = await axios.put(`${API_URL}/partners/order/update`, { partners });
       return { success: true, data: res.data };

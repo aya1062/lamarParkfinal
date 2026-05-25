@@ -164,7 +164,7 @@ html {
 .luxury-sheen-border-card {
   position: relative;
   padding: 1.5px;
-  border-radius: 32px;
+  border-radius: 20px;
   overflow: hidden;
   background: transparent;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -180,13 +180,19 @@ html {
   }
 }
 
+@media (min-width: 640px) {
+  .luxury-sheen-border-card {
+    border-radius: 32px;
+  }
+}
+
 /* The animated background layers - ALWAYS ACTIVE but Calm */
 .luxury-sheen-border-card .sheen-animation-bg {
   position: absolute;
   inset: 0;
   opacity: 0.55;
   pointer-events: none;
-  border-radius: 32px;
+  border-radius: 20px;
   overflow: hidden;
   
   /* Diagonal gradient with transparent ends, and a bright gold-white sheen highlight in the middle */
@@ -205,6 +211,12 @@ html {
   animation: sheenSweepMotion 4.5s ease-in-out infinite;
 }
 
+@media (min-width: 640px) {
+  .luxury-sheen-border-card .sheen-animation-bg {
+    border-radius: 32px;
+  }
+}
+
 @keyframes sheenSweepMotion {
   0% {
     background-position: 250% 0%;
@@ -221,7 +233,7 @@ html {
 .luxury-sheen-inner-card {
   position: relative;
   background: #ffffff;
-  border-radius: 30.5px;
+  border-radius: 18.5px;
   height: 100%;
   width: 100%;
   display: flex;
@@ -229,6 +241,12 @@ html {
   overflow: hidden;
   z-index: 2;
   transition: background 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .luxury-sheen-inner-card {
+    border-radius: 30.5px;
+  }
 }
 
 /* ===== Elegant Scroll Helper & Navigation Animations ===== */

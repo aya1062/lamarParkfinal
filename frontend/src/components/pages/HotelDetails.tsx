@@ -60,6 +60,12 @@ const HotelDetails: React.FC = () => {
 				const h = hotelRes.data?.hotel || hotelRes.data;
 				setHotel(h);
                 setCurrentSlide(0);
+                
+                // دائماً نجلب كل العقارات (غرف + شاليهات) المرتبطة بهذا الفندق/المنتجع
+                // بغض النظر عن النوع، لأن المستخدم قد يربط شاليهات بفندق أو غرف بمنتجع
+                let allItems: any[] = [];
+
+                // 1) جلب الغرف من موديل Room (الغرف التقليدية المضافة من صفحة إدارة الغرف)
                 if (h?.type === 'hotel') {
                     const roomsRes = await api.getRoomsByHotel(id);
                     if (roomsRes.success && Array.isArray(roomsRes.data?.rooms) && roomsRes.data.rooms.length > 0) {
@@ -68,52 +74,45 @@ const HotelDetails: React.FC = () => {
                             city: h?.address?.city || undefined,
                             capacity: (r?.specifications?.maxOccupancy ?? ((r?.specifications?.maxAdults ?? 0) + (r?.specifications?.maxChildren ?? 0))) ?? undefined
                         }));
-                        setRooms(mappedRooms);
-                    } else {
-                        // Fallback: some setups store hotel rooms in Properties with type 'room'
-                        const propsRes = await api.getProperties({ type: 'room', hotel: id });
-                        const propsRoomsRaw = Array.isArray(propsRes.data?.properties)
-                            ? propsRes.data.properties
-                            : Array.isArray(propsRes.data)
-                            ? propsRes.data
-                            : [];
-                        const propsRooms = propsRoomsRaw.map((p: any) => ({
-                            _id: p._id,
-                            name: p.name,
-                            description: p.description,
-                            price: p?.roomSettings?.pricing?.basePrice ?? p.price ?? 0,
-                            images: Array.isArray(p.images)
-                                ? p.images.map((im: any) => (typeof im === 'string' ? im : im?.url)).filter(Boolean)
-                                : [],
-                            capacity:
-                                (p?.roomSettings?.specifications?.maxOccupancy ??
-                                ((p?.roomSettings?.specifications?.maxAdults ?? 0) + (p?.roomSettings?.specifications?.maxChildren ?? 0))) ??
-                                p?.capacity ?? undefined,
-                            city: h?.address?.city || undefined,
-                            isProperty: true // هذه غرف من Properties API
-                        }));
-                        setRooms(propsRooms);
+                        allItems = [...allItems, ...mappedRooms];
                     }
-				} else if (h?.type === 'resort') {
-					const chaletsRes = await api.getProperties({ type: 'chalet', hotel: id });
-					const chalets = Array.isArray(chaletsRes.data?.properties)
-						? chaletsRes.data.properties
-						: Array.isArray(chaletsRes.data)
-						? chaletsRes.data
-						: [];
-                    const mapped = chalets.map((c: any) => ({
-						_id: c._id,
-						name: c.name,
-						description: c.description,
-						price: c.price || c.basePrice || 0,
-						images: Array.isArray(c.images) ? c.images.map((im: any) => (typeof im === 'string' ? im : im?.url)).filter(Boolean) : [],
-                        capacity: c?.chaletSettings?.maxOccupancy || c.maxOccupancy || c.capacity || undefined,
-                        city: (c.address?.city) || (typeof c.location === 'string' ? String(c.location).split('،')[0]?.trim() : undefined)
-					}));
-					setRooms(mapped);
-				} else {
-					setRooms([]);
-				}
+                }
+
+                // 2) دائماً نجلب كل Properties (غرف + شاليهات) المربوطة بهذا الـ ID
+                const propsRes = await api.getProperties({ hotel: id });
+                const propsRaw = Array.isArray(propsRes.data?.properties)
+                    ? propsRes.data.properties
+                    : Array.isArray(propsRes.data)
+                    ? propsRes.data
+                    : [];
+
+                const mappedProps = propsRaw.map((p: any) => ({
+                    _id: p._id,
+                    name: p.name,
+                    description: p.description,
+                    price:
+                        p?.roomSettings?.pricing?.basePrice ??
+                        p?.chaletSettings?.pricing?.basePrice ??
+                        p.price ?? 0,
+                    images: Array.isArray(p.images)
+                        ? p.images.map((im: any) => (typeof im === 'string' ? im : im?.url)).filter(Boolean)
+                        : [],
+                    capacity:
+    (p?.roomSettings?.specifications?.maxOccupancy ??
+     p?.chaletSettings?.maxOccupancy ??
+     ((p?.roomSettings?.specifications?.maxAdults ?? 0) + (p?.roomSettings?.specifications?.maxChildren ?? 0))) ||
+    p?.capacity ||
+    undefined,
+                    city:
+                        p?.address?.city ||
+                        h?.address?.city ||
+                        (typeof p.location === 'string' ? String(p.location).split('،')[0]?.trim() : undefined),
+                    isProperty: true,
+                    propertyType: p.type // 'room' | 'chalet'
+                }));
+
+                allItems = [...allItems, ...mappedProps];
+                setRooms(allItems);
 			} else {
 				setHotel(null);
 				setRooms([]);
