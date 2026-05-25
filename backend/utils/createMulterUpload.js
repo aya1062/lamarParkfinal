@@ -62,15 +62,15 @@ function uploadBufferToCloudinary(buffer, options = {}) {
  */
 async function uploadFilesToCloudinary(files, folder = 'uploads') {
   if (!files || files.length === 0) return [];
-  const results = await Promise.all(
-    files.map((file) =>
-      uploadBufferToCloudinary(file.buffer, {
-        folder,
-        resource_type: 'image',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp']
-      })
-    )
-  );
+  const results = [];
+  for (const file of files) {
+    const res = await uploadBufferToCloudinary(file.buffer, {
+      folder,
+      resource_type: 'image',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp']
+    });
+    results.push(res);
+  }
   return results;
 }
 

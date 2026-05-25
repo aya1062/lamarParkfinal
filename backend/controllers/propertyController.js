@@ -14,7 +14,14 @@ exports.getAllProperties = async (req, res) => {
     if (req.query.type) filter.type = req.query.type;
     if (req.query.featured !== undefined) filter.featured = req.query.featured === 'true';
     if (req.query.status) filter.status = req.query.status;
-    if (req.query.hotel) filter.hotel = req.query.hotel;
+    if (req.query.hotel) {
+      const mongoose = require('mongoose');
+      if (mongoose.Types.ObjectId.isValid(req.query.hotel)) {
+        filter.hotel = new mongoose.Types.ObjectId(req.query.hotel);
+      } else {
+        filter.hotel = req.query.hotel;
+      }
+    }
     
     // --- New Search and Filter Logic ---
     if (req.query.search) {

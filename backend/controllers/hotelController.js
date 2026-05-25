@@ -71,18 +71,57 @@ exports.getHotelById = async (req, res) => {
       status: 'active' 
     });
 
-    // جلب الغرف التابعة للفندق
+    // جلب الغرف التابعة للفندق (سواء من جدول Room أو Property)
     const rooms = await Room.find({ 
       hotel: hotel._id, 
       status: 'active' 
     });
+
+    const propertyRooms = await Property.find({
+      hotel: hotel._id,
+      type: 'room',
+      status: 'active'
+    });
+
+    const mappedPropertyRooms = propertyRooms.map((p) => {
+      const obj = p.toObject();
+      return {
+        ...obj,
+        isProperty: true,
+        specifications: obj.roomSettings?.specifications || {
+          size: obj.chaletSettings?.size || 0,
+          floor: obj.chaletSettings?.floor || 0,
+          view: 'interior',
+          bedType: 'double',
+          maxOccupancy: obj.chaletSettings?.maxOccupancy || 2,
+          maxAdults: obj.chaletSettings?.maxOccupancy || 2,
+          maxChildren: 0
+        },
+        pricing: obj.roomSettings?.pricing || {
+          basePrice: obj.price || 0,
+          currency: 'SAR',
+          extraPersonPrice: 0,
+          extraBedPrice: 0
+        },
+        availability: obj.roomSettings?.availability || {
+          isActive: true,
+          totalRooms: 1,
+          availableRooms: 1
+        }
+      };
+    });
+
+    const allRooms = [
+      ...rooms.map(r => r.toObject()),
+      ...mappedPropertyRooms
+    ];
 
     res.json({ 
       success: true, 
       hotel: {
         ...hotel.toObject(),
         chalets,
-        rooms
+        rooms: allRooms
       }
     });
   } catch (err) {
