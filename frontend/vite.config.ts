@@ -13,7 +13,7 @@ export default defineConfig({
     proxy: {
       // Forward API calls to the backend in dev so visiting /api/* works in the browser
       '/api': {
-        target: 'https://api.lamarparks.com',
+        target: 'https://api.lamarparks.com/api',
         changeOrigin: true,
         secure: false
       }
