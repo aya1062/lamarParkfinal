@@ -45,38 +45,7 @@ app.use('/api/payment', cors({
 
 // CORS configuration object for reuse
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests without origin (like ARB callbacks, mobile apps, etc.)
-    if (!origin) {
-      console.log('CORS: No origin header, allowing request');
-      return callback(null, true);
-    }
-    console.log('CORS: Checking origin:', origin);
-    
-    // Check exact match first
-    if (allowedOrigins.includes(origin)) {
-      console.log('CORS: Origin allowed (exact match):', origin);
-      return callback(null, true);
-    }
-    
-    // Check if origin matches lamarparks.com domain (with or without www, http/https)
-    const lamarparksPattern = /^https?:\/\/(www\.)?lamarparks\.com$/i;
-    if (lamarparksPattern.test(origin)) {
-      console.log('CORS: Origin allowed (lamarparks.com pattern):', origin);
-      return callback(null, true);
-    }
-    
-    // Check local network for development
-    const isLocalNetwork = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2\d|3[0-1])\.)\d+\.\d+:(3000|5173)$/.test(origin);
-    if (process.env.NODE_ENV !== 'production' && isLocalNetwork) {
-      console.log('CORS: Local network origin allowed:', origin);
-      return callback(null, true);
-    }
-    
-    console.log('CORS: Origin blocked:', origin);
-    console.log('CORS: Allowed origins:', allowedOrigins);
-    return callback(new Error('Not allowed by CORS'));
-  },
+  origin: true, // Allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
