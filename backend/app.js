@@ -6,7 +6,6 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const pricingRoutes = require('./routes/pricingRoutes');
-// const checkoutRoutes = require('./routes/checkoutRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
@@ -19,12 +18,14 @@ const path = require("path");
 
 const app = express();
 
+/**
+ * Allowed Origins
+ */
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:5173',
   'https://lamarpark.up.railway.app',
-  'https://your-frontend-domain.com',
   'https://lamar-park.vercel.app',
   'https://lamarparks.com',
   'http://lamarparks.com',
@@ -35,100 +36,68 @@ const allowedOrigins = [
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
-// CORS configuration for payment routes (ARB callbacks may not have origin)
-app.use('/api/payment', cors({
-  origin: true, // Allow all origins for payment callbacks
-  credentials: false,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Content-Length']
-}));
-
-// CORS configuration object for reuse
+/**
+ * CORS Config (MAIN FIX)
+ */
 const corsOptions = {
-  origin: true, // Allow all origins
+  origin: function (origin, callback) {
+    // allow server-to-server or mobile apps (no origin)
+    if (!origin) return callback(null, true);
+
+    const lamarPattern = /^https?:\/\/(www\.)?lamarparks\.com$/;
+
+    if (allowedOrigins.includes(origin) || lamarPattern.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS: ' + origin));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
+    'Content-Type',
+    'Authorization',
     'X-Requested-With',
     'Accept',
-    'Origin',
-    'Access-Control-Request-Method',
-    'Access-Control-Request-Headers',
-    'Content-Length',
-    'Cache-Control',
-    'X-File-Name'
-  ],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+    'Origin'
+  ]
 };
 
-// Apply CORS before any routes
+/**
+ * Apply CORS globally
+ */
 app.use(cors(corsOptions));
-
-// Handle preflight requests for all routes with same CORS options
 app.options('*', cors(corsOptions));
 
-// Manual CORS headers as fallback (in case middleware fails)
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log('Request origin:', origin);
-  console.log('Request method:', req.method);
-  console.log('Request path:', req.path);
-  
-  if (origin) {
-    const lamarparksPattern = /^https?:\/\/(www\.)?lamarparks\.com$/i;
-    if (allowedOrigins.includes(origin) || lamarparksPattern.test(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Content-Length, Cache-Control, X-File-Name');
-      res.header('Access-Control-Expose-Headers', 'Content-Range, X-Content-Range');
-      
-      // Handle preflight requests
-      if (req.method === 'OPTIONS') {
-        return res.status(204).end();
-      }
-    }
-  }
-  next();
-});
+/**
+ * Special CORS override for payment (callbacks)
+ */
+app.use('/api/payment', cors({
+  origin: true,
+  credentials: false
+}));
 
-// Increase body size limits for large file uploads
+/**
+ * Body Parser
+ */
 app.use(express.json({ limit: '200mb' }));
-app.use(express.urlencoded({ extended: true, limit: '200mb', parameterLimit: 50000 }));
+app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 
-// Handle 413 errors (Request Entity Too Large)
-app.use((err, req, res, next) => {
-  if (err.status === 413 || err.type === 'entity.too.large') {
-    console.error('Request entity too large:', {
-      url: req.url,
-      method: req.method,
-      contentLength: req.headers['content-length'],
-      origin: req.headers.origin
-    });
-    return res.status(413).json({
-      success: false,
-      message: 'حجم الطلب كبير جداً. الحد الأقصى 200 ميجابايت. يرجى تقليل حجم الصور أو رفع عدد أقل من الصور.'
-    });
-  }
-  next(err);
-});
-
-// Serve static files for images
+/**
+ * Static files
+ */
 app.use('/lamar', express.static(path.join(__dirname, 'client/public/lamar')));
 app.use('/imageProperety', express.static(path.join(__dirname, 'client/public/imageProperety')));
 
-// API routes
+/**
+ * Routes
+ */
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/pricing', pricingRoutes);
-// app.use('/api/checkout', checkoutRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/hotels', hotelRoutes);
@@ -138,16 +107,9 @@ app.use('/api/export', exportRoutes);
 app.use('/api/partners', partnerRoutes);
 app.use('/api/quick-links', quickLinkRoutes);
 
-// Test routes
-// Payment test pages removed
-
-app.get('/test-direct-payment', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-direct-payment.html'));
-});
-
-// Legacy payment routes removed. Integrate new gateway separately.
-
-// Root API check
+/**
+ * Root
+ */
 app.get('/', (req, res) => {
   res.send('Lamar API is running');
 });
