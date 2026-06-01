@@ -29,7 +29,10 @@ if (cloudName && apiKey && apiSecret) {
  * استخدم uploadToCloudinary() بعد ذلك لرفع الملفات يدويًا.
  */
 function createMulterUpload({ folder } = {}) {
-  const limits = { fileSize: 50 * 1024 * 1024 };
+// Increase limit to match the 200 MB body parser limit.
+// Optionally use an env var: MAX_UPLOAD_SIZE_MB (default 200).
+const maxSizeMb = parseInt(process.env.MAX_UPLOAD_SIZE_MB || '200', 10);
+const limits = { fileSize: maxSizeMb * 1024 * 1024 };
   return multer({
     storage: multer.memoryStorage(),
     limits,
