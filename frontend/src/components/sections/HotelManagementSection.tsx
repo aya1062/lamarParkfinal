@@ -147,7 +147,7 @@ const HotelManagementSection = () => {
 
             {/* Right side: Luxurious Dusk Resort Photo */}
             <div 
-              className="w-full lg:w-[70%] relative min-h-[300px] lg:min-h-auto bg-cover bg-center"
+              className="w-full lg:w-[75%] relative min-h-[300px] lg:min-h-auto bg-cover bg-center"
               style={{
                 backgroundImage: `url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=1200&auto=format&fit=crop')`
               }}
