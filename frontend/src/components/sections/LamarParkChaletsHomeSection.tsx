@@ -56,6 +56,17 @@ const LamarParkChaletsHomeSection = () => {
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const bannerScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleBannerScroll = (direction: 'left' | 'right') => {
+    setBannerIdx((prev) => {
+      const len = resortImages.length;
+      const next = direction === 'left' ? prev - 1 : prev + 1;
+      return (next + len) % len;
+    });
+  };
+
+  // Scroll handler for chalet cards
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
@@ -98,8 +109,30 @@ const LamarParkChaletsHomeSection = () => {
     return DEFAULT_CHALETS_BANNER;
   }, [chalets]);
 
-  const shellClass =
-    'mt-6 sm:mt-10 rounded-[24px] bg-white px-4 py-6 sm:px-8 sm:py-10 md:px-10 md:py-14 shadow-[0_4px_40px_-12px_rgba(0,0,0,0.08)] border border-gray-100/90';
+  const shellClass = 'mt-6 sm:mt-10 rounded-[24px] px-4 py-6 sm:px-8 sm:py-10 md:px-10 md:py-14';
+
+// Prepare carousel images for the resort banner
+const resortImages = useMemo(() => {
+  // Use images from chalets as fallback carousel images
+  const imgs = chalets.map((p) => heroImageFromChalet(p)).filter(Boolean);
+  // Ensure at least one image exists
+  return imgs.length > 0 ? imgs : [bannerUrl];
+}, [chalets, bannerUrl]);
+
+const [bannerIdx, setBannerIdx] = useState(0);
+
+const currentBanner = resortImages[bannerIdx] || bannerUrl;
+
+// Trigger fade animation on banner index change – handled via key prop on <img>
+// No additional state needed.
+
+  // Auto‑rotate banner images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBannerIdx((prev) => (prev + 1) % resortImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [resortImages]);
 
   if (loading) {
     return (
@@ -121,19 +154,50 @@ const LamarParkChaletsHomeSection = () => {
       {/* عناوين مثل المرجع: عنوان + خط تحته + سطر فرعي */}
       <header className="text-right md:text-center mb-4 md:mb-10">
         <h3 className="text-xl sm:text-2xl md:text-[1.75rem] font-bold text-gray-900 tracking-tight">
-          <span className="inline-block border-b-[3px] border-[#DfB86c] pb-2 px-1">شاليهات لامار بارك</span>
+          <span className="inline-block border-b-[3px] border-[#DfB86c] pb-2 px-1">منتجع لامار بارك</span>
         </h3>
         <p className="text-lg sm:text-xl font-bold text-gray-900 mt-6 md:mt-7">تجربة إقامة لا تنسي</p>
       </header>
 
-      {/* بانر كامل العرض بزوايا كبيرة — يظهر دائمًا */}
-      <div className="mb-5 md:mb-12 overflow-hidden rounded-[20px] border border-gray-200/80 shadow-sm">
+      {/* بانر كامل العرض - عرض صور المنتجع على شكل كرousel */}
+      <div className="mb-5 md:mb-12 overflow-hidden rounded-[20px] border border-gray-200/80 shadow-sm relative banner-container">
+
+        {/* Carousel container with fade effect */}
         <img
-          src={bannerUrl}
-          alt="شاليهات لامار بارك"
-          className="w-full h-[220px] sm:h-[280px] md:h-[380px] object-cover"
+          src={currentBanner}
+          alt={`صورة المنتجع ${bannerIdx + 1}`}
+          className="banner-image w-full h-[220px] sm:h-[280px] md:h-[380px] object-cover rounded-[20px]"
+          key={bannerIdx}
           onError={(e) => handleImageError(e, FALLBACK_IMAGES.property)}
         />
+
+        {/* Navigation arrows for banner */}
+        {resortImages.length > 1 && (
+          <>
+            <button
+              onClick={() => handleBannerScroll('left')}
+              className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-[#DfB86c] text-gray-800 hover:text-white backdrop-blur-sm shadow-xl items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 border border-gray-100 hover:scale-110"
+              aria-label="Banner Scroll Left"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => handleBannerScroll('right')}
+              className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-[#DfB86c] text-gray-800 hover:text-white backdrop-blur-sm shadow-xl items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 border border-gray-100 hover:scale-110"
+              aria-label="Banner Scroll Right"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+        {/* Gradient overlay for premium look */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent rounded-[20px]" />
+        {/* Centered resort title and subtitle */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg mb-2">منتجع لامار بارك</h2>
+          <p className="text-sm md:text-base text-white opacity-90 mb-4">تجربة فاخرة لا تُنسى في قلب الطبيعة</p>
+          <a href="/resort" className="inline-block bg-[#c9a55a] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#b8934e] transition-colors">استكشف المنتجع</a>
+        </div>
       </div>
 
       {chalets.length === 0 ? (

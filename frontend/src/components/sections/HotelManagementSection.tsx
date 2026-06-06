@@ -135,15 +135,15 @@ const HotelManagementSection = () => {
             </div>
 
             {/* Wavy separator (visible only on desktop) */}
-            <div className="hidden lg:block absolute left-[54.5%] top-0 bottom-0 w-20 z-20 pointer-events-none">
-              <svg className="h-full w-full text-[#faf4e5] fill-current" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path d="M100,0 Q30,50 100,100 L0,100 L0,0 Z" />
-              </svg>
-              {/* Golden Wave Line overlay */}
-              <svg className="absolute inset-0 h-full w-full text-[#c9a55a] fill-none stroke-[2]" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path d="M100,0 Q30,50 100,100" />
-              </svg>
-            </div>
+      <div className="hidden lg:block absolute left-[54.5%] top-0 bottom-0 w-20 z-20 pointer-events-none">
+        <svg className="h-full w-full text-[#f4ebd4] fill-current" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M100,0 Q30,50 100,100 L0,100 L0,0 Z" />
+        </svg>
+        {/* Golden Wave Line overlay */}
+        <svg className="absolute inset-0 h-full w-full text-[#f4ebd4] fill-none stroke-[2]" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M100,0 Q30,50 100,100" />
+        </svg>
+      </div>
 
             {/* Right side: Luxurious Dusk Resort Photo */}
             <div 

@@ -398,3 +398,13 @@ html {
 .luxury-sheen-btn:hover::before {
   animation: buttonLuxurySheen 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
+/* Card fade effect for banner images */
+.banner-image {
+  opacity: 0;
+  animation: bannerFadeIn 0.6s ease-in-out forwards;
+}
+@keyframes bannerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

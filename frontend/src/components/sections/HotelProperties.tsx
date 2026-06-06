@@ -78,7 +78,10 @@ const CitySection = ({
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {displayed.map((hotel) => (
-                <div key={hotel._id || hotel.id} className="w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full">
+                <div
+                  key={hotel._id || hotel.id}
+                  className="w-[75%] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full mr-4"
+                >
                   <PropertyCard property={hotel} hideTypeBadge />
                 </div>
               ))}
@@ -152,6 +155,7 @@ const HotelProperties = () => {
           </div>
         ) : (
           <div>
+            <LamarParkChaletsHomeSection />
             <CitySection
               title="فروعنا بمدينة الرياض"
               items={riyadhHotels}
@@ -172,7 +176,7 @@ const HotelProperties = () => {
           </div>
         )}
 
-        <LamarParkChaletsHomeSection />
+        {/* <LamarParkChaletsHomeSection /> */}
 
         {/* view all button */}
         <div className="text-center mt-6 md:mt-16">
