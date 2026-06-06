@@ -244,7 +244,7 @@ const currentBanner = resortImages[bannerIdx] || bannerUrl;
               return (
                 <div
                   key={raw._id || raw.id}
-                  className="w-[calc(50%-8px)] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full [&_.card-luxury]:rounded-[20px] [&_.card-luxury]:shadow-md [&_.card-luxury]:border [&_.card-luxury]:border-gray-100 [&_.card-luxury>div:first-child]:rounded-t-[20px] [&_.card-luxury>div:first-child]:overflow-hidden"
+                  className="w-[55%] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full mr-4 [&_.card-luxury]:rounded-[20px] [&_.card-luxury]:shadow-md [&_.card-luxury]:border [&_.card-luxury]:border-gray-100 [&_.card-luxury>div:first-child]:rounded-t-[20px] [&_.card-luxury>div:first-child]:overflow-hidden"
                 >
                   <PropertyCard property={property} ctaLabel="احجز الآن" hideTypeBadge />
                 </div>
