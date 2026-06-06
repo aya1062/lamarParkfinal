@@ -80,7 +80,7 @@ const CitySection = ({
               {displayed.map((hotel) => (
                 <div
                   key={hotel._id || hotel.id}
-                  className="w-[65%] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full mr-4"
+                  className="w-[75%] md:w-[calc(33.333%-16px)] flex-shrink-0 snap-start md:snap-align-none h-full mr-4"
                 >
                   <PropertyCard property={hotel} hideTypeBadge />
                 </div>
